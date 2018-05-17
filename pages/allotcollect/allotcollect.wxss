@@ -1,0 +1,16 @@
+/* pages/allotcollect/allotcollect.wxss */
+@import '../../common/common';
+page,.cllect{
+  height: 100%;
+  overflow: hidden;
+}
+
+.btn-review >button{
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 32rpx;
+  border-radius: 0;
+  color: #fff;
+  margin: 0;
+  background-color: rgba(255,0,0,.7);
+}

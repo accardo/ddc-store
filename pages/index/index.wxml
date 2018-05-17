@@ -1,0 +1,24 @@
+<!--pages/index/index.wxml-->
+<view class='index-box'>
+  <picker 
+    bindchange="selectShop" 
+    value="{{selectIndex}}" 
+    range="{{shopArray}}"
+    range-key="{{'shopName'}}"
+  >
+     <view class="select-ads">
+      <text class='ads-name'>当前店铺：{{shopAds}}</text>
+      <button class='select-btn' type="primary" size="mini">切换门店</button>
+    </view>
+  </picker>
+  <view class='page-tit'>库存管理</view>
+  <admin-item select-index="{{selectIndex}}" stock-data="{{stockIcon}}"></admin-item>
+  <view class='page-tit'>个人管理</view>
+  <!-- <view class="user-info">
+    <view class="user-item">用户名称：{{username}}</view>
+    <view class="user-item">手机号码：{{mobile}}</view>
+    <view class="user-item">当前角色：{{roleName}}</view>
+    <view class="user-item center" bindtap='loginOut'>退出登录</view>
+  </view> -->
+   <admin-item stock-data="{{signout}}"></admin-item> 
+</view>

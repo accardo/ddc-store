@@ -1,0 +1,63 @@
+<!--components/receiptList/receiptList.wxml-->
+<view class='goods-box'>
+    <view class='goods-item' wx:for="{{receiptArr}}" wx:key="index">
+       <image class="goods-img {{item.img ? '':'active'}}" src='{{imgUrl}}{{item.img ? item.img : defImg}}'></image>
+      <view class='goods-txt-box' wx:if="{{pageindex ==0 }}">
+        <view class='goods-txt'>
+              <text class='goods-type' wx:if="{{item.typename}}">{{item.typename}}</text>
+              <text class='goods-name'>{{item.name}}</text>
+              <text>{{item.unit}}</text>
+        </view>
+        <view class='goods-label' wx:if="{{item.typelist && item.typelist.length>0}}">
+              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+        </view>
+        <view class='goods-num'>订货数量：<text>{{item.ordercurrent}}</text><text>{{item.company}}</text> </view>
+        <view class='goods-num'>{{titlename}}：<text>{{item.actul ? item.actul : '-' }}</text><text wx:if="{{item.actul}}">{{item.company}}</text> </view>
+        <view class='goods-num goods-inp' wx:if="{{pageType !='orderfrom'}}">收货数量：<input data-index="index" bindinput="setNumber" type='number' confirm-type="done" value="{{item.current}}" placeholder="数量"></input>
+        <text>{{item.company}}</text> 
+      </view>
+      </view>
+      <view class='goods-txt-box' wx:if="{{pageindex == 1 }}">
+          <view class='goods-txt'>
+                <text class='goods-type' wx:if="{{item.typename}}">{{item.typename}}</text>
+                <text class='goods-name'>{{item.name}}</text>
+                <text>{{item.unit}}</text>
+          </view>
+          <view class='goods-label' wx:if="{{item.typelist && item.typelist.length>0}}">
+                <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+          </view>
+          <view class='goods-num'>理论库存：<text>{{item.ordercurrent}}</text><text>{{item.company}}</text> </view>
+          <view class='goods-num'>盘点数量：<text>{{item.stoknum}}</text> </view>
+          <view class='goods-num goods-inp' wx:if="{{pageType !='orderfrom'}}">收货数量：
+            <input data-index="index" bindinput="setNumber" type='number' confirm-type="done" value="{{item.current}}" placeholder="数量"></input>
+            <text>{{item.company}}</text> 
+          </view>
+      </view>
+      <view class='goods-txt-box' wx:if="{{pageindex == 2 }}">
+        <view class='goods-txt'>
+              <text class='goods-type' wx:if="{{item.typename}}">{{item.typename}}</text>
+              <text class='goods-name'>{{item.name}}</text>
+              <text>{{item.unit}}</text>
+        </view>
+        <view class='goods-label' wx:if="{{item.typelist && item.typelist.length>0}}">
+              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+        </view>
+        <view class='goods-num'>出库数量：<text>{{item.stoknum}}</text> </view>
+      </view>
+      <view class='goods-txt-box' wx:if="{{pageindex ==5 }}">
+            <view class='goods-txt'>
+                  <text class='goods-type' wx:if="{{item.typename}}">{{item.typename}}</text>
+                  <text class='goods-name'>{{item.name}}</text>
+                  <text>{{item.unit}}</text>
+            </view>
+            <view class='goods-label' wx:if="{{item.typelist && item.typelist.length>0}}">
+                  <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+            </view>
+            <view class='goods-num'>订货数量：<text>{{item.ordercurrent}}</text><text>{{item.company}}</text> </view>
+            <view class='goods-num'>{{titlename}}：<text>{{item.actul ? item.actul : '-' }}</text><text wx:if="{{item.actul}}">{{item.company}}</text> </view>
+            <view class='goods-num goods-inp' wx:if="{{pageType !='orderfrom'}}">收货数量：<input data-index="index" bindinput="setNumber" type='number' confirm-type="done" value="{{item.current}}" placeholder="数量"></input>
+            <text>{{item.company}}</text> 
+            </view>
+      </view>
+    </view>
+  </view>

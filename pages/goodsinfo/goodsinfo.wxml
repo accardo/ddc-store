@@ -1,0 +1,16 @@
+<!--pages/goodsinfo/goodsinfo.wxml-->
+<view class='detail'>
+  <tip-info outage="{{outage}}" label-name="出库原因"></tip-info>
+  <view class="scroll-box {{pagetitle =='出库'? 'active' : ''}}">
+  <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
+    <product-info product-list="{{productlist}}"></product-info>
+  </scroll-view>
+  </view>
+  <view class='bottom-box' wx:if="{{pagetitle == '订货' }}">
+      <view class='bottom-price'>
+        共<text>20</text>个商品，<text>200</text>件
+      </view>
+      <button class='bottom-btn' bindtap='goNext' size="mini">下一步</button>
+  </view>
+  <view bindtap='nextGo' wx:if="{{pagetitle == '出库'}}" class='btn-review'>下一步</view>
+</view>

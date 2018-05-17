@@ -1,0 +1,24 @@
+<!--pages/orderlist/orderlist.wxml-->
+<view class='order-list'>
+  <view class='order-btn-box' wx:if="{{titlename !='出库操作' }}">
+    <button class='order-btn' bindtap='ordergoods' size="mini">{{btntext}}</button>
+  </view>
+  <view class='order-btn-box' wx:if="{{titlename =='出库操作' }}">
+    <button class='order-btn'  bindtap='scrapSelect' size="mini">报废</button>
+    <button class='order-btn ml20' bindtap='returnGoods' size="mini">退货</button>
+  </view>
+  <list-order  type-name="{{typeName}}" list="{{listData}}">
+  </list-order>
+  <view bindtap="dialogClose" class="show-bg {{isShow ? '' : 'close'}}"></view>
+  <view class="show-box {{isShow ? '' : 'close'}}">
+    <radio-group class="radio-group" bindchange="radioChange">
+      <label class="radio" wx:for="{{labelList}}" wx:key="index">
+        <radio value="{{item.name}}" checked="{{item.checked}}"/>{{item.name}}
+      </label>
+    </radio-group>
+    <view class='btn-box'>
+      <button class='btn-cancel' bindtap="dialogClose" size="mini" >取消</button>
+      <button class='btn-confirm' bindtap='confirmFun' size="mini" >确定</button>
+    </view>
+  </view>
+</view>

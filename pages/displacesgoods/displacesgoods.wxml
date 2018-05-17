@@ -1,0 +1,23 @@
+<!--置换列表-->
+<view  class='displace'>
+  <view class='scroll-box'>
+    <scroll-view class='displace-view'>
+      <view class='scroll-title'>
+        <text>要转换商品</text>
+        <button size='mini' data-name="want"  bindtap='goSearch'>选择商品</button>
+      </view>
+      <product-info product-type="displace" product-click="{{isSelect}}" product-list="{{wantShop}}"></product-info>
+    </scroll-view>
+    <scroll-view class='displace-view mt20'>
+      <view class='scroll-title'>
+        <text>转化为商品</text>
+        <button size='mini' data-name="cover" bindtap='goSearch'>选择商品</button>
+      </view>
+      <product-info product-type="cover" product-click="{{isSelect}}"  product-list="{{coverShop}}"></product-info>
+    </scroll-view>
+  </view>
+  <view class='btn-review'>
+    <button class='nobordr' bindtap='subDisplace'  disabled='{{btnDisabled}}' >提交置换</button>
+  </view>
+</view>
+

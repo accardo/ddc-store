@@ -1,0 +1,20 @@
+<!--pages/displaceslist/displaceslist.wxml-->
+<!--置换列表-->
+<view  class='displace'>
+  <view class='scroll-box'>
+    <scroll-view class='displace-view'>
+      <view class='scroll-title'>
+        <text>要转换商品</text>
+      </view>
+      <product-info product-type="want" product-status="over" product-click="{{isSelect}}" product-list="{{wantShop}}"></product-info>
+    </scroll-view>
+    <scroll-view class='displace-view mt20'>
+      <view class='scroll-title'>
+        <text>转化为商品</text>
+      </view>
+      <product-info product-type="cover" product-click="{{isSelect}}"  product-list="{{coverShop}}"></product-info>
+    </scroll-view>
+  </view>
+</view>
+
+

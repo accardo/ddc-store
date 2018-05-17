@@ -1,0 +1,119 @@
+{
+	"description": "项目配置文件。",
+	"packOptions": {
+		"ignore": []
+	},
+	"setting": {
+		"urlCheck": false,
+		"es6": true,
+		"postcss": true,
+		"minified": true,
+		"newFeature": true
+	},
+	"compileType": "miniprogram",
+	"libVersion": "2.0.0",
+	"appid": "wxf15e4572aeeb4e5a",
+	"projectname": "entry",
+	"isGameTourist": false,
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"currentL": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": 0,
+			"list": [
+				{
+					"id": -1,
+					"name": "login",
+					"pathName": "pages/login/login",
+					"query": ""
+				},
+				{
+					"id": 1,
+					"name": "index",
+					"pathName": "pages/index/index",
+					"query": "ads=2"
+				},
+				{
+					"id": 2,
+					"name": "订货",
+					"pathName": "pages/orderlist/orderlist",
+					"query": "titlename=出库操作"
+				},
+				{
+					"id": -1,
+					"name": "订单详情",
+					"pathName": "pages/goodsinfo/goodsinfo",
+					"query": "titlename=订货"
+				},
+				{
+					"id": 4,
+					"name": "订货一级导航",
+					"pathName": "pages/ordergoods/ordergoods",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "搜索",
+					"pathName": "pages/search/search",
+					"query": ""
+				},
+				{
+					"id": 6,
+					"name": "收货",
+					"pathName": "pages/goodsreceipt/goodsreceipt",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "收货单",
+					"pathName": "pages/orderfrom/orderfrom",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "课程消耗调整",
+					"pathName": "pages/expendtrim/expendtrim",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "盘点审核",
+					"pathName": "pages/inventoryreview/inventoryreview",
+					"query": "titlename=出库操作"
+				},
+				{
+					"id": -1,
+					"name": "图片上传",
+					"pathName": "pages/uploadimg/uploadimg",
+					"query": "radiotxt=在库退货"
+				},
+				{
+					"id": -1,
+					"name": "置换-选择商品",
+					"pathName": "pages/displacesgoods/displacesgoods",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "置换",
+					"pathName": "pages/displacesgoods/displacesgoods",
+					"query": ""
+				}
+			]
+		}
+	}
+}

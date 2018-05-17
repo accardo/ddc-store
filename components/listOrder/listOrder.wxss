@@ -1,0 +1,33 @@
+/* components/listOrder/listOrder.wxss */
+
+.list-item > view{
+  margin-bottom: 10rpx;
+}
+.list-item{
+  width: 100%;
+  padding:20rpx 30rpx;
+  box-sizing: border-box;
+  border-bottom: 1px solid #ccc;
+}
+.list-title{
+  position: relative;
+}
+.list-box text{
+  font-size: 30rpx;
+  color: #666;
+}
+.allot-box{
+  display: flex;
+}
+.allot-box .list-name{
+  flex: 1;
+}
+.list-box .list-type{
+  display: inline-block;
+  position: absolute;
+  top:12rpx;
+  text-align: right;
+  right: 0rpx;
+  color:#ff5d31;
+}
+

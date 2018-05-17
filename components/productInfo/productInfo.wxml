@@ -1,0 +1,175 @@
+<!--components/productInfo/productInfo.wxml-->
+<view class='goods-box'>
+      <view class='goods-item'  wx:for="{{productList}}" wx:key="index">
+        <image class="goods-img {{item.thumb.includes('http') ? '':'active'}}" src="{{item.thumb.includes('http') ? item.thumb : defImg}}"></image>
+        <view wx:if="{{pagetitle =='订货'}}" class='goods-txt-box'>
+          <view class='goods-txt'>
+            <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
+            <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
+            <text>{{item.item.deductionType ==2 ? ( item.item.netWightValue +''+ item.item.materialUnitName):''}}</text>
+          </view>
+          <view class='goods-stock'>
+            当前库存：<text>{{item.item.deductionType ==1 ? (item.item.unitValue+''+ item.item.unitName): (item.item.unitValue+''+ item.item.unitName +' '+item.item.materialUnitValue+''+ item.item.materialUnitName)}}</text>
+          </view>
+          <view class='goods-label' 
+            wx:if="{{item.attrValues && item.attrValues.length>0}}">
+            <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+          </view>
+          <view class='product-count' >
+            <image class='input-icon' data-index="{{index}}" catchtap='countReduce' src='../../icons/jian.png'></image>
+            <view class='input-number'>
+              <text class='input-num red'>{{item.item.unitValue }}</text>
+              <text class='input-type'>{{item.item.unitName}}</text>
+            </view>
+            <image class='input-icon' data-index="{{index}}" catchtap='countAdd' src='../../icons/jia.png'></image>
+          </view>
+        </view>
+        <view wx:if="{{pagetitle =='盘点'}}" class='goods-txt-box'>
+          <view class='goods-txt'>
+            <text class='goods-type'>{{item.typename}}</text>
+            <text class='goods-name'>{{item.name}}</text>
+            <text>{{item.unit}}</text>
+          </view>
+          <view class='goods-label' 
+            wx:if="{{item.typelist && item.typelist.length>0}}">
+            <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+          </view>
+          <view class='goods-stock' wx:if="{{item.company !='个'}}">
+            净含量：<text>{{item.netcontent}}{{item.company}}</text>
+          </view>
+          <view class='goods-stock stock-num'>
+            盘点数量:<view class="number-box" wx:if="{{item.company !='个'}}">
+              <input type='number'></input>袋
+              <input type='number'></input>{{item.company}}
+            </view>
+           <view class="number-box"  wx:if="{{item.company =='个'}}">
+             <input type='number'></input>个
+           </view>
+          </view>
+        </view>
+        <view wx:if="{{pagetitle =='出库操作'}}" class='goods-txt-box'>
+            <view class='goods-txt'>
+              <text class='goods-type'>{{item.typename}}</text>
+              <text class='goods-name'>{{item.name}}</text>
+              <text>{{item.unit}}</text>
+            </view>
+            <view class='goods-label' 
+              wx:if="{{item.typelist && item.typelist.length>0}}">
+              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+            </view>
+            <view class='goods-stock' wx:if="{{item.company !='个'}}">
+              净含量：<text>{{item.netcontent}}{{item.company}}</text>
+            </view>
+            <view class='goods-stock stock-num'>
+                库存数量:<view class="number-box" wx:if="{{item.company !='个'}}">
+                 <text>{{item.stoknum}}</text>
+                </view>
+               <view class="number-box"  wx:if="{{item.company =='个'}}">
+                 <text>{{item.stoknum}}</text>
+               </view>
+              </view>
+            <view class='goods-stock stock-num'>
+              出库数量:<view class="number-box" wx:if="{{item.company !='个'}}">
+                <input type='number'></input>袋
+                <input type='number'></input>{{item.company}}
+              </view>
+             <view class="number-box"  wx:if="{{item.company =='个'}}">
+               <input type='number'></input>个
+             </view>
+            </view>
+        </view>
+        <view wx:if="{{productType =='want' || productType == 'cover' }}" data-ind="{{index}}" catchtap='clickShop' class='goods-txt-box'>
+            <view class='goods-txt'>
+              <text class='goods-type'>{{item.typename}}</text>
+              <text class='goods-name'>{{item.name}}</text>
+              <text>{{item.unit}}</text>
+            </view>
+            <view class='goods-label' 
+              wx:if="{{item.typelist && item.typelist.length>0}}">
+              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+            </view>
+            <view class='goods-stock' wx:if="{{productStatus != 'over'}}">
+              当前库存：<text>{{item.current}}{{item.company}}</text>
+            </view>
+            <view class='goods-stock' wx:if="{{productStatus == 'over'}}">
+                转换数量：<text>{{item.wannum}}{{item.company}}</text>
+            </view>  
+          </view>
+          <view wx:if="{{productType =='displace' }}" class='goods-txt-box'>
+              <view class='goods-txt'>
+                <text class='goods-type'>{{item.typename}}</text>
+                <text class='goods-name'>{{item.name}}</text>
+                <text>{{item.unit}}</text>
+              </view>
+              <view class='goods-label' 
+                wx:if="{{item.typelist && item.typelist.length>0}}">
+                <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+              </view>
+              <view class='goods-stock'>
+                当前库存：<text>{{item.current}}{{item.company}}</text>
+              </view>
+              <view class='goods-stock want-box'>
+                  转化数量：<input type='number' data-name='wantNum' data-ind="{{index}}" bindinput='setWantNum'></input>{{item.company}}
+                </view>
+            </view>
+        <view wx:if="{{pagetitle=='调拨' && productType==''}}" class='goods-txt-box'>
+            <view class='goods-txt'>
+              <text class='goods-type'>{{item.typename}}</text>
+              <text class='goods-name'>{{item.name}}</text>
+              <text>{{item.unit}}</text>
+            </view>
+            <view class='goods-label' 
+              wx:if="{{item.typelist && item.typelist.length>0}}">
+              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+            </view>
+            <view class='goods-stock'>
+              当前库存：<text>{{item.stock}}{{item.company}}</text>
+            </view>
+            <view class='product-count allot' >
+              <text>调出数量:</text>
+              <image class='input-icon' data-index="{{index}}" catchtap='countReduce' src='../../icons/jian.png'></image>
+              <view class='input-number'>
+                <text class='input-num red'>{{item.current}}</text>
+                <text class='input-type'>{{item.company}}</text>
+              </view>
+              <image class='input-icon' data-index="{{index}}" catchtap='countAdd' src='../../icons/jia.png'></image>
+            </view>
+        </view>
+        <view wx:if="{{ productType=='调拨收货' }}" class='goods-txt-box'>
+            <view class='goods-txt'>
+              <text class='goods-type'>{{item.typename}}</text>
+              <text class='goods-name'>{{item.name}}</text>
+              <text>{{item.unit}}</text>
+            </view>
+            <view class='goods-label' 
+              wx:if="{{item.typelist && item.typelist.length>0}}">
+              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+            </view>
+            <view class='goods-stock'>
+              订货数量：<text>{{item.order}}{{item.company}}</text>
+            </view>
+            <view class='goods-stock stock-num'>
+                收货数量：<view class="number-box">
+                  <input type='number' data-name='collect' data-ind="{{index}}" bindinput='setCollect'></input>{{item.company}}
+                </view>
+              </view>
+        </view>
+        <view wx:if="{{pagetitle =='库存查询'}}" class='goods-txt-box'>
+          <view class='goods-txt'>
+            <text class='goods-type'>{{item.typename}}</text>
+            <text class='goods-name'>{{item.name}}</text>
+            <text>{{item.unit}}</text>
+          </view>
+          <view class='goods-label' 
+            wx:if="{{item.typelist && item.typelist.length>0}}">
+            <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+          </view>
+          <view class='goods-stock' wx:if="{{item.company !='个'}}">
+            净含量：<text>{{item.netcontent}}{{item.company}}</text>
+          </view>
+          <view class='goods-stock'>
+            盘点数量：<text>{{item.stoknum}}</text>
+          </view>
+        </view>
+      </view>
+    </view>

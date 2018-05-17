@@ -1,0 +1,28 @@
+<!--pages/login/login.wxml-->
+<view class='login'> 
+  <image class='logo' src='{{imgUrl}}logo.png'></image>
+  <view class='login-item'>
+    <text>用 户 名：</text>
+    <input maxlength="20" type='text' data-name='username'  bindinput='setUserName' value='{{username}}' placeholder='用户名'></input>
+    <image wx:if="{{username}}" data-utype="username" bindtap='clearInput' class='icon-close' src='{{imgUrl}}close.png'></image>
+  </view>
+  <view class='login-item'>
+    <text>密　码：</text>
+    <input maxlength="20" type='text' data-name='userpwd' bindinput='setUserPwd' value="{{userpwd}}" password='true' placeholder='密码'></input>
+    <image wx:if="{{userpwd}}" data-utype="userpwd" bindtap='clearInput' class='icon-close' src='{{imgUrl}}close.png'></image>
+  </view>
+  <picker class='login-item' 
+  bindchange="selectShop" 
+  value="{{selectIndex}}"
+  range="{{shopArray}}"
+  range-key="{{'shopName'}}">
+    <view class="picker">
+      <text class='picker-txt'>所在店铺：</text> 
+      <text class='picker-sel'>{{shopName}}</text>
+      <image src="{{imgUrl}}arrow-lower.png" class='icon-lower'></image>
+    </view>
+  </picker>
+  <view class='btn-box'>
+    <button size='mini' bindtap="loginFun" class='btn btn-active'>登录</button>
+  </view>
+</view>

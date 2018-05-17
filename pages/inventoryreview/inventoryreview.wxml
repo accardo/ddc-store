@@ -1,0 +1,54 @@
+<!--盘点 审核 -->
+<scroll-view  scroll-y style="height:100%;" class="scroll-box">
+  <view class='goods-box'>
+    <view class='goods-item' wx:for="{{inventoryList}}" wx:key="index">
+        <image class="goods-img {{item.img ? '':'active'}}" src='{{imgUrl}}{{item.img ? item.img : defImg}}'></image>
+        <view  class='goods-txt-box'>
+            <view class='goods-txt'>
+                <text class='goods-type'>{{item.typename}}</text>
+                <text class='goods-name'>{{item.name}}</text>
+                <text>{{item.unit}}</text>
+            </view>
+            <view class='goods-label' 
+                wx:if="{{item.typelist && item.typelist.length>0}}">
+                <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+            </view>
+            <view class='goods-stock' wx:if="{{item.company !='个'}}">
+                净含量：<text>{{item.netcontent}}{{item.company}}</text>
+            </view>
+            <view class='goods-stock' wx:if="{{item.company !='个'}}">
+                理论库存:<view class="number-box" wx:if="{{item.company !='个'}}">
+                <text class='mglr10'>{{item.stockthory}} </text>
+                <text>{{item.unitinfo}}</text>
+                </view>
+                <view class="number-box"  wx:if="{{item.company =='个'}}">
+                <text class='mglr10'>{{item.stoknum}} </text>
+                <text>{{item.unitinfo}}</text>
+              </view>
+            </view>
+            <view class='goods-stock stock-num'>
+                盘点数量:
+               <view class="number-box" wx:if="{{item.company !='个'}}">
+                <text class='mglr10 red'>{{item.stoknum}} </text>
+                <text>{{item.unitinfo}}</text>
+                </view>
+                <view class="number-box"  wx:if="{{item.company =='个'}}">
+                <text class='mglr10 red'>{{item.stoknum}} </text>
+                <text>{{item.unitinfo}}</text>
+              </view>
+               <view bindtap='editNum' data-ind="{{index}}" data-stoknum="{{item.stoknum}}" class="edit">修改</view>
+            </view>
+        </view>
+    </view>
+</view>
+</scroll-view>
+<view wx:if="{{isShow == true}}"  class='show-bg'></view>
+<view wx:if="{{isShow == true}}"  class='show-box'>
+     <view class='show-content'>
+    <input type='number' data-val='valNum' focus="{{isShow}}"  bindinput='setValue' placeholder='请输入调整数量' confirm-type="确定" bindconfirm="confimNum" ></input>
+    </view>
+    <view class='btn-box'>
+      <button bindtap='confimNum' class='nobordr btn-def' size="mini" >确定</button>
+    </view>
+  </view>
+<view bindtap='subReview' class='btn-review'>提交审核</view>

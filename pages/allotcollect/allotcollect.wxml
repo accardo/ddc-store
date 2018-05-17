@@ -1,0 +1,9 @@
+<!--pages/allotcollect/allotcollect.wxml-->
+<view class='cllect'>
+  <scroll-view scroll-top="0" scroll-y style="height:100%;" class="scroll-box">
+     <product-info product-type="{{productType}}" product-list="{{productlist}}"></product-info>
+  </scroll-view>
+  <view class='btn-review'>
+    <button class='nobordr' bindtap='subAllot' >收货完毕</button>
+  </view>
+</view>

@@ -1,0 +1,20 @@
+<!--pages/search/search.wxml-->
+<view class='search-container'>
+  <view class='search-box'>
+    <view class='search-inp'>
+      <image class='icon-search' src='../../icons/search-32.png'></image>
+      <input focus="{{focus}}" data-name="searchtxt" bindinput='setSearchtxt' value='{{searchtxt}}' type='text' bindconfirm="searchFun"  placeholder='输入商品名称' confirm-type='search'></input>
+      <image class='icon-close' bindtap='clearText'  wx:if="{{searchtxt}}" src='../../icons/close.png'></image>
+    </view>
+    <view bindtap='searchFun' class='search-btn'>搜索</view>
+  </view>
+  <view class='scroll-box' wx:if="{{showList}}">
+    <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
+    <product-info product-type="{{shoptype}}" product-list="{{productlist}}"></product-info>
+  </scroll-view>
+  </view>
+  <view class='search-no' wx:if="{{searchReset}}">
+    <image src='../../icons/nosearch.png'></image>
+    <text>无搜索结果</text>
+  </view>
+</view>

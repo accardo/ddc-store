@@ -1,0 +1,12 @@
+<!--pages/goodsreceipt/goodsreceipt.wxml-->
+<view class='goods-receipt'>
+<view class='scroll-box'>
+  <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
+    <receipt-list receipt-arr="{{receiptList}}" title-name="{{txtName}}" page-type="{{pagetype}}"></receipt-list>
+  </scroll-view>
+</view>
+  <view class='btn-box'>
+    <button type='default' bindtap='partialReceipt' size="mini">部分收货</button>
+    <button size="mini" bindtap='completeReceipt'>收货完毕</button>
+  </view>
+</view>

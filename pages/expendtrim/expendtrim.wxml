@@ -1,0 +1,38 @@
+<!-- 课程 消耗 调整 -->
+<view class='expent'>
+  <view class='expent-tip'>请在每日{{endTime}}点前完成课程消耗调整</view>
+  <view class='course-box'>
+    <view class='course-item' wx:for="{{courseList}}" wx:key="index">
+      <view class='course-name'>
+        <view class='course-time'>
+          <text>{{item.name}}</text>
+          <text>{{item.time}}</text>
+        </view>
+        <text>老师：{{item.telname}}</text>
+      </view>
+      <view class='course-share'>
+        <view class='course-info' data-mold="actual" data-ind="{{index}}" data-num="{{item.actual}}" bindtap='editNum'>
+          <text>{{item.actual}}人</text>
+          <text>实际上课人</text>
+        </view>
+        <view class='course-info' data-mold="normal" data-ind="{{index}}"  data-num="{{item.normal}}" bindtap='editNum'>
+          <text>{{item.normal}}份</text>
+          <text>正常消耗量</text>
+        </view>
+        <view class='course-info' data-mold="scrap" data-ind="{{index}}"  data-num="{{item.scrap}}" bindtap='editNum'>
+          <text>{{item.scrap}}份</text>
+          <text>制作报废数量</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view wx:if="{{isShow == true}}"  class='show-bg'></view>
+  <view wx:if="{{isShow == true}}"  class='show-box'>
+    <view class='show-content'>
+    <input type='number' data-val='valNum' focus="{{isShow}}"  bindinput='setValue' placeholder='请输入调整数量' confirm-type="确定" bindconfirm="confimNum" ></input>
+    </view>
+    <view class='btn-box'>
+      <button bindtap='confimNum' class='nobordr btn-def' size="mini" >提交</button>
+    </view>
+  </view>
+</view>

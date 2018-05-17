@@ -1,0 +1,87 @@
+/* pages/login/login.wxss */
+@import '../../common/common';
+
+page,.login{
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  background-color: #f9f9f9;
+}
+.logo{
+  display: block;
+  margin: 50rpx auto;
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 50%;
+}
+.login-item{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  box-sizing: border-box;
+  padding:0 30rpx;
+  border-bottom: 1px solid #e6e6e6;
+}
+.login-item:first-child{
+    border-top:1px solid #e6e6e6;
+}
+.login-item text{
+  width: 180rpx;
+  display: inline-block;
+}
+.login-item input{
+  flex: 3;
+}
+.login-item input,.login-item .picker,.place,.login-item text{
+  font-size: 32rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  color:#333;
+}
+picker.login-item{
+  position: relative;
+}
+.login-item .picker{
+  width: 600rpx;
+  display: flex;
+  overflow: hidden;
+}
+.login-item .picker-def{
+  flex: 6;
+  color: #999;
+}
+.login-item .picker-sel{
+  flex: 6;
+}
+.login-item .icon-lower{
+  position: absolute;
+  right: 30rpx;
+  top:20rpx;
+  width: 45rpx;
+  height: 45rpx;
+}
+.btn-box{
+  margin:40rpx 30rpx;
+  text-align: center;
+}
+.btn-box .btn{
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  border:none;
+  font-size: 35rpx;
+  letter-spacing: 10rpx;
+  background-color: #ccc;
+}
+.btn-box .btn-active{
+  background-color: rgba(255,0,0,.8);
+  color: #fff;
+}
+
+.icon-close{
+  width: 40rpx;
+  height: 40rpx;
+  display: inline-block;
+}

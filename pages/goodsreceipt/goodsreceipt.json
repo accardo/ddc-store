@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "receipt-list": "../../components/receiptList/receiptList"
+  }
+}

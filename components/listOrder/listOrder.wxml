@@ -1,0 +1,117 @@
+<!--components/listOrder/listOrder.wxml-->
+<view class='list-box'>
+<!-- 订货 -->
+  <view class='list-item' wx:if="{{ pagetTypeIndex == 0 }}" data-order="{{item.purchaseSn}}" data-typenum="{{item.status}}" data-id="{{tem.id}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+    <view class='list-title'>
+      <text class='label-txt'>订货单：</text>
+      <text class='label-order'>{{item.purchaseSn}}</text>
+      <text class='list-type'>{{item.statusStr}}</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>提交人：</text>
+      <text class='label-name'>{{item.createName}}</text>
+    </view>
+    <view class='list-time'>
+      <text class='label-time'>{{item.createTime}}</text>
+    </view>
+  </view>
+  <view class='list-item' wx:if="{{ pagetTypeIndex == 1 }}"  data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+    <view class='list-title'>
+      <text class='label-txt'>盘点单：</text>
+      <text class='label-order'>{{item.order}}</text>
+      <text class='list-type'>{{ getTypeName[item.type]}}</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>提交人：</text>
+      <text class='label-name'>{{item.uname}}</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>审核人：</text>
+      <text class='label-name'>{{item.examine ? item.examine : '-'  }}</text>
+    </view>
+    <view class='list-time'>
+      <text class='label-time'>{{item.time}}</text>
+    </view>
+  </view>
+  <view class='list-item' wx:if="{{ pagetTypeIndex == 2 }}"  data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+    <view class='list-title'>
+      <text class='label-txt'>出库单：</text>
+      <text class='label-order'>{{item.order}}</text>
+      <text class='list-type'>{{ getTypeName[item.type]}}</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>出库类型：</text>
+      <text class='label-name'>{{ getOutType[item.outType]}}</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>出库原因：</text>
+      <text class='label-name'>{{ getTypeName[item.outType][item.outreason] }}</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>提交人：</text>
+      <text class='label-name'>{{item.examine ? item.examine : '-'  }}</text>
+    </view>
+    <view class='list-time'>
+      <text class='label-time'>{{item.time}}</text>
+    </view>
+  </view>
+  <view class='list-item' wx:if="{{ pagetTypeIndex == 4 }}" data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+    <view class='list-title'>
+      <text class='label-txt'>置换单：</text>
+      <text class='label-order'>{{item.order}}</text>
+      <text class='list-type'>{{ getTypeName[item.type]}}</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>提交人：</text>
+      <text class='label-name'>{{item.uname}}</text>
+    </view>
+    <view class='list-time'>
+      <text class='label-time'>{{item.time}}</text>
+    </view>
+  </view>
+  <view class='list-item' wx:if="{{ pagetTypeIndex == 5 }}" data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+    <view class='list-title'>
+      <text class='label-txt'>调拨单：</text>
+      <text class='label-order'>{{item.order}}</text>
+      <text class='list-type'>{{ getTypeName[item.type]}}</text>
+    </view>
+     <view class='list-name'>
+      <text class='label-txt'>订单类型：</text>
+      <text class='label-name'>{{getOrderType[item.ordertype]}}</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>调出店铺：</text>
+      <text class='label-name'>{{item.allotOut }}</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>调入店铺：</text>
+      <text class='label-name'>{{item.allotEnter }}</text>
+    </view>
+    <view class='allot-box'>
+      <view class='list-name'>
+        <text class='label-txt'>提交人：</text>
+        <text class='label-name'>{{item.subname}}</text>
+      </view>
+      <view class='list-name'>
+        <text class='label-txt'>收货人：</text>
+        <text class='label-name'>{{item.collect}}</text>
+      </view>
+    </view>
+    <view class='list-time'>
+      <text class='label-time'>{{item.time}}</text>
+    </view>
+  </view>
+  <view class='list-item' wx:if="{{ pagetTypeIndex == 7 }}"  data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+    <view class='list-title'>
+      <text class='label-txt'>调整单：</text>
+      <text class='label-order'>{{item.order}}</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>最后修改人：</text>
+      <text class='label-name'>{{item.uname }}</text>
+    </view>
+    <view class='list-time'>
+      <text class='label-time'>{{item.time}}</text>
+    </view>
+  </view>
+</view>

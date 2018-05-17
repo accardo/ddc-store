@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "admin-item": "../../components/adminItem/adminItem"
+  },
+  "backgroundColor": "rgba(245,245,245,.6)"
+}

@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "product-info": "../../components/productInfo/productInfo",
+    "tip-info": "../../components/tipInfo/tipInfo"
+  }
+}

@@ -1,0 +1,29 @@
+<!--pages/ordergoods/ordergoods.wxml-->
+<view class='order-goods'>  
+  <tip-info outage="{{outage}}" label-name="出库原因"></tip-info>
+  <view class='search-box' bindtap='goSearch'>
+    <view class='search'>
+      <image src='../../icons/search-32.png'></image>
+      <text>搜索查询</text>
+    </view>
+  </view>
+  <view class="category-product {{ showbtnbox ? '':'active' }}">
+    <view class='category-nav'>
+      <view wx:for="{{navlist}}" bindtap='selectNav'  data-index="{{index}}" wx:key="index" class='category-nav-item active_{{_index==index}}'>{{item.name}}</view>
+    </view>
+     <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
+        <product-info product-list="{{productlist}}" bind:countAdd="modifyNum"></product-info>
+     </scroll-view>
+  </view>
+   <view class='bottom-box' wx:if="{{pagetitle == '订货'}}">
+      <view class='bottom-price'>
+        共<text>{{shopTotalN}}</text>个商品，<text>{{shopPieceN}}</text>件
+      </view>
+      <button class='bottom-btn' bindtap='goNext' size="mini">下一步</button>
+  </view>
+  <view class='bottom-box btns' wx:if="{{pagetitle =='盘点' }}">
+    <button class='btn-cancel nobordr' bindtap='clearInput' size="mini">清空</button>
+    <button bindtap='subInventory' class='btn-sub nobordr'>提交盘点</button>
+  </view>
+  <view bindtap='goNext' wx:if="{{pagetitle == '出库'}}" class='btn-review'>下一步</view>
+</view>

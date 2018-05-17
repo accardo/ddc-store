@@ -1,0 +1,7 @@
+<!--components/adminItem/adminItem.wxml-->
+<view class='admin-box'>
+    <view class='admin-item' wx:if="{{item.status}}" data-ind="{{index}}" data-txt='{{item.text}}' data-menuid="{{item.menuId}}" bindtap='itemclick' wx:for="{{stockData}}" wx:key="index">
+      <image class='admin-img' src='{{imgUrl}}{{item.icon}}'></image>
+      <text>{{item.text}}</text>
+    </view>
+  </view>

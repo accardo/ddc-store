@@ -1,0 +1,86 @@
+/* pages/orderlist/orderlist.wxss */
+@import '../../common/common';
+page{
+  background-color: #fff;
+}
+.order-list{
+  overflow-x: hidden;
+}
+.order-btn-box{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 15rpx 30rpx;
+  background-color: rgba(220,220,220,.3);
+}
+.order-btn{
+  background-color: rgba(255,0,0,.7);
+  color: #fff;
+  margin:0;
+  font-size: 30rpx;
+}
+.ml20{
+  margin-left: 20rpx;
+}
+.radio-group{
+  display: flex;
+  width: 80%;
+  margin: 0 auto;
+  padding: 30rpx;
+  box-sizing: border-box;
+  flex-flow:column;
+}
+.radio-group label{
+  display: block;
+  text-align: left;
+  padding-bottom:30rpx;
+  margin-top: 30rpx; 
+  border-bottom:1px solid #ccc; 
+  font-size: 35rpx;
+}
+.radio-group label:last-child{
+  border:none;
+}
+.radio-group label radio{
+  margin-right:20rpx;
+}
+.show-box{
+  padding: 0;
+}
+.btn-box{
+  width: 100%;
+  position: relative;
+  padding: 30rpx;
+  display: flex;
+  height: 100rpx;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-top:1px solid #ccc;
+}
+.btn-box::after{
+  position: absolute;
+  left: 50%;
+  top:0;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 100rpx;
+  background-color: #ccc;
+  content: '';
+  z-index: 10;
+}
+.btn-box button{
+  background-color: transparent;
+  border: none;
+  font-size: 35rpx;
+  box-shadow: 0px 0px 0px;
+}
+.btn-cancel{
+  color: rgba(0,0,0,.8);
+}
+.btn-confirm{
+  color: rgba(255,0,0,.7);
+}
+.btn-box button::after {
+  border: 0;
+}

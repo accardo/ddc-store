@@ -1,0 +1,23 @@
+<!--pages/allocation/allocation.wxml-->
+<view class='allot'>
+  <picker 
+    bindchange="selectShop" 
+    data-name="selectIndex"
+    value="{{selectIndex}}" 
+    range="{{shopArray}}"
+  >
+     <view class="select-ads">
+      <text class='ads-name'>调入门店：{{shopAds}}</text>
+      <button class='select-btn' type="default" size="mini">切换门店</button>
+    </view>
+  </picker>
+  <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
+   <product-info product-list="{{productlist}}"></product-info>
+   <view class='add-shaop' bindtap='searchShop'>
+    <text>+添加调拨商品</text>
+   </view>
+  </scroll-view>
+  <view class='btn-review'>
+    <button class='nobordr' bindtap='subAllot' >提交调拨</button>
+  </view>
+</view>

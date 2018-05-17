@@ -1,0 +1,27 @@
+/* components/adminItem/adminItem.wxss */
+
+.admin-box{
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.admin-item{
+  min-width:180rpx;
+  width: 25%;
+  margin: 20rpx 0;
+  padding:10rpx 20rpx;
+  box-sizing: border-box;
+  text-align: center;
+}
+.admin-img{
+  width: 82rpx;
+  height: 75rpx;
+}
+.admin-item > text{
+  display: block;
+  width: 100%;
+  font-size: 30rpx;
+  text-align: center;
+}
