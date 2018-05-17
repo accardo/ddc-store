@@ -20,6 +20,7 @@ Page({
     outage:'',
     shopTotalN:0,
     shopPieceN:0,
+    selectProductList:[],
     navlist:[
       '饮品',
       '零食',
@@ -89,11 +90,11 @@ Page({
   },
 
   /* 设置商品数量 */
-  setTotal(productlist, listArray){
+  setTotal(productlist, isArray){
     let _this = this;
-    let shopPieceN = 0, shopTotalN=0;
+    let shopPieceN = 0, shopTotalN = 0, listArray = [];
     productlist.map((item,index)=>{
-      if (listArray){
+      if (isArray){
         item.attrValues = item.attrValues.split(',');
         listArray.push(item);
       }
@@ -132,8 +133,7 @@ Page({
         return
       }
       if(code ==0 && page.list && page.list.length >0){
-        let listArray = [];
-        listArray = _this.setTotal(page.list, listArray);
+        let listArray  = _this.setTotal(page.list,true);
         _this.setData({
           productlist: listArray
         })
@@ -166,11 +166,18 @@ Page({
 
   /* 前往商品信息页面 */
   goNext(){
-    let ordernumber = '567878wfw';
-    let { outage } = this.data;
-    // wx.redirectTo({
-    //   url: '../../pages/goodsinfo/goodsinfo?ordernumber=' + ordernumber + '&outage=' + outage
-    // })
+    let _this = this;
+    let { shopTotalN, shopPieceN, shopId, outage } = _this.data;
+    if (shopTotalN <=0){
+      wx.showToast({
+        title: '请选择商品',
+        icon:'none'
+      })
+      return
+    }
+    wx.redirectTo({
+      url: '../../pages/goodsinfo/goodsinfo?outage=' + outage
+    })
   },
 
   /* 提交盘点 */
@@ -270,7 +277,7 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-  
+    console.log('下拉加载数据');
   },
 
   /**

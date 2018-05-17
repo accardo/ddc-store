@@ -13,7 +13,7 @@
 	"compileType": "miniprogram",
 	"libVersion": "2.0.0",
 	"appid": "wxf15e4572aeeb4e5a",
-	"projectname": "entry",
+	"projectname": "ddc-store",
 	"isGameTourist": false,
 	"condition": {
 		"search": {
@@ -33,7 +33,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 0,
+			"current": 1,
 			"list": [
 				{
 					"id": -1,

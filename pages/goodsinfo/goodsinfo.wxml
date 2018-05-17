@@ -3,12 +3,12 @@
   <tip-info outage="{{outage}}" label-name="出库原因"></tip-info>
   <view class="scroll-box {{pagetitle =='出库'? 'active' : ''}}">
   <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
-    <product-info product-list="{{productlist}}"></product-info>
+    <product-info product-list="{{productlist}}" bind:countAdd="modifyNum" product-type="goods"></product-info>
   </scroll-view>
   </view>
   <view class='bottom-box' wx:if="{{pagetitle == '订货' }}">
       <view class='bottom-price'>
-        共<text>20</text>个商品，<text>200</text>件
+        共<text>{{shopTotalN}}</text>个商品，<text>{{shopPieceN}}</text>件
       </view>
       <button class='bottom-btn' bindtap='goNext' size="mini">下一步</button>
   </view>

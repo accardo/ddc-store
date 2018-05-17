@@ -1,7 +1,7 @@
 <!--components/listOrder/listOrder.wxml-->
 <view class='list-box'>
 <!-- 订货 -->
-  <view class='list-item' wx:if="{{ pagetTypeIndex == 0 }}" data-order="{{item.purchaseSn}}" data-typenum="{{item.status}}" data-id="{{tem.id}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+  <view class='list-item' wx:if="{{ pagetTypeIndex == 0 }}" data-order="{{item.purchaseSn}}" data-typenum="{{item.status}}" data-itemid="{{item.id}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
     <view class='list-title'>
       <text class='label-txt'>订货单：</text>
       <text class='label-order'>{{item.purchaseSn}}</text>

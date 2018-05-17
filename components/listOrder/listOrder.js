@@ -49,8 +49,8 @@ Component({
    */
   methods: {
     detail(e){
-      let { order, typenum } = e.currentTarget.dataset;
-      let parth = '?ordernumber=' + order;
+      let { order, typenum,itemid } = e.currentTarget.dataset;
+      let parth = '?ordernumber=' + order + '&itemId=' + itemid;
       let { pageName = '', pagetitle, pagetTypeIndex=0 } = this.data;
       switch (pagetTypeIndex){
         case 0:

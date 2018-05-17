@@ -42,14 +42,15 @@ Component({
     let productList = [];
     let {  productType ="" } = _this.data;
     let pagetitle = wx.getStorageSync('pagetitle');
-    if (productType){
+    if (productType == 'want' || productType == 'cover'){
       let { productList } =_this.data;
       wx.setStorageSync('productList', JSON.stringify(productList));
+    } else if (productType == 'goods'){
+      productList = wx.getStorageSync('productList-dingh');
     }
     this.setData({
       pagetitle,
-      productList,
-      productType
+      productList
     })
   },
 
@@ -75,17 +76,25 @@ Component({
     //点击 加 OR 减
     setCurrentNum(e,sym){
       let _this = this;
+      let selectList = [];
       let { current, ind } = _this.getCurrent(e);
+      let productListItem = _this.data.productList[ind];
       if (sym){
         current = parseInt(current) + 1
       }else{
         current = parseInt(current) <= 0 ? 0 : parseInt(current) -1;
       }
-      _this.data.productList[ind].item.unitValue = current;
+      productListItem.item.unitValue = current;
       this.setData({
         productList: _this.data.productList
       })
-      wx.setStorageSync('productList-dingh', _this.data.productList);
+      _this.data.productList.map(item =>{
+        if (item.item.unitValue > 0){
+          selectList.push(item);
+        }
+      })
+      console.log('选中的商品', selectList);
+      wx.setStorageSync('productList-dingh', selectList);
       this.triggerEvent("countAdd")
     },
 
