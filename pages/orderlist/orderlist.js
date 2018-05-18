@@ -12,6 +12,7 @@ Page({
     btntext:'',
     isShow:false,
     selectRadio:'',
+    pagetListData:[],
     radioList: [
       [
         { 'name': '商品破损', value: '1', checked:false},
@@ -102,10 +103,11 @@ Page({
 
   /* 获取订货信息 */
   getOrderGoods(){
+    wx.showLoading({ title: '加载中' });
     let _this = this;
     let token = wx.getStorageSync('getusertoken');
     let shopId = app.selectIndex;
-    let { currPage, pageSize } = _this.data;
+    let { currPage, pageSize, pagetListData } = _this.data;
     let getParm = {
       currPage,
       pageSize,
@@ -114,25 +116,42 @@ Page({
     }
     sysService.purchase({
       url: 'list',
-      method:'get',
+      method: 'get',
       data: getParm
-    }).then(res=>{
-      let { code,page,msg } = res;
+    }).then(res => {
+      wx.stopPullDownRefresh();
+      let { code, page, msg } = res;
       if (code == 401) {
         config.logOutAll();
         return
       }
-      if(code == 0 && page && page.list){
+      if (code == 0 && page && page.list) {
+        if (page.list.length == 0){
+          wx.hideLoading();
+          wx.showToast({
+            title: '没有更多数据',
+            icon:'none'
+          });
+          wx.stopPullDownRefresh();
+          return 
+        }
+        pagetListData = pagetListData.concat(page.list);
+        console.log(pagetListData);
         _this.setData({
-          listData: page.list
+          pagetListData,
+          currPage: currPage + 1,
+          listData: pagetListData
         })
-      }else{
+      } else {
         wx.showToast({
           title: msg,
-          icon:'none'
+          icon: 'none'
         })
-      } 
-    })
+      }
+      wx.hideLoading();
+      }).catch(error=>{
+        wx.hideLoading();
+      })
   },
 
   /* 退货 */
@@ -166,7 +185,7 @@ Page({
     })
   },
 
-  /* 选中的 */
+  /* radio 选中的 */
   radioChange(e){
     this.setData({
       selectRadio: e.detail.value
@@ -178,10 +197,9 @@ Page({
    */
   onLoad: function (options) {
     let _this = this;
-    _this.getOrderGoods();
     let { titlename } = options;
     let typeName = '', btntext='';
-    let listData = _this.data.listData;
+    let { listData } = _this.data; 
     switch(titlename){
       case '订货':
         btntext = titlename;
@@ -219,7 +237,7 @@ Page({
       listData,
       typeName
     })
-    wx: wx.setNavigationBarTitle({
+    wx.setNavigationBarTitle({
       title: titlename
     })
   },
@@ -228,7 +246,6 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-    let _this = this;
    
   },
 
@@ -236,7 +253,11 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-  
+    this.setData({
+      currPage:1,
+      pagetListData:[]
+    })
+    this.getOrderGoods();
   },
 
   /**
@@ -257,14 +278,14 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-  
+    
   },
 
   /**
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function () {
-  
+    this.getOrderGoods();
   },
 
   /**

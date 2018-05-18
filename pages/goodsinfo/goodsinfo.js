@@ -12,6 +12,8 @@ Page({
     outage:'',
     pagetitle:'',
     ordernumber:'',
+    listtype:'goods',
+    itemId:0,
     shopTotalN: 0,
     shopPieceN: 0,
     productlist:[
@@ -28,8 +30,6 @@ Page({
   goNext(){
     let _this = this;
     let { shopPieceN,shopTotalN } = _this.data;
-    console.log('总数', shopTotalN);
-    console.log('总个数', shopPieceN);
     if (shopPieceN <=0){
       wx.showToast({
         title: '请选择商品',
@@ -37,9 +37,8 @@ Page({
       });
       return;
     }
-
     let thisTime = new Date().getHours();
-    if (15<= thisTime <=24){
+    if (15 <= thisTime && thisTime <=24){
       wx.showModal({
         content: '当前订货需求将在明天15:00提交至BD',
         confirmColor: config.showModal.confirmColor,
@@ -132,12 +131,21 @@ Page({
 
   modifyNum(){
     let _this = this;
-    let productlist = wx.getStorageSync('productList-dingh');
-    let shopPieceN=0, shopTotalN=0;
+    let { itemId} =_this.data;
+    let productlist = [], shopPieceN = 0, shopTotalN = 0;
+    if (itemId){
+      productlist = wx.getStorageSync('productList-dh-confirm');
+      productlist.map(item => {
+        shopPieceN = parseInt(item.needNumber) + shopPieceN;
+      })
+    }else{
+      productlist = wx.getStorageSync('productList-dingh');
+      console.log(productlist);
+      productlist.map(item => {
+        shopPieceN = parseInt(item.item.unitValue) + shopPieceN;
+      })
+    }
     shopTotalN = productlist.length;
-    productlist.map(item => {
-      shopPieceN = parseInt(item.item.unitValue) + shopPieceN;
-    })
     _this.setData({
       shopPieceN,
       shopTotalN
@@ -158,7 +166,8 @@ Page({
       _this.setData({
         shopPieceN,
         shopTotalN,
-        productlist
+        productlist,
+        listtype:'goods'
       })
     }
   },
@@ -168,19 +177,15 @@ Page({
     let _this = this;
     let shopPieceN = 0, shopTotalN = 0, listArray = [];
     productlist.map((item,index) =>{
-      let shopItemSkuVO = item;
-      
+      if (item.shopItemSkuVO){
+        let { shopItemSkuVO } = item;
+        shopTotalN = shopTotalN+1;
+        item.shopItemSkuVO.attrValues = shopItemSkuVO.attrValues.split(',');
+        shopPieceN = parseInt(item.needNumber) + shopPieceN
+      }else{
+        productlist.splice(index,1)
+      }
     })
-    // productlist.map((item, index) => {
-    //   if (isArray) {
-    //     item.attrValues = item.attrValues.split(',');
-    //     listArray.push(item);
-    //   }
-    //   shopPieceN = parseInt(item.item.unitValue) + shopPieceN;
-    //   if (item.item.unitValue > 0) {
-    //     shopTotalN = shopTotalN + 1;
-    //   }
-    // })
     _this.setData({
       shopTotalN,
       shopPieceN
@@ -191,6 +196,7 @@ Page({
   /* 根据订货单ID 获取 商品信息 */
   getShopListById(itemId){
     let _this = this;
+    wx.removeStorageSync('productList-dh-confirm');
     let token = wx.getStorageSync('getusertoken');
     let getData = {
       purchaseId: itemId,
@@ -202,17 +208,14 @@ Page({
       method:'get',
       data: getData
     }).then(res =>{
-      console.log(res);
       let { code, msg, purchaseDetailVOList } =res;
       if (code == 401) {
         config.logOutAll();
         return
       }
       if (code == 0 && purchaseDetailVOList){
-        let listArray = _this.setTotal(purchaseDetailVOList, true);
-        _this.setData({
-          productlist: listArray
-        })
+        _this.setTotal(purchaseDetailVOList, false);
+        wx.setStorageSync('productList-dh-confirm', purchaseDetailVOList);
       }else{
         wx.showToast({
           title: msg,
@@ -227,8 +230,11 @@ Page({
    */
   onLoad: function (options) {
     let _this = this;
-    let { ordernumber, outage, itemId} = options;
-    if (ordernumber && itemId){
+    let { ordernumber ='', outage, itemId = ''} = options;
+    if (itemId){
+      _this.setData({
+        listtype:'listdetail'
+      })
       _this.getShopListById(itemId);
     }else{
       _this.getSelectShop();
@@ -242,7 +248,8 @@ Page({
     }
     this.setData({
       pagetitle,
-      ordernumber
+      ordernumber,
+      itemId
     })
     wx:wx.setNavigationBarTitle({
       title: pagetitle

@@ -1,8 +1,8 @@
 <!--components/productInfo/productInfo.wxml-->
 <view class='goods-box'>
-      <view class='goods-item'  wx:for="{{productList}}" wx:key="index">
+      <view class='goods-item'  wx:for="{{productList}}" wx:key="index" >
         <image class="goods-img {{item.thumb.includes('http') ? '':'active'}}" src="{{item.thumb.includes('http') ? item.thumb : defImg}}"></image>
-        <view wx:if="{{pagetitle =='订货'}}" class='goods-txt-box'>
+        <view wx:if="{{pagetitle =='订货' && productType == 'goods'}}" class='goods-txt-box'>
           <view class='goods-txt'>
             <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
             <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
@@ -20,6 +20,28 @@
             <view class='input-number'>
               <text class='input-num red'>{{item.item.unitValue }}</text>
               <text class='input-type'>{{item.item.unitName}}</text>
+            </view>
+            <image class='input-icon' data-index="{{index}}" catchtap='countAdd' src='../../icons/jia.png'></image>
+          </view>
+        </view>
+        <view wx:if="{{pagetitle =='订货' && productType == 'listdetail'}}" class='goods-txt-box'>
+          <view class='goods-txt'>
+            <text class='goods-type' wx:if="{{item.shopItemSkuVO.item.itemType}}" >{{shopType[item.shopItemSkuVO.item.itemType]}}</text>
+            <text class='goods-name'>{{item.shopItemSkuVO.item.itemName  }}</text>
+            <text>{{item.shopItemSkuVO.item.deductionType ==2 ? ( item.shopItemSkuVO.item.netWightValue +''+ item.shopItemSkuVO.item.materialUnitName):''}}</text>
+          </view>
+          <view class='goods-stock'>
+            当前库存：<text>{{item.shopItemSkuVO.item.deductionType ==1 ? (item.shopItemSkuVO.item.unitValue+''+ item.shopItemSkuVO.item.unitName): (item.shopItemSkuVO.item.unitValue+''+ item.shopItemSkuVO.item.unitName +' '+item.shopItemSkuVO.item.materialUnitValue+''+ item.shopItemSkuVO.item.materialUnitName)}}</text>
+          </view>
+          <view class='goods-label' 
+            wx:if="{{item.shopItemSkuVO.attrValues && item.shopItemSkuVO.attrValues.length>0}}">
+            <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+          </view>
+          <view class='product-count' >
+            <image class='input-icon' data-index="{{index}}" catchtap='countReduce' src='../../icons/jian.png'></image>
+            <view class='input-number'>
+              <text class='input-num red'>{{item.needNumber }}</text>
+              <text class='input-type'>{{item.shopItemSkuVO.item.unitName}}</text>
             </view>
             <image class='input-icon' data-index="{{index}}" catchtap='countAdd' src='../../icons/jia.png'></image>
           </view>

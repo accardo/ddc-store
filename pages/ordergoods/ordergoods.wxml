@@ -12,7 +12,7 @@
       <view wx:for="{{navlist}}" bindtap='selectNav'  data-index="{{index}}" wx:key="index" class='category-nav-item active_{{_index==index}}'>{{item.name}}</view>
     </view>
      <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
-        <product-info product-list="{{productlist}}" bind:countAdd="modifyNum"></product-info>
+        <product-info product-list="{{productlist}}" product-type="goods" bind:countAdd="modifyNum"></product-info>
      </scroll-view>
   </view>
    <view class='bottom-box' wx:if="{{pagetitle == '订货'}}">

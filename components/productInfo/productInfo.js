@@ -34,19 +34,36 @@ Component({
     productType:'',
     productClick:'',
     productStatus:'',
-    shopType: config.dict.shopType
+    shopType: config.dict.shopType,
+    setIntervalList:''
   },
 
   ready() {
     let _this = this;
     let productList = [];
-    let {  productType ="" } = _this.data;
+    let { productType = "", setIntervalList} = _this.data;
     let pagetitle = wx.getStorageSync('pagetitle');
     if (productType == 'want' || productType == 'cover'){
       let { productList } =_this.data;
       wx.setStorageSync('productList', JSON.stringify(productList));
     } else if (productType == 'goods'){
       productList = wx.getStorageSync('productList-dingh');
+    } else if (productType == 'listdetail'){
+      wx.showLoading({
+        title: '数据加载中',
+      });
+      clearInterval(setIntervalList);
+      setIntervalList = setInterval(()=>{
+        if (productList == null || productList.length ==0){
+          productList = wx.getStorageSync('productList-dh-confirm');
+        }else{
+          clearInterval(setIntervalList);
+          wx.hideLoading();
+          this.setData({
+            productList
+          })
+        }
+      },800);
     }
     this.setData({
       pagetitle,
@@ -60,9 +77,17 @@ Component({
   methods: {
     getCurrent(e){
       let ind = e.currentTarget.dataset.index;
-      let { item } = this.data.productList[ind];
-      let current =  item.unitValue;
-      current = current ? current : 0
+      let { productType } = this.data;
+      let current = 0;
+      if (productType== 'goods'){
+        let { item } = this.data.productList[ind];
+        current = item.unitValue;
+        current = current ? current : 0
+      } else if (productType == 'listdetail'){
+        let item = this.data.productList[ind];
+        current = item.needNumber;
+        current = current ? current : 0
+      }
       return { current,ind } ;
     },
     countAdd(e){
@@ -77,6 +102,8 @@ Component({
     setCurrentNum(e,sym){
       let _this = this;
       let selectList = [];
+      let numAttr = '';
+      let { productType } = _this.data;
       let { current, ind } = _this.getCurrent(e);
       let productListItem = _this.data.productList[ind];
       if (sym){
@@ -84,18 +111,27 @@ Component({
       }else{
         current = parseInt(current) <= 0 ? 0 : parseInt(current) -1;
       }
-      productListItem.item.unitValue = current;
+      if (productType =='goods'){
+        productListItem.item.unitValue = current;
+        _this.data.productList.map(item => {
+          if (item.item.unitValue > 0) {
+            selectList.push(item);
+          }
+        })
+        wx.setStorageSync('productList-dingh', selectList);
+      }else{
+        productListItem.needNumber = current;
+        _this.data.productList.map(item => {
+          if (item.needNumber > 0) {
+            selectList.push(item);
+          }
+        })
+        wx.setStorageSync('productList-dh-confirm', selectList);
+      }
       this.setData({
         productList: _this.data.productList
       })
-      _this.data.productList.map(item =>{
-        if (item.item.unitValue > 0){
-          selectList.push(item);
-        }
-      })
-      console.log('选中的商品', selectList);
-      wx.setStorageSync('productList-dingh', selectList);
-      this.triggerEvent("countAdd")
+      this.triggerEvent("countAdd");
     },
 
     /* 设置调拨收货 输入数量 */
