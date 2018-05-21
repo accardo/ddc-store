@@ -107,28 +107,31 @@ Page({
     wx.showLoading({
       title: '数据加载中',
     });
-    loginService.api({
-      url: "/login",
-      method:"post",
-      data: postData
-    }).then(res =>{
-      wx.hideLoading();
-      let { code, sysUser, msg,token } = res;
-      if(code ==0){
-        app.selectIndex = postData.shopId;
-        wx.setStorageSync('getuserinfo', sysUser);
-        wx.setStorageSync('getusertoken', token);
-        wx.redirectTo({
-          url: '/pages/index/index',
-        })
-      }else{
-        wx.hideLoading();
-        wx.showToast({
-          title: msg,
-          icon: 'none'
-        })
-      }
-    })
+
+	  wx.request({
+		  url: "https://wms-d.daydaycook.com.cn/wms/login",
+		  method: "post",
+		  data: postData,
+		  success: (res) => {
+			  wx.hideLoading();
+			  let { code, sysUser, msg, token } = res.data;
+			  console.log(code, sysUser, msg, token)
+			  if(code == '0'){
+				  app.selectIndex = postData.shopId;
+				  wx.setStorageSync('getuserinfo', sysUser);
+				  wx.setStorageSync('getusertoken', token);
+				  wx.redirectTo({
+					  url: '/pages/index/index',
+				  })
+			  }else{
+				  wx.hideLoading();
+				  wx.showToast({
+					  title: msg,
+					  icon: 'none'
+				  })
+			  }
+		  }
+	  })
   },
 
   /* 提示信息 */

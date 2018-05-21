@@ -22,7 +22,8 @@ function qrstring(url,params){
 }
 
 /* 设置 请求信息 */
-function service({ formType, apiPrefix, url, method = "GET", params = {}, data = {}, header={'content-type':'application/json'},fromH5 = true}){
+
+function service({ formType, apiPrefix, url, method = "GET", params = { token: wx.getStorageSync('getusertoken') }, data = {}, header={'content-type':'application/json'},fromH5 = true}){
   return new Promise((resolve, reject) => {
     apiPrefix = apiPrefixList[apiPrefix] || apiPrefixList.WMS;
     var urlData = url ? apiPrefix + url + qrstring(url, params) : apiPrefix ;
