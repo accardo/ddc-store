@@ -115,7 +115,6 @@ Page({
 		  success: (res) => {
 			  wx.hideLoading();
 			  let { code, sysUser, msg, token } = res.data;
-			  console.log(code, sysUser, msg, token)
 			  if(code == '0'){
 				  app.selectIndex = postData.shopId;
 				  wx.setStorageSync('getuserinfo', sysUser);
