@@ -6,5 +6,5 @@
       <image wx:for="{{ imgList }}" wx:key="index" src="{{item}}"></image>
     </view>
   </view>
-   <receipt-list receipt-arr="{{receiptList}}" page-type="{{pagetype}}"></receipt-list>
+   <receipt-list receipt-arr="{{receiptList}}"  order-status="{{ status }}" page-type="{{pagetype}}"></receipt-list>
 </view>

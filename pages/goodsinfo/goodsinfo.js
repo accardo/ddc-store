@@ -1,6 +1,7 @@
 const config = require('../../config/config.js');
 const sysService = require('../../service/sys.service.js');
 const app = getApp();
+const utils = require('../../utils/util');
 // pages/goodsinfo/goodsinfo.js
 Page({
 
@@ -16,18 +17,14 @@ Page({
     itemId:0,
     shopTotalN: 0,
     shopPieceN: 0,
-    productlist:[
-      { img:"pro-img1.png",name:"皇家奶茶杯盖",typename:"原料",unit:"10g",stock:"48",typelist:["大杯","黑色"],current:"55",company:"kg" },
-      { img: "pro-img2.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "23", company: "kg" },
-      { img: "pro-img3.png", name: "皇家奶茶杯盖", typename: "零售品", unit: "10g", stock: "48", current: "99", company: "kg" },
-      { img: "pro-img4.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "54", company: "kg" },
-      { img: "pro-img5.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "65", company: "kg" },
-      { img: "pro-img6.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", current: "76", company: "kg" }
-    ]
+	  update: 0, // 判断更新操作
+    status: 0,
+    productlist:[]
   },
 
   // 下一步
-  goNext(){
+  goNext(e){
+    console.log(e)
     let _this = this;
     let { shopPieceN,shopTotalN } = _this.data;
     if (shopPieceN <=0){
@@ -64,52 +61,66 @@ Page({
   /* 设置请求的数据信息 */
   setPostData(){
     let _this = this;
-    let { outage, shopTotalN } = _this.data;
-    let productList = wx.getStorageSync('productList-dingh');
-    let token = wx.getStorageSync('getusertoken');
-    let selectIndex = app.selectIndex;
     let purchaseDetailVOList = [];
-    productList.map((item,index) =>{
-      let childItem = item.item;
-      let postData = {
-        id: item.id,
-        goodsId: item.skuId,
-        needNumber: childItem.unitValue
-      }
-      purchaseDetailVOList.push(postData)
-    })
-    let promeData = {
-      shopId: selectIndex,
-      status: 4,
-      purchaseDetailVOList
+    let token = wx.getStorageSync('getusertoken');
+    if (this.data.update !== '1') { // 1 为更新操作 处理原始数据，原始数据和后台传数据结构相差太大，很坑人的。
+	    purchaseDetailVOList = wx.getStorageSync('productList-dingh');
+	    purchaseDetailVOList.forEach((item) => {
+		    item.goodsId = item.skuId;
+		    item.needNumber = item.item.unitValue;
+		    item.shopItemSkuVO = {
+			    attrValues: item.attrValues.toString(),
+          id: item.id,
+          item: item.item
+        }
+      })
+    } else {
+	    purchaseDetailVOList = wx.getStorageSync('productList-dh-confirm');
+	    purchaseDetailVOList.forEach((item) => { // 属性 数组转字符串
+	      item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.toString();
+      })
     }
-    sysService.purchase({
-      url: 'save?token='+token,
-      method: "post",
-      data: promeData
-    }).then(res => {
-      let {code,msg} = res;
-      if (code == 401) {
-        config.logOutAll();
-        return
-      }
-      if(code == 0){
-        wx.showToast({
-          title: '订货成功',
-          mask:true
-        });
-        setTimeout(() => {
-          wx.navigateBack({
-            delta: 1
-          })
-        }, 800);
-      }else{
-        wx.showToast({
-          title: msg,
-          icon: 'none'
-        })
-      }
-    })
+
+    let promeData = {
+	    id: this.data.itemId || null, // 订单id
+      shopId: app.selectIndex, // 店铺ID
+      status: this.data.status || 0, // 状态 (1、待收货 2、部分收货 3、已收货 4、待派单)
+	    purchaseDetailVOList
+    }
+    if (this.data.update === '1') {
+      sysService.purchase({
+	      url: 'update?token='+token,
+        method: "post",
+	      data: promeData
+      }).then((res) => {
+        if (res.code == 0) {
+	        utils.showToast({title: '更新成功', page: '1'})
+        } else if(res.code == 401) {
+	        config.logOutAll();
+	        return
+        }
+      })
+    } else {
+	    sysService.purchase({
+		    url: 'save?token='+token,
+		    method: "post",
+		    data: promeData
+	    }).then(res => {
+		    let {code,msg} = res;
+		    if (code == 401) {
+			    config.logOutAll();
+			    return
+		    }
+		    if(code == 0){
+			    utils.showToast({title: '订货成功', page: '2'})
+		    }else{
+			    wx.showToast({
+				    title: msg,
+				    icon: 'none'
+			    })
+		    }
+	    })
+    }
   },
 
   /* 前往照片上传页面 */
@@ -215,7 +226,10 @@ Page({
       }
       if (code == 0 && purchaseDetailVOList){
         _this.setTotal(purchaseDetailVOList, false);
-        wx.setStorageSync('productList-dh-confirm', purchaseDetailVOList);
+	      _this.setData({
+		      productlist: purchaseDetailVOList
+	      });
+      //  wx.setStorageSync('productList-dh-confirm', purchaseDetailVOList);
       }else{
         wx.showToast({
           title: msg,
@@ -230,7 +244,7 @@ Page({
    */
   onLoad: function (options) {
     let _this = this;
-    let { ordernumber ='', outage, itemId = ''} = options;
+    let { ordernumber ='', outage, itemId = '', update = '0', status = '0'} = options;
     if (itemId){
       _this.setData({
         listtype:'listdetail'
@@ -249,7 +263,9 @@ Page({
     this.setData({
       pagetitle,
       ordernumber,
-      itemId
+      itemId,
+	    update,
+      status,
     })
     wx:wx.setNavigationBarTitle({
       title: pagetitle

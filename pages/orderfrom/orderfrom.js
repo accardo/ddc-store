@@ -2,7 +2,6 @@
 const config = require('../../service/sys.service.js');
 const sysService = require('../../service/sys.service.js');
 const app = getApp();
-const userToken = wx.getStorageSync('getusertoken');
 Page({
 
   /**
@@ -11,14 +10,9 @@ Page({
   data: {
     pagetype:'orderfrom',
     pagetitle:'',
+    status: '', // 订货状态
     imgList:[],
-    receiptList: [
-      { img: "pro-img2.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", typelist: ["大杯", "黑色"], current: 0, ordercurrent: 78, actul: 78, company: "袋" },
-      { img: "pro-img3.png", name: "皇家奶茶杯盖", unit: "10g", current: 10, ordercurrent: 78, actul: 78, company: "袋" },
-      { name: "皇家奶茶杯盖", typename: "原料", unit: "10g", current: 0, ordercurrent: 28, actul: 28, company: "kg" },
-      { img: "pro-img4.png", name: "皇家奶茶杯盖", unit: "10g", current: 20, ordercurrent: 78, actul: 78, company: "袋" },
-      { name: "皇家奶茶杯盖", typename: "原料", unit: "10g", typelist: ["大杯", "黑色"], current: 0, ordercurrent: 78, actul: '20', company: "kg" }
-    ],
+	  receiptList: [],
     stockquerylist:[
       { img: "pro-img3.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 120, netcontent: 100, typelist: ["大杯", "黑色"],company: "g" },
       { img: "pro-img2.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 130, netcontent: 100, company: "g" },
@@ -38,19 +32,21 @@ Page({
   /* 获取订货单详情商品列表 */
   getPurchaseDetail(){
     let _this = this;
-    let token = userToken;
     let shopId = app.selectIndex;
     let promseData = {
-      purchaseId:'',
+      purchaseId: _this.data.purchaseId,
       shopId,
-      token
     }
     sysService.purchasedetail({
       url:'info',
       method:'get',
       data: promseData
-    }).then(res=>{
-        console.log(res);
+    }).then((res) => {
+      if (res.code == '0') {
+	      _this.setData({
+	        receiptList: res.purchaseDetailVOList // 订货列表数据
+        })
+      }
     })
   },
 
@@ -59,15 +55,22 @@ Page({
    */
   onLoad: function (options) {
     let _this = this;
-    _this.getPurchaseDetail();
+    let pageIndex = wx.getStorageSync('pageindex');
     let pagetitle = wx.getStorageSync('pagetitle');
     let imgList = wx.getStorageSync('imgList');
     imgList = imgList.length > 0 ? imgList : ['../../icons/def-img.png'];
-    if(pagetitle=='盘点'){
+    if (pageIndex == '0') { // 0 订货页面
+	    _this.setData({
+		    purchaseId: options.itemId,
+		    status: options.status,
+      })
+    }
+	  _this.getPurchaseDetail();
+    if(pageIndex == '1'){
       this.setData({
         receiptList:this.data.stockquerylist
       })
-    }else if(pagetitle == '出库操作'){
+    }else if(pageIndex == '2'){
       pagetitle = '出库';
       this.setData({
         pagetitle,

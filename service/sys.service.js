@@ -18,10 +18,15 @@ function purchasedetail({ url, method, params, data }) {
 function oss({ url, method, params, data }) {
   return baseService.service({ url: "sys/oss/" + url, method, params, data })
 }
+/* 盘点列表接口 */
+function inventory({ url, method, params, data }) {
+	return baseService.service({ url: "sys/inventory/" + url, method, params, data })
+}
 module.exports = {
   api,
   category,
   purchase,
   purchasedetail,
-  oss
+  oss,
+	inventory
 }

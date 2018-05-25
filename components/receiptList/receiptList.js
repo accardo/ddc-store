@@ -6,50 +6,50 @@ Component({
    */
   properties: {
     receiptArr:{
-      type:Array,
-      value:[]
+      type: Array,
+      value: [],
+	    observer: function(newVal, oldVal) {
+        if (newVal) {
+	        newVal.map((item) => {
+	          if (item.shopItemSkuVO !== null) {
+		          item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.split(',');
+            }
+          })
+        }
+		    this.setData({
+			    receiptArr: newVal
+		    })
+		    this.triggerEvent("bindReceiptData", this.data.receiptArr); // 返回父组件数据
+      }
     },
     pageType:{
-      type:String,
-      value:''
-    }
+      type: String,
+      value: ''
+    },
+	  orderStatus: { // 订货状态
+      type: String,
+      value: 0
+    },
   },
 
   /**
    * 组件的初始数据
    */
   data: {
-    receiptArr:[],
     defImg: 'logo.png',
     imgUrl: config.pageImgUrl,
     pageType:'',
-    titlename:'',
-    pageindex:0,
-    thisReceiptArr:[]
+    // titlename:'',
+	  pageindex:0,
+    thisReceiptArr:[],
+	  configFl: config.dict.shopType,
   },
-
-  ready(){
-    let _this = this;
+	ready(){
     let pageindex = wx.getStorageSync('pageindex');
-    let titlename ='';
-    if(pageindex ==0){
-      titlename = _this.data.pageType == 'orderfrom' ? '收货数量' : '实收数量' ;
-    }else if(pageindex == 5){
-      titlename = '实收数量';
-    }else{
-      let receiptArr =[];
-      _this.data.receiptArr.map(item => {
-        let stoknum = config.transCompany(item.stock, item.netcontent, item.company);
-        item['stoknum'] = stoknum;
-        receiptArr.push(item);
-      })
-      _this.setData({
-        receiptArr
-      })
-    }
-    _this.setData({
+    // let titlename ='';
+    this.setData({
       pageindex,
-      titlename
+      // titlename
     })
   },
 
@@ -57,6 +57,14 @@ Component({
    * 组件的方法列表
    */
   methods: {
-
+	  /**
+	   * Description: 设置输入值
+	   * Author: yanlichen <lichen.yan@daydaycook.com>
+	   * Date: 2018/5/23
+	   */
+	  setNumber(e) {
+	  	this.data.receiptArr[e.currentTarget.dataset.index].deliveryCount = e.detail.value;
+		  this.triggerEvent("bindReceiptData", this.data.receiptArr); // 返回父组件数据
+	  },
   }
 })

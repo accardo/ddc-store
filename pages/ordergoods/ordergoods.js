@@ -1,6 +1,7 @@
 // pages/ordergoods/ordergoods.js
 const config = require('../../config/config.js');
 const sysService = require('../../service/sys.service.js');
+const utils = require('../../utils/util');
 const app = getApp();
 Page({
 
@@ -29,26 +30,10 @@ Page({
       '饼干',
       '糖果'
     ],
-    productlist: [
-      { img: "pro-img1.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "55", company: "kg" },
-      { img: "pro-img2.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "23", company: "kg" },
-      { img: "pro-img3.png", name: "皇家奶茶杯盖", typename: "零售品", unit: "10g", stock: "48", current: "99", company: "kg" },
-      { img: "pro-img4.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "54", company: "kg" },
-      { img: "pro-img5.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "65", company: "kg" },
-      { img: "pro-img6.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", current: "76", company: "kg" }
-    ],
-    stockquerylist:[
-      { img: "pro-img1.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 120, netcontent: 100, typelist: ["大杯", "黑色"],company: "g" },
-      { img: "pro-img2.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 130, netcontent: 100, company: "g" },
-      { img: "pro-img6.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 20, netcontent: 100, typelist: ["大杯", "黑色"], company: "g" },
-      {name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", current: 190, netcontent: 100, company: "g" },
-      { img: "pro-img2.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 130, netcontent: 100, company: "g" },
-      { img: "pro-img6.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 20, netcontent: 100, typelist: ["大杯", "黑色"], company: "g" },
-      { name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", current: 190, netcontent: 100, company: "g" },
-      { img: "pro-img3.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 10, netcontent: 100, company: "个" }
-    ]
+    productlist: [],
+    stockquerylist:[],
+	  tempInventList: [], // 子组件返回父组件临时盘点数据待提交用
   },
-
   //选择产品类别 - 导航
   selectNav(e){
     let ind = e.currentTarget.dataset.index;
@@ -113,13 +98,15 @@ Page({
   /* 获取产品信息 */
   getProductByNav(categoryId){
     let _this = this;
-    let { currPage, pageSize, shopId, goodsName, shopTotalN, shopPieceN } = _this.data;
+    let { currPage, pageSize, shopId} = _this.data;
+	  let pageIndex = wx.getStorageSync('pageindex');
+	  let itemTypes = utils.limitClass(pageIndex);
     let promdData = {
       currPage,
       pageSize,
-      shopId,
-      categoryId,
-      goodsName,
+      shopId, // 店铺ID
+      categoryId, // 产品分类ID
+	    itemTypes, // 订货为 2,4,5,6 限制商品  盘点为 2,4,6
       token: wx.getStorageSync('getusertoken')
     }
     sysService.category({
@@ -150,8 +137,6 @@ Page({
   modifyNum(){
     let _this = this;
     let productList = wx.getStorageSync('productList-dingh');
-    let shopPieceN =0;
-    let shopTotalN = 0;
     _this.setTotal(productList);
   },
 
@@ -160,7 +145,7 @@ Page({
     let _this = this;
     let { categoryId } = _this.data;
     wx.navigateTo({
-      url: '../../pages/search/search?categoryId=' + categoryId
+      url: `../../pages/search/search?categoryId=${categoryId}&shopType=goods&shopTypeSearch=search`
     })
   },
 
@@ -175,13 +160,66 @@ Page({
       })
       return
     }
-    wx.redirectTo({
+    wx.navigateTo({
       url: '../../pages/goodsinfo/goodsinfo?outage=' + outage
     })
   },
-
-  /* 提交盘点 */
+  /* 盘点 start*/
+	/**
+	 * Description:  子组件返回的盘点数据
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/25
+	 */
+	_bindInventoryData(e) {
+		this.setData({
+			tempInventList: e.detail
+		})
+  },
+	/**
+	 * Description: 保存盘点 接口
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/25
+	 */
+  getInventory() {
+    //处理数据结构 start
+    let ArrayDeepCopy = utils.ArrayDeepCopy(this.data.tempInventList);
+		let inventoryDetailVOList = utils.ArrayDeepCopy(ArrayDeepCopy);
+		inventoryDetailVOList.forEach((item) => {
+			item.goodsId = item.skuId;
+			item.shopItemSkuVO = {
+				attrValues: item.attrValues.toString(),
+				id: item.id,
+				item: item.item
+			}
+		})
+		let promdData = {
+			id: this.data.itemId || null, // 订单id // 更新必传
+			shopId: app.selectIndex, // 店铺ID
+			inventoryDetailVOList,
+		}
+		//处理数据结构 end
+     return new Promise((resolve) => {
+       sysService.inventory({
+         url:'save',
+         method:'post',
+         data:promdData
+       }).then((res) => {
+         resolve(res);
+       })
+     })
+  },
+	/**
+	 * Description: 提交保存 盘点操作
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/25
+	 */
   subInventory(){
+    //console.log();
+    this.getInventory().then((data) => {
+      console.log(data);
+    })
+
+    return false;
     wx.showModal({
       content: '是否确认提交盘点？',
       confirmColor: config.showModal.confirmColor,
@@ -199,7 +237,7 @@ Page({
       }
     });
   },
-
+	/* 盘点 end*/
   /**
    * 生命周期函数--监听页面加载
    */
@@ -215,13 +253,14 @@ Page({
         _this.setData({
           pagetitle,
           shopId,
-          productlist: _this.data.productlist
+        //  productlist: _this.data.productlist
         })
         break;
       case '盘点':
         _this.setData({
           pagetitle,
-          productlist: _this.data.stockquerylist
+	        shopId,
+        //  productlist: _this.data.stockquerylist
         });
         break;
       case '出库操作':
@@ -229,14 +268,14 @@ Page({
         _this.setData({
           outage,
           pagetitle:'出库',
-          productlist: _this.data.stockquerylist
+        //  productlist: _this.data.stockquerylist
         });
         break;
       case '库存查询':
         _this.setData({
           pagetitle,
           showbtnbox: 0,
-          productlist: _this.data.stockquerylist
+        //  productlist: _this.data.stockquerylist
         })
         break;
     }
@@ -255,8 +294,22 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
-  
+  onShow () { // 当订货显示页面修改时返回时，缓存和原始数据对比如果有修改就把修改后的数据赋值
+    this.modifyNum();
+    let _this = this;
+    let productListDingh = wx.getStorageSync('productList-dingh'); // 获取页面缓存数据
+    if (_this.data.productlist.length > 0 && productListDingh) {
+	    _this.data.productlist.forEach((itemA, index) => {
+        productListDingh.forEach((itemB) => {
+		      if (itemA.id == itemB.id) {
+			      _this.data.productlist.splice(index, 1, itemB);
+            _this.setData({
+				      productlist:_this.data.productlist
+            })
+          }
+        })
+	    })
+    }
   },
 
   /**

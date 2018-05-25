@@ -1,5 +1,6 @@
 // components/listOrder/listOrder.js
 var config = require('../../config/config.js');
+
 Component({
   /**
    * 组件的属性列表
@@ -7,7 +8,15 @@ Component({
   properties: {
     list:{
       type:Array,
-      value:[]
+      value:[],
+	    observer: function(newVal, oldVal) {
+		    let pagetTypeIndex = wx.getStorageSync('pageindex');
+		    this.setData({
+			    pagetTypeIndex,
+
+		    });
+        console.log(newVal)
+      }
     },
     typeName:{
       type:String,
@@ -19,41 +28,40 @@ Component({
    * 组件的初始数据
    */
   data: {
-    list:[],
     typeName:'',
     getTypeName: [],
     getOutType:['报废','退货'],
     getOrderType:['调拨入库','调拨出库'],
-    pagetTypeIndex:0,
-    pagetitle:''
+    pagetTypeIndex: 0,
+    pagetitle:'',
+	  statusName: config.dict.inventoryStatus,
   },
 
   //组件初始化
   ready() {
-    let pagetitle = wx.getStorageSync('pagetitle');
-    let _this = this;
-    let pagetTypeIndex = wx.getStorageSync('pageindex');
-    if (!pagetitle.includes('课程消耗')) {
-      _this.setData({
-        getTypeName: config.dict[this.data.typeName]
-      })
-    }
-    _this.setData({
-      pagetitle,
-      pagetTypeIndex
-    });
+    // let pagetitle = wx.getStorageSync('pagetitle');
+
+
+    // if (!pagetitle.includes('课程消耗')) {
+    //   _this.setData({
+    //     getTypeName: config.dict[this.data.typeName]
+    //   })
+    // }
+  //  console.log(pagetTypeIndex, typeof pagetTypeIndex)
+
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
-    detail(e){
-      let { order, typenum,itemid } = e.currentTarget.dataset;
-      let parth = '?ordernumber=' + order + '&itemId=' + itemid;
+    detail(e){ // typenum 订货单状态(1、待收货 2、部分收货 3、已收货 4、待派单)
+	    let { typenum, itemid } = e.currentTarget.dataset;
+      let parth = '?itemId=' + itemid; // itemId：订货单id
       let { pageName = '', pagetitle, pagetTypeIndex=0 } = this.data;
       switch (pagetTypeIndex){
         case 0:
+	        parth += `&update=1&status=${typenum}`;
           pageName = typenum ==1 || typenum == 2 ? 'goodsreceipt' : (typenum == 3 ? 'orderfrom':'goodsinfo' )
           break;
         case 1:

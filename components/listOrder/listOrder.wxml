@@ -1,7 +1,7 @@
 <!--components/listOrder/listOrder.wxml-->
 <view class='list-box'>
 <!-- 订货 -->
-  <view class='list-item' wx:if="{{ pagetTypeIndex == 0 }}" data-order="{{item.purchaseSn}}" data-typenum="{{item.status}}" data-itemid="{{item.id}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+  <view class='list-item' wx:if="{{ pagetTypeIndex == 0 }}" data-typenum="{{item.status}}" data-itemid="{{item.id}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
     <view class='list-title'>
       <text class='label-txt'>订货单：</text>
       <text class='label-order'>{{item.purchaseSn}}</text>
@@ -18,20 +18,21 @@
   <view class='list-item' wx:if="{{ pagetTypeIndex == 1 }}"  data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
     <view class='list-title'>
       <text class='label-txt'>盘点单：</text>
-      <text class='label-order'>{{item.order}}</text>
-      <text class='list-type'>{{ getTypeName[item.type]}}</text>
+      <text class='label-order'>{{item.purchaseSn}}</text>
+      <text class='list-type'>{{ item.status == 1 ? statusName[item.status] : statusName[item.status]}}</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>提交人：</text>
-      <text class='label-name'>{{item.uname}}</text>
+      <text class='label-name'>{{item.createName}}</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>审核人：</text>
-      <text class='label-name'>{{item.examine ? item.examine : '-'  }}</text>
+      <text class='label-name'>{{item.updateName ? item.updateName : '-'  }}</text>
     </view>
     <view class='list-time'>
-      <text class='label-time'>{{item.time}}</text>
+      <text class='label-time'>{{item.createTime}}</text>
     </view>
+    <view wx:if="{{ list.length == 0 }}">没有盘点数据</view>
   </view>
   <view class='list-item' wx:if="{{ pagetTypeIndex == 2 }}"  data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
     <view class='list-title'>

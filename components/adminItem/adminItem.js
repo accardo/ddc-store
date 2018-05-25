@@ -15,7 +15,6 @@ Component({
    * 组件的初始数据
    */
   data: {
-    stockData:[],
     imgUrl: config.pageImgUrl
   },
 

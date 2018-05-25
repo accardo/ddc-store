@@ -1,22 +1,33 @@
 <!--components/receiptList/receiptList.wxml-->
 <view class='goods-box'>
     <view class='goods-item' wx:for="{{receiptArr}}" wx:key="index">
-       <image class="goods-img {{item.img ? '':'active'}}" src='{{imgUrl}}{{item.img ? item.img : defImg}}'></image>
-      <view class='goods-txt-box' wx:if="{{pageindex ==0 }}">
-        <view class='goods-txt'>
-              <text class='goods-type' wx:if="{{item.typename}}">{{item.typename}}</text>
-              <text class='goods-name'>{{item.name}}</text>
-              <text>{{item.unit}}</text>
+      <image class="goods-img" src='{{imgUrl}}{{!item.shopItemSkuVO.thumb ? item.shopItemSkuVO.thumb : defImg}}'></image> <!-- 正式的时候需要修改 绝对路径-->
+        <!-- 订货 start-->
+        <view class='goods-txt-box' wx:if="{{pageindex ==0}}">
+            <view class='goods-txt'>
+                  <text class='goods-type' wx:if="{{configFl[item.shopItemSkuVO.item.itemType]}}">{{configFl[item.shopItemSkuVO.item.itemType]}}</text>
+                  <text class='goods-name'>{{item.shopItemSkuVO.item.itemName}}</text>
+                  <text>{{item.shopItemSkuVO.item.deductionType == 2 ? item.shopItemSkuVO.item.netWightValue + item.shopItemSkuVO.item.materialUnitName : '' }}</text>
+            </view>
+            <view class='goods-label' wx:if="{{item.shopItemSkuVO.attrValues && item.shopItemSkuVO.attrValues.length>0}}">
+                  <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="ind" class='goods-label-txt'>{{item}}</text>
+            </view>
+            <view class='goods-num'>订货数量：<text>{{item.needNumber}}</text><text>{{item.shopItemSkuVO.item.unitName}}</text> </view>
+            <view class='goods-num' wx:if="{{ orderStatus == '1'}}"><!-- 订货 状态1 为待收货； 状态3 为已收货  -->
+                实收数量：{{item.finalNumber > '0' ? item.finalNumber + item.shopItemSkuVO.item.unitName : '-' }} <!--实收数量默认为 - 当有收货是显示-->
+            </view>
+            <view class='goods-num goods-inp'>
+                收货数量：<view wx:if="{{ orderStatus == '1'}}" style="display: flex; align-items: center">
+                <input data-index="{{index}}"
+                       bindinput="setNumber"
+                       type='number'
+                       value=""
+                       placeholder="数量"
+                />{{item.shopItemSkuVO.item.unitName}}</view>
+            <text wx:if="{{ orderStatus == '3'}}">{{item.finalNumber}} {{item.shopItemSkuVO.item.unitName}}</text>
+            </view>
         </view>
-        <view class='goods-label' wx:if="{{item.typelist && item.typelist.length>0}}">
-              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
-        </view>
-        <view class='goods-num'>订货数量：<text>{{item.ordercurrent}}</text><text>{{item.company}}</text> </view>
-        <view class='goods-num'>{{titlename}}：<text>{{item.actul ? item.actul : '-' }}</text><text wx:if="{{item.actul}}">{{item.company}}</text> </view>
-        <view class='goods-num goods-inp' wx:if="{{pageType !='orderfrom'}}">收货数量：<input data-index="index" bindinput="setNumber" type='number' confirm-type="done" value="{{item.current}}" placeholder="数量"></input>
-        <text>{{item.company}}</text> 
-      </view>
-      </view>
+        <!-- 订货 end-->
       <view class='goods-txt-box' wx:if="{{pageindex == 1 }}">
           <view class='goods-txt'>
                 <text class='goods-type' wx:if="{{item.typename}}">{{item.typename}}</text>

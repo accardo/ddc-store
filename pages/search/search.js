@@ -1,6 +1,7 @@
 // pages/search/search.js
 const config = require('../../config/config.js');
 const sysService = require('../../service/sys.service.js');
+const utils = require('../../utils/util');
 const app = getApp();
 Page({
 
@@ -12,26 +13,16 @@ Page({
     searchtxt:'',
     searchReset:null,
     showList: false,
-    shoptype:'',
+    shopType:'',
+	  shopTypeSearch: '', // 当一个类型中既有搜索又有下单时候判断搜索类型缓存
     scrollTop: 0,
     currPage:1,
     pageSize:10,
     shopId:0,
-    categoryId:0,
+    categoryId: '',
     goodsName:'',
-    productlist: [
-      { img: "pro-img1.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "55", company: "kg" },
-      { img: "pro-img2.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "23", company: "kg" },
-      { name: "皇家奶茶杯盖", typename: "零售品", unit: "10g", stock: "48", current: "99", company: "kg" },
-      {name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "54", company: "kg" },
-      { img: "pro-img5.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "65", company: "kg" },
-      { name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", current: "76", company: "kg" }
-    ],
-    displaceList:[
-      { name: "皇家奶茶杯盖", typename: "原料", unit: "10g", current: "76", company: "kg" },
-      { img: "pro-img5.png",name: "皇家奶茶杯盖", typename: "原料", typelist: ["大杯", "黑色"], unit: "10g", current: "76", company: "kg" },
-      { img: "pro-img5.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", current: "76", company: "kg" }
-    ]
+    productlist: [],
+    displaceList:[]
   },
 
   /* 清除 搜索文本框 */
@@ -46,21 +37,31 @@ Page({
   getSearchList(goodsName){
     let _this = this;
     let shopid = app.selectIndex;
-    let token = wx.getStorageSync('getusertoken');
+	  let pageIndex = wx.getStorageSync('pageindex');
+	  let itemTypes = utils.limitClass(pageIndex);
     let getProse = {
       currPage: _this.data.currPage,
       pageSize: _this.data.pageSize,
       categoryId: _this.data.categoryId,
       shopId: shopid,
-      goodsName,
-      token
+	    goodsName,
+	    itemTypes
     }
     sysService.category({
       url:'listProduct',
       method:'get',
       data: getProse
-    }).then(res=>{
-      console.log(res);
+    }).then((res) => {
+      if (res.code == 0) {
+        console.log(res.page.list);
+	      res.page.list.forEach((item) => {
+		      item.attrValues = item.attrValues.split(',');
+	      })
+	      _this.setData({
+		      showList: true,
+		      productlist: res.page.list
+        })
+      }
     })
   },
 
@@ -98,12 +99,13 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let { source, shoptype, categoryId } = options;
-    if (shoptype){
+    let { shopType, categoryId, shopTypeSearch } = options;
+    console.log(options)
+    if (shopType){
       this.setData({
-        shoptype: shoptype ? shoptype : '',
-        productlist: this.data.displaceList,
-        categoryId        
+        shoptype: shopType ? shopType : '',
+        categoryId,
+	      shopTypeSearch
       });
     }
     wx: wx.setNavigationBarTitle({

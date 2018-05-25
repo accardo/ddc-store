@@ -5,21 +5,32 @@ Component({
    * 组件的属性列表
    */
   properties: {
-    productList:{
+    productList:{ // 数据
       type:Array,
-      value:[]
+      value:[],
+	    observer: function(newVal, oldVal) {
+		    let pageindex = wx.getStorageSync('pageindex');
+		    this.setData({
+			    pageindex
+		    })
+        console.log(newVal, this.data.pageindex);
+      }
     },
-    productType:{
+    productType:{ // 类型 判断是否订货，盘点，调拨 ....
       type:String,
       value:''
     },
-    productClick:{
+    productClick:{ // 商品是否可以点击
       type:String,
       value:''
     },
-    productStatus:{
+    productStatus:{ // 未知
       type:String,
       value:''
+    },
+	  shopTypeSearch: { // 判断缓存是否是搜索页面中内容
+      type: String,
+      value: ''
     }
   },
 
@@ -27,54 +38,70 @@ Component({
    * 组件的初始数据
    */
   data: {
-    productList:[],
-    countNum:1,
-    defImg: config.pageImgUrl+'logo.png', 
-    pagetitle: '',
-    productType:'',
-    productClick:'',
-    productStatus:'',
+    defImg: config.pageImgUrl+'logo.png',
     shopType: config.dict.shopType,
-    setIntervalList:''
   },
 
   ready() {
-    let _this = this;
-    let productList = [];
-    let { productType = "", setIntervalList} = _this.data;
-    let pagetitle = wx.getStorageSync('pagetitle');
-    if (productType == 'want' || productType == 'cover'){
-      let { productList } =_this.data;
-      wx.setStorageSync('productList', JSON.stringify(productList));
-    } else if (productType == 'goods'){
-      productList = wx.getStorageSync('productList-dingh');
-    } else if (productType == 'listdetail'){
-      wx.showLoading({
-        title: '数据加载中',
-      });
-      clearInterval(setIntervalList);
-      setIntervalList = setInterval(()=>{
-        if (productList == null || productList.length ==0){
-          productList = wx.getStorageSync('productList-dh-confirm');
-        }else{
-          clearInterval(setIntervalList);
-          wx.hideLoading();
-          this.setData({
-            productList
-          })
-        }
-      },800);
+    let productType = this.data.productType;
+	  let shopTypeSearch = this.data.shopTypeSearch;
+    if (productType == 'goods' && shopTypeSearch == '') { // 订货列表
+	    let productList = wx.getStorageSync('productList-dingh'); // 点击加减订货数据
+	    this.setData({
+		    productList
+	    })
     }
-    this.setData({
-      pagetitle,
-      productList
-    })
-  },
 
+	  // let _this = this;
+	  // let { productType = ""} = _this.data;
+	  // let pagetitle = wx.getStorageSync('pagetitle');
+	  // if (productType == 'want' || productType == 'cover'){ // 出库,
+     //  let { productList } =_this.data;
+     //  wx.setStorageSync('productList', JSON.stringify(productList));
+	  //   this.setData({
+		 //    productList
+	  //   })
+	  // } else if (productType == 'goods' && this.data.shopTypeSearch == ''){
+     //
+	  // }
+	  // this.setData({
+		 //  pagetitle
+	  // })
+  },
   /**
    * 组件的方法列表
    */
   methods: {
+    /* 盘点部分 start*/
+	  /**
+	   * Description: 拆零扣减 设置整数 input 用一个字段 unitValue
+	   * Author: yanlichen <lichen.yan@daydaycook.com>
+	   * Date: 2018/5/25
+	   */
+	  setScattered1(e) {
+		  this.data.productList[e.currentTarget.dataset.index].unitValue = e.detail.value;
+		  this.triggerEvent("bindInventoryData", this.data.productList); // 返回父组件数据
+		  console.log(e, this.data.productList);
+    },
+	  /**
+	   * Description: 拆零扣减 设置零散 input
+	   * Author: yanlichen <lichen.yan@daydaycook.com>
+	   * Date: 2018/5/25
+	   */
+	  setScattered2(e) {
+		  this.data.productList[e.currentTarget.dataset.index].materialUnitValue = e.detail.value;
+		  console.log(e, this.data.productList);
+    },
+	  /**
+	   * Description: 直接扣减 设置 input 用一个字段 unitValue
+	   * Author: yanlichen <lichen.yan@daydaycook.com>
+	   * Date: 2018/5/25
+	   */
+	  setDirectly(e) {
+		  this.data.productList[e.currentTarget.dataset.index].unitValue = e.detail.value;
+		  console.log(e);
+    },
+	  /* 盘点部分 end*/
     getCurrent(e){
       let ind = e.currentTarget.dataset.index;
       let { productType } = this.data;
