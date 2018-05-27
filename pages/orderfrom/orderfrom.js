@@ -10,7 +10,7 @@ Page({
   data: {
     pagetype:'orderfrom',
     pagetitle:'',
-    status: '', // 订货状态
+    status: 0, // 订货状态
     imgList:[],
 	  receiptList: [],
     stockquerylist:[
@@ -59,18 +59,19 @@ Page({
     let pagetitle = wx.getStorageSync('pagetitle');
     let imgList = wx.getStorageSync('imgList');
     imgList = imgList.length > 0 ? imgList : ['../../icons/def-img.png'];
-    if (pageIndex == '0') { // 0 订货页面
+    console.log(options)
+    if (pageIndex == 0) { // 0 订货页面
 	    _this.setData({
-		    purchaseId: options.itemId,
-		    status: options.status,
+		    purchaseId: options.orderId,
+		    status: options.orderStatus,
       })
     }
 	  _this.getPurchaseDetail();
-    if(pageIndex == '1'){
+    if(pageIndex == 1){
       this.setData({
         receiptList:this.data.stockquerylist
       })
-    }else if(pageIndex == '2'){
+    }else if(pageIndex == 2){
       pagetitle = '出库';
       this.setData({
         pagetitle,

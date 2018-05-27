@@ -8,12 +8,13 @@ Page({
    * 页面的初始数据
    */
   data: {
-    titlename: '',
-    btntext:'',
-    isShow:false,
+    titlename: '', // 按钮名称
+    btntext:'', // 类型名，如订货，盘点，出库操作，置换，调拨，库存查询，课程消耗
+    isShow: false,
     selectRadio:'',
 	  listData: [], // 总数据
-    pagetListData: [], // 结果数据数据 需要合并
+    pagetListData: [], // 临时拼接数据需要合并到 lisData中
+    pageindex: 0, // 缓存数据中取出 判断是哪个类型
     radioList: [
       [
         { 'name': '商品破损', value: '1', checked:false},
@@ -66,27 +67,30 @@ Page({
     ],
     currPage:1,
     pageSize:10,
-    shopId:0
   },
 
   /* 商品详情 */
   ordergoods(){
-    let _this = this;
-    let { titlename } = _this.data;
-    if (titlename.includes('课程消耗调整')){
+    let pageindex = wx.getStorageSync('pageindex');
+    if (pageindex == 7) { // 课程消耗
       wx.navigateTo({
         url: '../../pages/expendtrim/expendtrim'
       })
-    } else if (titlename.includes('置换')){
+    } else if (pageindex == 4){ // 置换
       wx.navigateTo({
         url: '../../pages/displacesgoods/displacesgoods'
       })
-    } else if (titlename.includes('调拨')) {
+    } else if (pageindex == 5) { // 调拨
       wx.navigateTo({
         url: '../../pages/allocation/allocation'
       })
     }else{
-      wx.navigateTo({ // 订货 盘点
+      if (pageindex == 0) {
+        wx.navigateTo({ // 订货
+          url: '../../pages/ordergoods/ordergoods?productType=goods'
+        })
+      }
+      wx.navigateTo({ // 订货 盘点 出库操作 入库操作 库存查询
         url: '../../pages/ordergoods/ordergoods'
       })
     }
@@ -104,7 +108,6 @@ Page({
   /* 获取订货信息 */
   getOrderGoods() {
     wx.showLoading({ title: '加载中' });
-    let _this= this;
     let getParm = {
       currPage: this.data.currPage,
       pageSize: this.data.pageSize,
@@ -116,11 +119,7 @@ Page({
       data: getParm
     }).then((res) => {
       wx.stopPullDownRefresh();
-      if (res.code == 401) {
-        config.logOutAll();
-        return
-      }
-      if (res.code == 0) {
+      if (res.code = '0') {
         if (res.page.list.length == 0) {
           wx.hideLoading();
           wx.showToast({
@@ -130,11 +129,14 @@ Page({
           wx.stopPullDownRefresh();
           return
         }
-	      this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
-	      _this.setData({
-		      listData: this.data.pagetListData,
-		      currPage: this.data.currPage + 1
-	      })
+        this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
+        this.setData({
+          listData: this.data.pagetListData,
+          currPage: this.data.currPage + 1
+        })
+      } else if (res.code == '401') {
+        config.logOutAll();
+        return
       } else {
         wx.showToast({
           title: res.msg,
@@ -153,7 +155,6 @@ Page({
 	 */
   getInventory() {
 		wx.showLoading({ title: '加载中' });
-		let _this = this;
 		let getParm = {
 			currPage: this.data.currPage,
 			pageSize: this.data.pageSize,
@@ -165,11 +166,7 @@ Page({
 			data: getParm
 		}).then((res) => {
 			wx.stopPullDownRefresh();
-			if (res.code == 401) {
-				config.logOutAll();
-				return
-			}
-			if (res.code == 0) {
+			if (res.code == '0') {
 				if (res.page.list.length == 0) {
 					wx.hideLoading();
 					wx.showToast({
@@ -180,11 +177,14 @@ Page({
 					return
 				}
 				this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
-				_this.setData({
+				this.setData({
 					listData: this.data.pagetListData,
 					currPage: this.data.currPage + 1
 				})
-			} else {
+			} else if (res.code == '401') {
+        config.logOutAll();
+        return
+      } else {
 				wx.showToast({
 					title: res.msg,
 					icon: 'none'
@@ -238,33 +238,27 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-	   let typeName = ''; // 状态
 	   let btntext = ''; // 拼接按钮提示
-	   let titlename = ''; // title标题
+	   let titlename = ''; // title 按钮名称
 	   let pageindex = wx.getStorageSync('pageindex');
 	   console.log(pageindex, options);
 	   switch(pageindex){
         case 0: // 订货
           btntext = options.titlename;
-          typeName = 'orderGoodsStatus';
 	        this.getOrderGoods();
           break;
         case 1: // 盘点
-          btntext = '开始' + options.titlename;
-          typeName = 'inventoryStatus';
+          btntext = options.titlename;
           console.log(btntext);
           // this.getInventory();
           break;
         case 2: // 出库操作
-          typeName = 'outGoType';
           break;
         case 4: // 置换
           btntext = '发起置换';
-          typeName = 'displaces';
           break;
         case 5: // 调拨
           btntext = '调拨出库';
-          typeName = 'allotStatus';
           break;
         case 7: // 课程消耗
           btntext = '消耗调整';
@@ -273,8 +267,7 @@ Page({
 	   }
 	   this.setData({
         btntext,
-        typeName,
-		    titlename: options.titlename,
+        pageindex,
      })
       wx.setNavigationBarTitle({
         title: options.titlename

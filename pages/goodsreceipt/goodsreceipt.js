@@ -14,8 +14,9 @@ Page({
     pagetype:'goodsreceipt',
     txtName: "实收数量",
     receiptList: [], // 订货列表初始化数据
-	  status, // 订货状态
+	  status: '', // 订货状态
 	  tempReceiptList: [], // 子组件返回父组件临时数据待提交用
+    purchaseId: '' // 订货单ID
   },
 
   /* 根据订单号获取订单详情 */
@@ -43,7 +44,7 @@ Page({
 		let	ArrayDeepCopyData = utils.ArrayDeepCopy(this.data.tempReceiptList);  // 深层拷贝防止子组件数据联动
 		let purchaseDetailVOList = utils.dataSorting(ArrayDeepCopyData); // 属性 数组转字符串
 		let promeData = {
-			id: this.data.itemId || null, // 订单id
+			id: this.data.purchaseId || null, // 订单id
 			shopId: app.selectIndex, // 店铺ID
 			status: 2, // 状态 (1、待收货 2、部分收货 3、已收货 4、待派单)
 			purchaseDetailVOList
@@ -74,7 +75,7 @@ Page({
 		  }
 	  })
 	  let promeData = {
-		  id: this.data.itemId || null, // 订单id
+		  id: this.data.purchaseId || null, // 订单id
 		  shopId: app.selectIndex, // 店铺ID
 		  status: 3, // 状态 (1、待收货 2、部分收货 3、已收货 4、待派单)
 		  purchaseDetailVOList
@@ -134,14 +135,13 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: function(options) {
     let _this = this;
-	  let pageIndex = wx.getStorageSync('pageindex');
-	  if (pageIndex == '0') { // 0 订货页面
+	  let pageindex = wx.getStorageSync('pageindex');
+	  if (pageindex == 0) { // 0 订货页面
 		  _this.setData({
-			  purchaseId: options.itemId,
-			  status: options.status,
-			  itemId: options.itemId
+			  purchaseId: options.orderId,
+			  status: options.orderStatus,
 		  })
 		  _this.getSreceipt();
 	  }

@@ -1,14 +1,13 @@
 <!--pages/orderlist/orderlist.wxml-->
 <view class='order-list'>
-  <view class='order-btn-box' wx:if="{{titlename !='出库操作' }}">
+  <view class='order-btn-box' wx:if="{{pageindex != 2 }}">
     <button class='order-btn' bindtap='ordergoods' size="mini">{{btntext}}</button>
   </view>
-  <view class='order-btn-box' wx:if="{{titlename =='出库操作' }}">
+  <view class='order-btn-box' wx:if="{{pageindex == 2 }}">
     <button class='order-btn'  bindtap='scrapSelect' size="mini">报废</button>
     <button class='order-btn ml20' bindtap='returnGoods' size="mini">退货</button>
   </view>
-  <list-order  type-name="{{typeName}}" list="{{listData}}">
-  </list-order>
+  <list-order list="{{listData}}"></list-order>
   <view bindtap="dialogClose" class="show-bg {{isShow ? '' : 'close'}}"></view>
   <view class="show-box {{isShow ? '' : 'close'}}">
     <radio-group class="radio-group" bindchange="radioChange">

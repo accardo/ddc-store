@@ -9,26 +9,30 @@
   </view>
   <view class="category-product {{ showbtnbox ? '':'active' }}">
     <view class='category-nav'>
-      <view wx:for="{{navlist}}" bindtap='selectNav'  data-index="{{index}}" wx:key="index" class='category-nav-item active_{{_index==index}}'>{{item.name}}</view>
+      <view wx:for="{{navlist}}"
+            bindtap='selectNav'
+            data-index="{{index}}"
+            wx:key="index"
+            class='category-nav-item active_{{_index==index}}'
+      >{{item.name}}</view>
     </view>
      <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
         <product-info
                 product-list="{{productlist}}"
-                product-type="goods"
-                bind:countAdd="modifyNum"
-                bind:bindInventoryData="_bindInventoryData"
+                product-type="{{productType}}"
+                bind:watchChange="_watchChange"
         ></product-info>
      </scroll-view>
   </view>
-   <view class='bottom-box' wx:if="{{pagetitle == '订货'}}">
+   <view class='bottom-box' wx:if="{{pageindex == 0}}"><!-- 0 订货 -->
       <view class='bottom-price'>
         共<text>{{shopTotalN}}</text>个商品，<text>{{shopPieceN}}</text>件
       </view>
       <button class='bottom-btn' bindtap='goNext' size="mini">下一步</button>
   </view>
-  <view class='bottom-box btns' wx:if="{{pagetitle =='盘点' }}">
-    <button class='btn-cancel nobordr' bindtap='clearInput' size="mini">清空</button>
+  <view class='bottom-box btns' wx:if="{{pageindex == 1 }}"><!-- 1 盘点 -->
+    <button class='btn-cancel nobordr' bindtap='clearCache' size="mini">清空</button>
     <button bindtap='subInventory' class='btn-sub nobordr'>提交盘点</button>
   </view>
-  <view bindtap='goNext' wx:if="{{pagetitle == '出库'}}" class='btn-review'>下一步</view>
+  <view class='btn-review' bindtap='goNext' wx:if="{{pageindex == 2}}" >下一步</view> <!-- 2 出库 -->
 </view>

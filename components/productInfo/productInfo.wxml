@@ -4,7 +4,7 @@
       <view class='goods-item'  wx:for="{{productList}}" wx:key="index" >
         <image class="goods-img {{item.thumb.includes('http') ? '':'active'}}" src="{{item.thumb.includes('http') ? item.thumb : defImg}}"></image>
           <!--pageindex = 0 订货-->
-          <view wx:if="{{pageindex == '0'  && productType == 'goods'}}" class='goods-txt-box'>
+          <view wx:if="{{pageindex == 0  && productType == 'goods'}}" class='goods-txt-box'>
               <view class='goods-txt'>
                 <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
                 <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
@@ -28,7 +28,7 @@
               </view>
           </view>
           <!--订货详情 start-->
-        <view wx:if="{{pageindex == '0' && productType == 'listdetail'}}" class='goods-txt-box'>
+        <view wx:if="{{pageindex == 0 && productType == 'listdetail'}}" class='goods-txt-box'>
           <view class='goods-txt'>
             <text class='goods-type' wx:if="{{item.shopItemSkuVO.item.itemType}}" >{{shopType[item.shopItemSkuVO.item.itemType]}}</text>
             <text class='goods-name'>{{item.shopItemSkuVO.item.itemName  }}</text>
@@ -53,7 +53,7 @@
         </view>
           <!--订货 end-->
           <!-- 盘点 start-->
-        <view wx:if="{{pageindex == '1'}}" class='goods-txt-box'>
+        <view wx:if="{{pageindex == 1}}" class='goods-txt-box'>
             <view class='goods-txt'>
               <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
               <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
@@ -70,11 +70,11 @@
           <view class='goods-stock stock-num'>
             盘点数量:
               <view class="number-box" wx:if="{{item.item.deductionType == 2}}">
-                  <input type="number" bindinput="setScattered1" data-index="{{index}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
-                  <input type='number' bindinput="setScattered2" data-index="{{index}}" />{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
+                  <input type="number" bindinput="setScattered1" data-index="{{index}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
+                  <input type='number' bindinput="setScattered2" data-index="{{index}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
               </view>
               <view class="number-box" wx:if="{{item.item.deductionType == 1}}">
-                 <input type='number' bindinput="setDirectly" data-index="index" />{{item.item.unitName}} <!-- 1 直接扣减 -->
+                 <input type='number' bindinput="setScattered1" data-index="{{index}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
               </view>
           </view>
         </view>
@@ -102,11 +102,11 @@
               </view>
             <view class='goods-stock stock-num'>
               出库数量:<view class="number-box" wx:if="{{item.company !='个'}}">
-                <input type='number'></input>袋
-                <input type='number'></input>{{item.company}}
+                <input type='number' />袋
+                <input type='number' />{{item.company}}
               </view>
              <view class="number-box"  wx:if="{{item.company =='个'}}">
-               <input type='number'></input>个
+               <input type='number' />个
              </view>
             </view>
         </view>
@@ -182,7 +182,7 @@
             </view>
             <view class='goods-stock stock-num'>
                 收货数量：<view class="number-box">
-                  <input type='number' data-name='collect' data-ind="{{index}}" bindinput='setCollect'></input>{{item.company}}
+                  <input type='number' data-name='collect' data-ind="{{index}}" bindinput='setCollect' />{{item.company}}
                 </view>
               </view>
         </view>

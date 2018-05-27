@@ -1,7 +1,14 @@
 <!--components/listOrder/listOrder.wxml-->
 <view class='list-box'>
-<!-- 订货 -->
-  <view class='list-item' wx:if="{{ pagetTypeIndex == 0 }}" data-typenum="{{item.status}}" data-itemid="{{item.id}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+<!-- 订货 start -->
+  <view class='list-item'
+        wx:if="{{ pageindex == 0 }}"
+        wx:key="index"
+        wx:for="{{list}}"
+        data-orderstatus="{{item.status}}"
+        data-orderid="{{item.id}}"
+        bindtap='detail'
+  >
     <view class='list-title'>
       <text class='label-txt'>订货单：</text>
       <text class='label-order'>{{item.purchaseSn}}</text>
@@ -15,7 +22,15 @@
       <text class='label-time'>{{item.createTime}}</text>
     </view>
   </view>
-  <view class='list-item' wx:if="{{ pagetTypeIndex == 1 }}"  data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+  <!--订货 end -->
+  <!--盘点 start-->
+  <view class='list-item'
+        wx:if="{{ pageindex == 1 }}"
+        wx:key="index"
+        wx:for="{{list}}"
+        data-order="{{item.order}}"
+        data-typenum="{{item.type}}"
+        bindtap='detail'>
     <view class='list-title'>
       <text class='label-txt'>盘点单：</text>
       <text class='label-order'>{{item.purchaseSn}}</text>
@@ -34,7 +49,8 @@
     </view>
     <view wx:if="{{ list.length == 0 }}">没有盘点数据</view>
   </view>
-  <view class='list-item' wx:if="{{ pagetTypeIndex == 2 }}"  data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+  <!-- 盘点 end-->
+  <view class='list-item' wx:if="{{ pageindex == 2 }}"  data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
     <view class='list-title'>
       <text class='label-txt'>出库单：</text>
       <text class='label-order'>{{item.order}}</text>
@@ -56,7 +72,7 @@
       <text class='label-time'>{{item.time}}</text>
     </view>
   </view>
-  <view class='list-item' wx:if="{{ pagetTypeIndex == 4 }}" data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+  <view class='list-item' wx:if="{{ pageindex == 4 }}" data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
     <view class='list-title'>
       <text class='label-txt'>置换单：</text>
       <text class='label-order'>{{item.order}}</text>
@@ -70,7 +86,7 @@
       <text class='label-time'>{{item.time}}</text>
     </view>
   </view>
-  <view class='list-item' wx:if="{{ pagetTypeIndex == 5 }}" data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+  <view class='list-item' wx:if="{{ pageindex == 5 }}" data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
     <view class='list-title'>
       <text class='label-txt'>调拨单：</text>
       <text class='label-order'>{{item.order}}</text>
@@ -102,7 +118,7 @@
       <text class='label-time'>{{item.time}}</text>
     </view>
   </view>
-  <view class='list-item' wx:if="{{ pagetTypeIndex == 7 }}"  data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+  <view class='list-item' wx:if="{{ pageindex == 7 }}"  data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
     <view class='list-title'>
       <text class='label-txt'>调整单：</text>
       <text class='label-order'>{{item.order}}</text>

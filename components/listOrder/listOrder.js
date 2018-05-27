@@ -10,18 +10,13 @@ Component({
       type:Array,
       value:[],
 	    observer: function(newVal, oldVal) {
-		    let pagetTypeIndex = wx.getStorageSync('pageindex');
+		    let pageindex = wx.getStorageSync('pageindex');
 		    this.setData({
-			    pagetTypeIndex,
-
+          pageindex,
 		    });
         console.log(newVal)
       }
     },
-    typeName:{
-      type:String,
-      value:''
-    }
   },
 
   /**
@@ -32,9 +27,8 @@ Component({
     getTypeName: [],
     getOutType:['报废','退货'],
     getOrderType:['调拨入库','调拨出库'],
-    pagetTypeIndex: 0,
-    pagetitle:'',
 	  statusName: config.dict.inventoryStatus,
+    pageindex: 0, // 判断页面类型
   },
 
   //组件初始化
@@ -55,17 +49,20 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    detail(e){ // typenum 订货单状态(1、待收货 2、部分收货 3、已收货 4、待派单)
-	    let { typenum, itemid } = e.currentTarget.dataset;
-      let parth = '?itemId=' + itemid; // itemId：订货单id
-      let { pageName = '', pagetitle, pagetTypeIndex=0 } = this.data;
-      switch (pagetTypeIndex){
+    detail(e){
+	    let orderStatus = e.currentTarget.dataset.orderstatus; // orderStatus 订货单状态(1、待收货 2、部分收货 3、已收货 4、待派单)
+	    let orderId = e.currentTarget.dataset.orderid; // orderId 订货单id
+      let pageName;
+      let path;
+      console.log(typeof orderStatus, typeof orderId, this.data.pageindex);
+      // 0 订货 - goodsreceipt - 待收货、部分收获路径名， orderfrom - 已收货路径名， goodsinfo - 待派单路径名
+      switch (this.data.pageindex){
         case 0:
-	        parth += `&update=1&status=${typenum}`;
-          pageName = typenum ==1 || typenum == 2 ? 'goodsreceipt' : (typenum == 3 ? 'orderfrom':'goodsinfo' )
+	        path = `?orderId=${orderId}&update=1&orderStatus=${orderStatus}&goods=goodsdetail`; // goods 待派单 和 订货页面缓存区别
+          pageName = orderStatus ==1 || orderStatus == 2 ? 'goodsreceipt' : ( orderStatus == 3 ? 'orderfrom':'goodsinfo' )
           break;
         case 1:
-          pageName = typenum == 1 ? 'inventoryreview' : 'orderfrom';
+          pageName = orderStatus == 1 ? 'inventoryreview' : 'orderfrom';
           break;
         case 2:
           pageName = 'orderfrom';
@@ -74,14 +71,14 @@ Component({
           pageName = 'displaceslist';
           break;
         case 5:
-          pageName = typenum == 1 ? 'orderfrom' : 'allotcollect';
+          pageName = orderStatus == 1 ? 'orderfrom' : 'allotcollect';
           break;
         case 7:
           pageName = 'expenddetail';
           break;
       }
       wx.navigateTo({
-        url: config.getPageUrl(true, pageName, parth)
+        url: config.getPageUrl(true, pageName, path)
       })
     }
   }

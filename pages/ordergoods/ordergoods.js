@@ -1,4 +1,3 @@
-// pages/ordergoods/ordergoods.js
 const config = require('../../config/config.js');
 const sysService = require('../../service/sys.service.js');
 const utils = require('../../utils/util');
@@ -16,11 +15,8 @@ Page({
     categoryId:0,
     goodsName:'',
     showbtnbox:1,
-    pagetitle:'',
     scrollTop:0,
     outage:'',
-    shopTotalN:0,
-    shopPieceN:0,
     selectProductList:[],
     navlist:[
       '饮品',
@@ -30,9 +26,13 @@ Page({
       '饼干',
       '糖果'
     ],
-    productlist: [],
     stockquerylist:[],
+    productlist: [], // 初始化数据
 	  tempInventList: [], // 子组件返回父组件临时盘点数据待提交用
+    pageindex:'', // 页面判断 是哪一个类型
+    productType: '', // 同一个模块判断不同页面类型 做数据缓存
+    shopTotalN:0, // 选中多少个商品
+    shopPieceN:0, // 选中多少件商品
   },
   //选择产品类别 - 导航
   selectNav(e){
@@ -43,138 +43,111 @@ Page({
       scrollTop:0
     })
   },
-
   /* 获取类别信息 */
   getMenuList(){
-    let _this = this;
-    let token = wx.getStorageSync('getusertoken');
     sysService.category({
       url:'listCategory',
       method:'get',
-      data:{token}
-    }).then(res=>{
-      let { code, categoryVOList,msg } = res;
-      if (code == 401){
-        config.logOutAll();
-        return 
-      }
-      if (code == 0 && categoryVOList.length >0){
-        let categoryId = categoryVOList[0].id;
-        _this.setData({
-          categoryId,
-          navlist: categoryVOList
+    }).then((res) => {
+      if (res.code == '0' && res.categoryVOList.length > 0) {
+        this.setData({
+          categoryId: res.categoryVOList[0].id,
+          navlist: res.categoryVOList
         })
-        _this.getProductByNav(categoryId);
-      }else{
+        this.getProductByNav();
+      } else if (res.code == '401') {
+        config.logOutAll();
+        return
+      } else {
         wx.showToast({
-          title: msg,
+          title: res.msg,
           icon:'none'
         })
       }
     })
   },
-
-  /* 设置商品数量 */
-  setTotal(productlist, isArray){
-    let _this = this;
-    let shopPieceN = 0, shopTotalN = 0, listArray = [];
-    productlist.map((item,index)=>{
-      if (isArray){
-        item.attrValues = item.attrValues.split(',');
-        listArray.push(item);
-      }
-      shopPieceN = parseInt(item.item.unitValue) + shopPieceN;
-      if (item.item.unitValue > 0) {
-        shopTotalN = shopTotalN + 1;
-      }
-    })
-    _this.setData({
-      shopTotalN,
-      shopPieceN
-    });
-    return listArray;
-  },
-
   /* 获取产品信息 */
-  getProductByNav(categoryId){
-    let _this = this;
-    let { currPage, pageSize, shopId} = _this.data;
+  getProductByNav(){
 	  let pageIndex = wx.getStorageSync('pageindex');
 	  let itemTypes = utils.limitClass(pageIndex);
     let promdData = {
-      currPage,
-      pageSize,
-      shopId, // 店铺ID
-      categoryId, // 产品分类ID
+      currPage: this.data.currPage,
+      pageSize: this.data.pageSize,
+      shopId: app.selectIndex, // 店铺ID
+      categoryId: this.data.categoryId, // 产品分类ID
 	    itemTypes, // 订货为 2,4,5,6 限制商品  盘点为 2,4,6
-      token: wx.getStorageSync('getusertoken')
     }
     sysService.category({
       url:'listProduct',
       method:'get',
       data:promdData
-    }).then(res=>{
-      let { code,msg,page} = res;
-      if (code == 401) {
+    }).then((res) => {
+      if (res.code == '0' && res.page.list && res.page.list.length > 0) {
+        res.page.list.forEach((item) => {
+          item.attrValues = item.attrValues.split(',');
+        })
+        this._watchChange(res.page.list);
+        this.setData({
+          productlist: res.page.list
+        })
+      } else if (res.code == '401') {
         config.logOutAll();
         return
-      }
-      if(code ==0 && page.list && page.list.length >0){
-        let listArray  = _this.setTotal(page.list,true);
-        _this.setData({
-          productlist: listArray
-        })
-      }else{
+      } else {
         wx.showToast({
-          title: msg,
+          title: res.msg,
           icon: 'none'
         })
       }
     })
   },
 
-  /* 设置商品总数 */
-  modifyNum(){
-    let _this = this;
-    let productList = wx.getStorageSync('productList-dingh');
-    _this.setTotal(productList);
+  /**
+   * Description: 设置商品总数 只需要监听数据变化即可
+   * Author: yanlichen <lichen.yan@daydaycook.com>
+   * Date: 2018/5/27
+   */
+  _watchChange(productlist){
+    let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData'); // 读取订货缓存
+    let shopPieceN = 0; // 选中多少件商品
+    let productlistData = goodsOrderCacheData ? goodsOrderCacheData : productlist;
+    let tempGoodsOrderData = productlistData.filter((item) => {
+      return item.item.unitValue != '' || item.item.unitValue != 0;
+    })
+    tempGoodsOrderData.forEach((item, index) => {
+      shopPieceN += item.item.unitValue
+    })
+    this.setData({
+      shopTotalN: tempGoodsOrderData.length,
+      shopPieceN: shopPieceN
+    })
   },
 
-  //前往搜搜页面
-  goSearch(){
-    let _this = this;
-    let { categoryId } = _this.data;
+  /**
+   * Description: shopTypeSearch 判断是搜索类型不走缓存数据  categoryId 产品分类id
+   * Author: yanlichen <lichen.yan@daydaycook.com>
+   * Date: 2018/5/26
+   */
+  goSearch() {
     wx.navigateTo({
-      url: `../../pages/search/search?categoryId=${categoryId}&shopType=goods&shopTypeSearch=search`
+      url: `../../pages/search/search?categoryId=${this.data.categoryId}&shopType=goods&shopTypeSearch=search`
     })
   },
 
   /* 前往商品信息页面 */
-  goNext(){
-    let _this = this;
-    let { shopTotalN, shopPieceN, shopId, outage } = _this.data;
-    if (shopTotalN <=0){
+  goNext() {
+    if (this.data.shopTotalN <=0){
       wx.showToast({
         title: '请选择商品',
         icon:'none'
       })
       return
     }
-    wx.navigateTo({
-      url: '../../pages/goodsinfo/goodsinfo?outage=' + outage
+    wx.navigateTo({ // conclusion = 1  订货单总结页面 所有下订单的结果页
+      url: '../../pages/goodsinfo/goodsinfo?conclusion=1&productType=goods'
     })
   },
   /* 盘点 start*/
-	/**
-	 * Description:  子组件返回的盘点数据
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/5/25
-	 */
-	_bindInventoryData(e) {
-		this.setData({
-			tempInventList: e.detail
-		})
-  },
 	/**
 	 * Description: 保存盘点 接口
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -182,31 +155,47 @@ Page({
 	 */
   getInventory() {
     //处理数据结构 start
-    let ArrayDeepCopy = utils.ArrayDeepCopy(this.data.tempInventList);
-		let inventoryDetailVOList = utils.ArrayDeepCopy(ArrayDeepCopy);
-		inventoryDetailVOList.forEach((item) => {
-			item.goodsId = item.skuId;
-			item.shopItemSkuVO = {
-				attrValues: item.attrValues.toString(),
-				id: item.id,
-				item: item.item
-			}
-		})
+    let tempInventList = wx.getStorageSync('inventoryCacheData');
+    let inventoryDetailVOList = utils.ArrayDeepCopy(tempInventList);
+    let isComplete = inventoryDetailVOList.filter((item) =>{ // 过滤 没有填写数据
+      if (item.unitValue !== '' || item.materialUnitValue !== '') {
+          item.goodsId = item.skuId;
+          item.shopItemSkuVO = {
+              attrValues: item.attrValues.toString(),
+              id: item.id,
+              item: item.item
+          }
+          delete item.attrValues;
+          delete item.copyShopItemSkuId;
+          delete item.isExist;
+          delete item.isSale;
+          delete item.item;
+          delete item.price;
+          delete item.shopItemId;
+          delete item.skuId;
+          delete item.skuSn;
+          delete item.stock;
+          delete item.thumb;
+          delete item.valueIds;
+          delete item.costPrice;
+          return item;
+      }
+    })
 		let promdData = {
 			id: this.data.itemId || null, // 订单id // 更新必传
 			shopId: app.selectIndex, // 店铺ID
-			inventoryDetailVOList,
+			inventoryDetailVOList: isComplete,
 		}
-		//处理数据结构 end
-     return new Promise((resolve) => {
-       sysService.inventory({
-         url:'save',
-         method:'post',
-         data:promdData
-       }).then((res) => {
-         resolve(res);
+	  //处理数据结构 end
+       return new Promise((resolve) => {
+         sysService.inventory({
+           url:'save',
+           method:'post',
+           data:promdData
+         }).then((res) => {
+           resolve(res);
+         })
        })
-     })
   },
 	/**
 	 * Description: 提交保存 盘点操作
@@ -214,73 +203,53 @@ Page({
 	 * Date: 2018/5/25
 	 */
   subInventory(){
-    //console.log();
-    this.getInventory().then((data) => {
-      console.log(data);
-    })
-
-    return false;
     wx.showModal({
       content: '是否确认提交盘点？',
       confirmColor: config.showModal.confirmColor,
-      success: function (res) {
+      success: (res) => {
         if (res.confirm){
-          wx.showToast({
-            title: '提交盘点成功'
-          })
-          setTimeout(() => {
-            wx.navigateBack({
-              delta: 1
+            this.getInventory().then((data) => {
+              if (data.code == '0') {
+                utils.showToast({title: '提交盘点成功', page: 1});
+                this.clearCache(); // 数据提交后 清除缓存
+              } else if (data.code == '401') {
+                config.logOutAll();
+                return
+              } else {
+                wx.showToast({
+                  title: data.msg,
+                  icon:'none'
+                })
+              }
             })
-          }, 1200)
         }
       }
     });
+  },
+  /**
+   * Description: 清除缓存
+   * Author: yanlichen <lichen.yan@daydaycook.com>
+   * Date: 2018/5/26
+   */
+  clearCache() {
+    wx.removeStorageSync('inventoryCacheData');
+    this.getMenuList();
   },
 	/* 盘点 end*/
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let _this = this;
-    _this.getMenuList();
-    let shopId = app.selectIndex;
-    let pagetitle = wx.getStorageSync('pagetitle');
-    let outage = options.radiotxt ? options.radiotxt : '';
+    console.log(options, 'ordergoods');
+    this.getMenuList();
+    let pageindex = wx.getStorageSync('pageindex');
+    this.setData({
+      productType: options.productType,
+      pageindex,
+    })
     /* 根据页面标题 获取对应的数据源 */
-    switch (pagetitle){
-      case '订货':
-        _this.setData({
-          pagetitle,
-          shopId,
-        //  productlist: _this.data.productlist
-        })
-        break;
-      case '盘点':
-        _this.setData({
-          pagetitle,
-	        shopId,
-        //  productlist: _this.data.stockquerylist
-        });
-        break;
-      case '出库操作':
-        pagetitle = '出库'
-        _this.setData({
-          outage,
-          pagetitle:'出库',
-        //  productlist: _this.data.stockquerylist
-        });
-        break;
-      case '库存查询':
-        _this.setData({
-          pagetitle,
-          showbtnbox: 0,
-        //  productlist: _this.data.stockquerylist
-        })
-        break;
-    }
     wx.setNavigationBarTitle({
-      title: pagetitle
+      title: wx.getStorageSync('pagetitle')
     })
   },
 
@@ -294,21 +263,21 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow () { // 当订货显示页面修改时返回时，缓存和原始数据对比如果有修改就把修改后的数据赋值
-    this.modifyNum();
-    let _this = this;
-    let productListDingh = wx.getStorageSync('productList-dingh'); // 获取页面缓存数据
-    if (_this.data.productlist.length > 0 && productListDingh) {
-	    _this.data.productlist.forEach((itemA, index) => {
-        productListDingh.forEach((itemB) => {
-		      if (itemA.id == itemB.id) {
-			      _this.data.productlist.splice(index, 1, itemB);
-            _this.setData({
-				      productlist:_this.data.productlist
-            })
-          }
-        })
-	    })
+  onShow () {
+    let pageindex = wx.getStorageSync('pageindex');
+    let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData'); // 读取订货缓存
+    if (pageindex == 0 && goodsOrderCacheData ) { // 设置商品数量和件数
+      this._watchChange()
+      this.setData({
+        productlist: goodsOrderCacheData ? goodsOrderCacheData : this.data.productlist
+      })
+    }
+    // 获取缓存数据
+    if(pageindex == 1) {
+      let inventoryCacheData = wx.getStorageSync('inventoryCacheData');
+      this.setData({
+        productlist: inventoryCacheData ? inventoryCacheData : this.data.productlist
+      })
     }
   },
 

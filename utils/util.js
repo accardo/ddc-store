@@ -82,7 +82,6 @@ function ArrayDeepCopy(data) {
  * Date: 2018/5/24
  */
 function showToast(data) {
-	console.log(data);
 	wx.showToast({
 		title: data.title,
 	});

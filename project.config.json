@@ -11,7 +11,7 @@
 		"newFeature": true
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.0.0",
+	"libVersion": "2.0.8",
 	"appid": "wxf15e4572aeeb4e5a",
 	"projectname": "ddc-store",
 	"isGameTourist": false,

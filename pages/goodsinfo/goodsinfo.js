@@ -10,7 +10,7 @@ Page({
    */
   data: {
     scrollTop:0,
-    outage:'',
+    outage: '0',
     pagetitle:'',
     ordernumber:'',
     listtype:'goods',
@@ -19,7 +19,9 @@ Page({
     shopPieceN: 0,
 	  update: 0, // 判断更新操作
     status: 0,
-    productlist:[]
+    productlist:[],
+    conclusion: '',
+    productType: '', // 类型
   },
 
   // 下一步
@@ -64,7 +66,7 @@ Page({
     let purchaseDetailVOList = [];
     let token = wx.getStorageSync('getusertoken');
     if (this.data.update !== '1') { // 1 为更新操作 处理原始数据，原始数据和后台传数据结构相差太大，很坑人的。
-	    purchaseDetailVOList = wx.getStorageSync('productList-dingh');
+	    purchaseDetailVOList = wx.getStorageSync('goodsOrderCacheData');
 	    purchaseDetailVOList.forEach((item) => {
 		    item.goodsId = item.skuId;
 		    item.needNumber = item.item.unitValue;
@@ -167,7 +169,7 @@ Page({
   getSelectShop(){
     let _this =this;
     let { shopTotalN, shopPieceN } = _this.data;
-    let productlist = wx.getStorageSync('productList-dingh');
+    let productlist = wx.getStorageSync('goodsOrderCacheData');
 
     if (productlist && productlist.length >0){
       shopTotalN = productlist.length;
@@ -238,35 +240,59 @@ Page({
       }
     })
   },
-
+  /**
+   * Description: 订单结果页 完全读取缓存显示
+   * Author: yanlichen <lichen.yan@daydaycook.com>
+   * Date: 2018/5/27
+   */
+  // orderResultsPage() {
+  //   // let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData');
+  //   // let tempgoodsOrderCacheData = goodsOrderCacheData.filter((item) => {
+  //   //   return item.item.unitValue != '' || item.item.unitValue != '0' || item.item.unitValue != 0;
+  //   // })
+  //   this.setData({
+  //     productlist: this.data.productlist
+  //   })
+  //   //console.log(tempgoodsOrderCacheData);
+  // },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let _this = this;
-    let { ordernumber ='', outage, itemId = '', update = '0', status = '0'} = options;
-    if (itemId){
-      _this.setData({
-        listtype:'listdetail'
-      })
-      _this.getShopListById(itemId);
-    }else{
-      _this.getSelectShop();
-    }
+    let pageindex = wx.getStorageSync('pageindex');
     let pagetitle = wx.getStorageSync('pagetitle');
-    if (pagetitle =='出库操作'){
-      pagetitle = '出库';
+    if (pageindex == 0) {
+      //this.orderResultsPage();
       this.setData({
-        outage
+        conclusion: options.conclusion,
+        productType: options.productType
       })
     }
-    this.setData({
-      pagetitle,
-      ordernumber,
-      itemId,
-	    update,
-      status,
-    })
+    console.log(this.data.conclusion, 'goodsinfo');
+    // let _this = this;
+    // let { ordernumber ='', outage, itemId = '', update = '0', status = '0'} = options;
+    // if (itemId){
+    //   _this.setData({
+    //     listtype:'listdetail'
+    //   })
+    //   _this.getShopListById(itemId);
+    // }else{
+    //   _this.getSelectShop();
+    // }
+    // let pagetitle = wx.getStorageSync('pagetitle');
+    // if (pagetitle =='出库操作'){
+    //   pagetitle = '出库';
+    //   this.setData({
+    //     outage
+    //   })
+    // }
+    // this.setData({
+    //   pagetitle,
+    //   ordernumber,
+    //   itemId,
+	   //  update,
+    //   status,
+    // })
     wx:wx.setNavigationBarTitle({
       title: pagetitle
     })
