@@ -4,13 +4,15 @@
   <view class="scroll-box {{pagetitle =='出库'? 'active' : ''}}">
   <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
     <product-info
+            wx:if="{{conclusion}}"
             product-list="{{productlist}}"
             product-type="{{productType}}"
             product-conclusion="{{conclusion}}"
+            bind:watchChange="_watchChange"
     ></product-info>
   </scroll-view>
   </view>
-  <view class='bottom-box' wx:if="{{pageindex == '0' }}">
+  <view class='bottom-box' wx:if="{{pageindex == 0 }}">
       <view class='bottom-price'>
         共<text>{{shopTotalN}}</text>个商品，<text>{{shopPieceN}}</text>件
       </view>

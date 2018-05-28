@@ -11,21 +11,26 @@ Component({
 	    observer: function(newVal, oldVal) {
 		    let pageindex = wx.getStorageSync('pageindex');
         let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData'); // 订货数据缓存 直接订货
+		    let resultsGoodsOrderCacheData = wx.getStorageSync('resultsGoodsOrderCacheData'); // 订单结果综合数据
+		    let searchGoodsOrderCacheData = wx.getStorageSync('searchGoodsOrderCacheData'); // 查询搜索缓存数据
         let inventoryCacheData = wx.getStorageSync('inventoryCacheData'); // 获取盘点缓存数据 如果有缓存 读缓存数据
+		    console.log(newVal, 'newVal');
         newVal.forEach((item, index)=> {
-          console.log(this.data.productConclusion, 11111)
+          console.log(this.data.productConclusion, 'productConclusion')
           if (pageindex == 0) { // 订货
             if (this.data.shopTypeSearch == 'search') {  // 当是search的时候走搜索页面 不走缓存数据 读取新的接口数据
+              console.log(111111111111)
               item.needNumber = ''; // 订货数量 【必填】  提交数据
               item.finalNumber = ''; // 实收数量 【必填】如果是update必填  提交数据
               item.deliveryCount = ''; // 收货数量 【必填】 如果是update必填  提交数据
             } else if(this.data.productConclusion == '1'){
-              if(item.item.unitValue == '') {
-                console.log(item)
-                return newVal.splice(index, 1)
-              }
+              console.log(22222222222)
+            	item = resultsGoodsOrderCacheData[index];
             } else {
-              item.item.unitValue = goodsOrderCacheData ? goodsOrderCacheData[index].item.unitValue : item.item.unitValue; // 页面显示 数据
+              console.log(3333333333);
+            	if (!resultsGoodsOrderCacheData || !searchGoodsOrderCacheData) {
+		            item.item.unitValue = goodsOrderCacheData ? goodsOrderCacheData[index].item.unitValue : item.item.unitValue; // 页面显示 数据
+	            }
               item.needNumber = ''; // 订货数量 【必填】 提交数据
               item.finalNumber = ''; // 实收数量 【必填】如果是update必填  提交数据
               item.deliveryCount = ''; // 收货数量 【必填】 如果是update必填  提交数据
@@ -133,9 +138,16 @@ Component({
       // let current = this.getCurrent(e);
       let index = e.currentTarget.dataset.index;
       if ( isAddRed) {// 加法
+
         if (this.data.productType == 'goods') { // 订货详情
           ++ this.data.productList[index].item.unitValue;
-          wx.setStorageSync('goodsOrderCacheData', this.data.productList); // 设置缓存数据 下次进来加载
+           if(this.data.productConclusion == '1') { // 订单结果页面 数据
+	           wx.setStorageSync('resultsGoodsOrderCacheData', this.data.productList); // 结果页面缓存，下次需要合并
+           } else if(this.data.shopTypeSearch == 'search') {
+	           wx.setStorageSync('searchGoodsOrderCacheData', this.data.productList); // 搜索页面的缓存数据 需要处理
+           } else {
+	           wx.setStorageSync('goodsOrderCacheData', this.data.productList); // 设置缓存数据 下次进来加载
+           }
         } else if (this.data.productType == 'goodsdetail') { // 详情
 
         }
@@ -143,7 +155,13 @@ Component({
         if (this.data.productType == 'goods') {
           if (this.data.productList[index].item.unitValue > 0) {
             -- this.data.productList[index].item.unitValue;
-            wx.setStorageSync('goodsOrderCacheData', this.data.productList); // 设置缓存数据 下次进来加载
+	          if(this.data.productConclusion == '1') { // 订单结果页面 数据
+		          wx.setStorageSync('resultsGoodsOrderCacheData', this.data.productList); // 结果页面缓存，下次需要合并
+	          } else if(this.data.shopTypeSearch == 'search') {
+		          wx.setStorageSync('searchGoodsOrderCacheData', this.data.productList); // 搜索页面的缓存数据 需要处理
+            } else {
+		          wx.setStorageSync('goodsOrderCacheData', this.data.productList); // 设置缓存数据 下次进来加载
+	          }
           }
         } else if (this.data.productType == 'goodsdetail') {
 
@@ -152,35 +170,7 @@ Component({
       this.setData({
         productList: this.data.productList
       })
-      this.triggerEvent("watchChange");
-      // let { current, ind } = this.getCurrent(e);
-      // let productListItem = this.data.productList[ind];
-      // if (sym){
-      //   current = parseInt(current) + 1
-      // }else{
-      //   current = parseInt(current) <= 0 ? 0 : parseInt(current) -1;
-      // }
-      // if (productType =='goods'){
-      //   productListItem.item.unitValue = current;
-      //   this.data.productList.map(item => {
-      //     if (item.item.unitValue > 0) {
-      //       selectList.push(item);
-      //     }
-      //   })
-      //   wx.setStorageSync('productList-dingh', selectList);
-      // }else{
-      //   productListItem.needNumber = current;
-      //   this.data.productList.map(item => {
-      //     if (item.needNumber > 0) {
-      //       selectList.push(item);
-      //     }
-      //   })
-      //   wx.setStorageSync('productList-dh-confirm', selectList);
-      // }
-      // this.setData({
-      //   productList: this.data.productList
-      // })
-      //this.triggerEvent("countAdd");
+      this.triggerEvent("watchChange", "click");
     },
 
     /* 设置调拨收货 输入数量 */

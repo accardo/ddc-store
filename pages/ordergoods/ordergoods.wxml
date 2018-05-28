@@ -12,6 +12,7 @@
       <view wx:for="{{navlist}}"
             bindtap='selectNav'
             data-index="{{index}}"
+            data-categoryId="{{item.id}}"
             wx:key="index"
             class='category-nav-item active_{{_index==index}}'
       >{{item.name}}</view>
