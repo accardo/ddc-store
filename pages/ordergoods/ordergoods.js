@@ -320,7 +320,16 @@ Page({
 		    tempArray = tempArray1.concat(resultsGoodsOrderCacheData); // 两个缓存数据 过滤后进行合并
 		    this._watchChange(tempProductlistData, 'shopShow'); // 当时shopShow的时候 读取综合数据 重置底部商品数量
 	    } else if(optionStorage == 2) {
-		     tempArray = tempArray1.concat(tempArray2); // 两个缓存数据 过滤后进行合并
+		    // tempArray = tempArray1.concat(tempArray2); // 两个缓存数据 过滤后进行合并
+        tempProductlist.forEach((item, index) => {
+           tempArray2.forEach((itemA) =>{
+             if (item.id == itemA.id) {
+               tempProductlist[index] = itemA;
+             }
+           })
+         })
+        tempArray = tempProductlist;
+        console.log( tempArray, 'mapeach');
 		     // tempProductlistData = this.forDataComparison(tempProductlist, tempArray2);
         // tempProductlist.forEach((item, index) => {
 			   //  tempArray2.forEach((itemA) => {
