@@ -12,8 +12,8 @@ Component({
 		    let pageindex = wx.getStorageSync('pageindex');
         let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData'); // 订货数据缓存 直接订货
 		    let resultsGoodsOrderCacheData = wx.getStorageSync('resultsGoodsOrderCacheData'); // 订单结果综合数据
-		    let searchGoodsOrderCacheData = wx.getStorageSync('searchGoodsOrderCacheData'); // 查询搜索缓存数据
         let inventoryCacheData = wx.getStorageSync('inventoryCacheData'); // 获取盘点缓存数据 如果有缓存 读缓存数据
+        let optionStorage = wx.getStorageSync('optionStorage');
 		    console.log(newVal, 'newVal');
         newVal.forEach((item, index)=> {
           console.log(this.data.productConclusion, 'productConclusion')
@@ -23,14 +23,16 @@ Component({
               item.needNumber = ''; // 订货数量 【必填】  提交数据
               item.finalNumber = ''; // 实收数量 【必填】如果是update必填  提交数据
               item.deliveryCount = ''; // 收货数量 【必填】 如果是update必填  提交数据
-            } else if(this.data.productConclusion == '1'){
+            } else if(this.data.productConclusion == '1'){ // 判断订单结果页面 显示 下订单的数据
               console.log(22222222222)
             	item = resultsGoodsOrderCacheData[index];
             } else {
               console.log(3333333333);
-            	if (!resultsGoodsOrderCacheData || !searchGoodsOrderCacheData) {
-		            item.item.unitValue = goodsOrderCacheData ? goodsOrderCacheData[index].item.unitValue : item.item.unitValue; // 页面显示 数据
-	            }
+              if (optionStorage != 2) {
+	              if (!resultsGoodsOrderCacheData) {
+		              item.item.unitValue = goodsOrderCacheData ? goodsOrderCacheData[index].item.unitValue : item.item.unitValue; // 页面显示 数据
+	              }
+              }
               item.needNumber = ''; // 订货数量 【必填】 提交数据
               item.finalNumber = ''; // 实收数量 【必填】如果是update必填  提交数据
               item.deliveryCount = ''; // 收货数量 【必填】 如果是update必填  提交数据
@@ -60,7 +62,7 @@ Component({
       type:String,
       value:''
     },
-    productStatus:{ // 未知
+    productStatus:{ // 订货详情状态
       type:String,
       value:''
     },
@@ -148,7 +150,7 @@ Component({
            } else {
 	           wx.setStorageSync('goodsOrderCacheData', this.data.productList); // 设置缓存数据 下次进来加载
            }
-        } else if (this.data.productType == 'goodsdetail') { // 详情
+        } else if (this.data.productStatus == 'goodsdetail') { // 详情
 
         }
       } else { // 减法

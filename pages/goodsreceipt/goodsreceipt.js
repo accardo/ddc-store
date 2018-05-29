@@ -43,6 +43,17 @@ Page({
 	partialReceipt(){
 		let	ArrayDeepCopyData = utils.ArrayDeepCopy(this.data.tempReceiptList);  // 深层拷贝防止子组件数据联动
 		let purchaseDetailVOList = utils.dataSorting(ArrayDeepCopyData); // 属性 数组转字符串
+		    purchaseDetailVOList = purchaseDetailVOList.filter((item) => {
+					if (item.deliveryCount !== null && item.deliveryCount !== '') {
+						delete item.createTime;
+						delete item.purchaseId;
+						delete item.shopItemSkuVO.copyShopItemSkuId;
+						delete item.shopItemSkuVO.costPrice;
+						delete item.shopItemSkuVO.isExist;
+						delete item.shopItemSkuVO.isSale;
+						return item;
+			    };
+				})
 		let promeData = {
 			id: this.data.purchaseId || null, // 订单id
 			shopId: app.selectIndex, // 店铺ID
@@ -59,6 +70,11 @@ Page({
 		  } else if (res.code == 401) {
 			  config.logOutAll();
 			  return
+		  } else {
+			  wx.showToast({
+				  title: res.msg,
+				  icon:'none'
+			  })
 		  }
 	  })
   },
@@ -140,7 +156,7 @@ Page({
 	  let pageindex = wx.getStorageSync('pageindex');
 	  if (pageindex == 0) { // 0 订货页面
 		  _this.setData({
-			  purchaseId: options.orderId,
+			  purchaseId: options.orderId, // 订货单id
 			  status: options.orderStatus,
 		  })
 		  _this.getSreceipt();

@@ -3,8 +3,8 @@
   <tip-info outage="{{outage}}" label-name="出库原因"></tip-info>
   <view class="scroll-box {{pagetitle =='出库'? 'active' : ''}}">
   <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
+      <!--wx:if="{{conclusion}}"-->
     <product-info
-            wx:if="{{conclusion}}"
             product-list="{{productlist}}"
             product-type="{{productType}}"
             product-conclusion="{{conclusion}}"

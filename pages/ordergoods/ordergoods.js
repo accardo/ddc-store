@@ -116,11 +116,10 @@ Page({
     if (shopShow == 'shopShow') { // 订单结果页面返回时候，读取订单结果页面数据进行重新计算
 	    productlistData = productlist
     }
-    console.log(productlistData, 'watchaaaaaaaa');
     let tempGoodsOrderData = productlistData.filter((item) => {
       return item.item.unitValue != '' || item.item.unitValue != 0;
     })
-    tempGoodsOrderData.forEach((item, index) => {
+    tempGoodsOrderData.forEach((item) => {
       shopPieceN += item.item.unitValue
     })
     this.setData({
@@ -152,7 +151,7 @@ Page({
     }
     wx.setStorageSync('optionStorage', 1) // 用于判断进入不同页面 在返回获取数据 1是进入订单总结页面，2是进入搜索查询页面
     wx.navigateTo({ // conclusion = 1  订货单总结页面 所有下订单的结果页
-      url: '../../pages/goodsinfo/goodsinfo?conclusion=1&productType=goods'
+      url: '../../pages/goodsinfo/goodsinfo?conclusion=1&productType=goods&orderStatus=4'
     })
   },
   /* 盘点 start*/
@@ -313,14 +312,13 @@ Page({
 	  let tempArray1 = this.filterData(tempProductlist, 1); // 获取全部缓存数据为0的数据 有一种清空是直接搜索没有进行缓存
     let tempArray2 = this.filterData(searchGoodsOrderCacheData, 2); // 搜索数据获取数据输入不为0的数据
 
-    let tempProductlistData = [];
+    let tempProductlistData = []; // 用于商品数量的计算，搜索查询后，订单结果页面 两次分别计算
     if (pageindex == 0) { // 设置商品数量和件数
 	    if (optionStorage == 1) {
 		    tempProductlistData = this.forDataComparison(tempProductlist, resultsGoodsOrderCacheData);
 		    tempArray = tempArray1.concat(resultsGoodsOrderCacheData); // 两个缓存数据 过滤后进行合并
 		    this._watchChange(tempProductlistData, 'shopShow'); // 当时shopShow的时候 读取综合数据 重置底部商品数量
 	    } else if(optionStorage == 2) {
-		    // tempArray = tempArray1.concat(tempArray2); // 两个缓存数据 过滤后进行合并
         tempProductlist.forEach((item, index) => {
            tempArray2.forEach((itemA) =>{
              if (item.id == itemA.id) {
@@ -329,29 +327,16 @@ Page({
            })
          })
         tempArray = tempProductlist;
-        console.log( tempArray, 'mapeach');
-		     // tempProductlistData = this.forDataComparison(tempProductlist, tempArray2);
-        // tempProductlist.forEach((item, index) => {
-			   //  tempArray2.forEach((itemA) => {
-			   //    console.log(item, 222222222)
-			   //    if (item.id == itemA.id) {
-			   //      console.log(item, 1111)
-			   //      if (item.item.unitValue == '0') {
-			   //        console.log(2222)
-				 //        tempProductlist.splice(index, 1)
-        //       }
-        //     }
-        //   })
-        // })
-
+        tempProductlistData = this.forDataComparison(tempProductlist, tempArray2);
+        wx.setStorageSync('goodsOrderCacheData', tempArray);  // 搜索查询添加商品 需要把查出的商品处理后 重新 赋值给 全部商品缓存修改最后订单页面的值
 		    console.log(tempArray, 'tempProductlistData');
 		    this._watchChange(tempProductlistData, 'shopShow'); // 当时shopShow的时候 读取综合数据 重置底部商品数量
 	    }
       this.setData({
         productlist: tempArray
       })
+	    wx.removeStorageSync('optionStorage'); // 每次显示清空上一次判断结果
     }
-	  wx.removeStorageSync('optionStorage'); // 每次显示清空上一次判断结果
     // 获取缓存数据
     if(pageindex == 1) {
       let inventoryCacheData = wx.getStorageSync('inventoryCacheData');
