@@ -2,7 +2,7 @@
 var config = require('../../config/config.js');
 Component({
   /**
-   * 组件的属性列表
+   * 组件的属性列表  希望后来人不要骂我 都是让 后端逼的才这么写
    */
   properties: {
     productList:{ // 数据
@@ -12,26 +12,31 @@ Component({
 		    let pageindex = wx.getStorageSync('pageindex');
         let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData'); // 订货数据缓存 直接订货
 		    let resultsGoodsOrderCacheData = wx.getStorageSync('resultsGoodsOrderCacheData'); // 订单结果综合数据
+
         let inventoryCacheData = wx.getStorageSync('inventoryCacheData'); // 获取盘点缓存数据 如果有缓存 读缓存数据
+
+		    let outboundCacheData = wx.getStorageSync('outboundCacheData'); // 获取 出库缓存数据
+		    let resultsOutboundCacheData = wx.getStorageSync('resultsOutboundCacheData'); // 出库结果综合数据
+
         let optionStorage = wx.getStorageSync('optionStorage');
-		    console.log(newVal, 'newVal');
+		    console.log(newVal, pageindex, 'newVal');
         newVal.forEach((item, index)=> {
           console.log(this.data.productConclusion, 'productConclusion')
           if (pageindex == 0) { // 订货
             if (this.data.shopTypeSearch == 'search') {  // 当是search的时候走搜索页面 不走缓存数据 读取新的接口数据
-              console.log(111111111111)
               item.needNumber = ''; // 订货数量 【必填】  提交数据
               item.finalNumber = ''; // 实收数量 【必填】如果是update必填  提交数据
               item.deliveryCount = ''; // 收货数量 【必填】 如果是update必填  提交数据
             } else if(this.data.productConclusion == '1'){ // 判断订单结果页面 显示 下订单的数据
-              console.log(22222222222)
             	item = resultsGoodsOrderCacheData[index];
             } else {
-              console.log(3333333333);
               if (optionStorage != 2) {
 	              if (!resultsGoodsOrderCacheData) {
 		              item.item.unitValue = goodsOrderCacheData ? goodsOrderCacheData[index].item.unitValue : item.item.unitValue; // 页面显示 数据
 	              }
+              }
+              if (this.data.productStatus == 'goodsdetail') {
+	              item.item.unitValue = item.tempObj.needNumber;
               }
               item.needNumber = ''; // 订货数量 【必填】 提交数据
               item.finalNumber = ''; // 实收数量 【必填】如果是update必填  提交数据
@@ -43,9 +48,27 @@ Component({
               item.unitValue = '';
               item.materialUnitValue = '';
             } else {
-              item.unitValue = inventoryCacheData ? inventoryCacheData[index].unitValue : '';
-              item.materialUnitValue = inventoryCacheData ? inventoryCacheData[index].materialUnitValue : '';
+              if (optionStorage != 2) {
+	              item.unitValue = inventoryCacheData ? inventoryCacheData[index].unitValue : '';
+	              item.materialUnitValue = inventoryCacheData ? inventoryCacheData[index].materialUnitValue : '';
+              }
             }
+          }
+          if(pageindex == 2) {
+          	if (this.data.shopTypeSearch == 'search') {
+          		item.unitValue = '';
+          		item.materialUnitValue = '';
+	          } else if(this.data.productConclusion == '1'){
+          		item = resultsOutboundCacheData[index];
+	          } else {
+          	  if (optionStorage != 2) {
+		            if (!resultsOutboundCacheData) {
+			            item.unitValue = outboundCacheData ? outboundCacheData[index].unitValue : item.unitValue;  // 页面显示 数据
+			            item.materialUnitValue = outboundCacheData ? outboundCacheData[index].materialUnitValue : item.materialUnitValue;  // 页面显示 数据
+			            console.log(item, 111111222333);
+		            }
+	            }
+          	}
           }
         })
         this.setData({
@@ -99,8 +122,41 @@ Component({
 	   */
 	  setScattered1(e) {
 		  this.data.productList[e.currentTarget.dataset.index].unitValue = e.detail.value;
-		 // this.triggerEvent("bindInventoryData", this.data.productList); // 返回父组件数据
-      wx.setStorageSync('inventoryCacheData', this.data.productList); // 设置缓存数据 下次进来加载
+		  if (this.data.pageindex == 1) {
+		  	if (this.data.shopTypeSearch == 'search') {
+				  wx.setStorageSync('searchInventoryCacheData', this.data.productList); // 查询页面 设置盘点缓存
+			  } else {
+				  wx.setStorageSync('inventoryCacheData', this.data.productList); // 整体数据 盘点缓存
+			  }
+		  }else if(this.data.pageindex == 2) {
+		  	if (this.data.shopTypeSearch == 'search') {
+				  wx.setStorageSync('searchOutboundCacheData', this.data.productList); // 查询页面 设置出库缓存
+			  } else if (this.data.productConclusion == '1') {
+				  wx.setStorageSync('resultsOutboundCacheData', this.data.productList); // 结果页面 设置出库缓存
+			  } else {
+				  wx.setStorageSync('outboundCacheData', this.data.productList); // 整体数据 出库缓存
+			  }
+		  }
+
+      //
+      // if (this.data.shopTypeSearch == 'search') {
+	    	// if (this.data.pageindex == 1) {
+			 //    wx.setStorageSync('searchInventoryCacheData', this.data.productList); // 查询页面设置 盘点缓存
+		   //  } else if(this.data.pageindex == 2) {
+	    	// 	if(this.data.productConclusion == '1') {
+	    	//
+			 //    } else if(){
+				//     wx.setStorageSync('searchOutboundCacheData', this.data.productList); // 查询页面设置 出库缓存
+			 //    }
+			 //
+		   //  }
+      // } else {
+	    	// if (this.data.pageindex == 1) {
+			 //    wx.setStorageSync('inventoryCacheData', this.data.productList); // 整体数据 盘点缓存
+		   //  } else if(this.data.pageindex == 2) {
+			 //    wx.setStorageSync('outboundCacheData', this.data.productList); // 整体数据 出库缓存
+	    	// }
+      // }
     },
 	  /**
 	   * Description: 拆零扣减 设置零散 input
@@ -109,8 +165,35 @@ Component({
 	   */
 	  setScattered2(e) {
 		  this.data.productList[e.currentTarget.dataset.index].materialUnitValue = e.detail.value;
-      // this.triggerEvent("bindInventoryData", this.data.productList); // 返回父组件数据
-      wx.setStorageSync('inventoryCacheData', this.data.productList); // 设置缓存数据 下次进来加载
+		  if (this.data.pageindex == 1) {
+			  if (this.data.shopTypeSearch == 'search') {
+				  wx.setStorageSync('searchInventoryCacheData', this.data.productList); // 查询页面 设置盘点缓存
+			  } else {
+				  wx.setStorageSync('inventoryCacheData', this.data.productList); // 整体数据 盘点缓存
+			  }
+		  } else if (this.data.pageindex == 2) {
+			  if (this.data.shopTypeSearch == 'search') {
+				  wx.setStorageSync('searchOutboundCacheData', this.data.productList); // 查询页面 设置出库缓存
+			  } else if (this.data.productConclusion == '1') {
+				  wx.setStorageSync('resultsOutboundCacheData', this.data.productList); // 结果页面 设置出库缓存
+			  } else {
+				  wx.setStorageSync('outboundCacheData', this.data.productList); // 整体数据 出库缓存
+			  }
+		  }
+
+      // if (this.data.shopTypeSearch == 'search') {
+		   //  if (this.data.pageindex == 1) {
+			 //    wx.setStorageSync('searchInventoryCacheData', this.data.productList); // 查询页面设置 盘点缓存
+		   //  } else if(this.data.pageindex == 2) {
+			 //    wx.setStorageSync('searchOutboundCacheData', this.data.productList); // 查询页面设置 出库缓存
+		   //  }
+      // } else {
+		   //  if (this.data.pageindex == 1) {
+			 //    wx.setStorageSync('inventoryCacheData', this.data.productList); // 查询页面设置 盘点缓存
+		   //  } else if(this.data.pageindex == 2) {
+			 //    wx.setStorageSync('outboundCacheData', this.data.productList); // 查询页面设置 出库缓存
+		   //  }
+      // }
     },
 	  /* 盘点部分 end*/
 
@@ -140,9 +223,11 @@ Component({
       // let current = this.getCurrent(e);
       let index = e.currentTarget.dataset.index;
       if ( isAddRed) {// 加法
-
         if (this.data.productType == 'goods') { // 订货详情
           ++ this.data.productList[index].item.unitValue;
+            if (this.data.productStatus == 'goodsdetail') { // 因为订货详情页面字段不一样需要另加
+              ++ this.data.productList[index].tempObj.needNumber;
+            }
            if(this.data.productConclusion == '1') { // 订单结果页面 数据
 	           wx.setStorageSync('resultsGoodsOrderCacheData', this.data.productList); // 结果页面缓存，下次需要合并
            } else if(this.data.shopTypeSearch == 'search') {
@@ -150,13 +235,15 @@ Component({
            } else {
 	           wx.setStorageSync('goodsOrderCacheData', this.data.productList); // 设置缓存数据 下次进来加载
            }
-        } else if (this.data.productStatus == 'goodsdetail') { // 详情
 
         }
       } else { // 减法
         if (this.data.productType == 'goods') {
           if (this.data.productList[index].item.unitValue > 0) {
             -- this.data.productList[index].item.unitValue;
+	          if (this.data.productStatus == 'goodsdetail') { // 因为订货详情页面字段不一样需要另加
+		          -- this.data.productList[index].tempObj.needNumber;
+	          }
 	          if(this.data.productConclusion == '1') { // 订单结果页面 数据
 		          wx.setStorageSync('resultsGoodsOrderCacheData', this.data.productList); // 结果页面缓存，下次需要合并
 	          } else if(this.data.shopTypeSearch == 'search') {
@@ -164,9 +251,8 @@ Component({
             } else {
 		          wx.setStorageSync('goodsOrderCacheData', this.data.productList); // 设置缓存数据 下次进来加载
 	          }
-          }
-        } else if (this.data.productType == 'goodsdetail') {
 
+          }
         }
       }
       this.setData({

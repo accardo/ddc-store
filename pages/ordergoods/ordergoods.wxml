@@ -1,6 +1,6 @@
 <!--pages/ordergoods/ordergoods.wxml-->
 <view class='order-goods'>  
-  <tip-info outage="{{outage}}" label-name="出库原因"></tip-info>
+  <tip-info reason="{{reason}}"></tip-info>
   <view class='search-box' bindtap='goSearch'>
     <view class='search'>
       <image src='../../icons/search-32.png'></image>

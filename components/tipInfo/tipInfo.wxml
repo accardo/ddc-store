@@ -1,4 +1,4 @@
 <!--components/tipInfo/tipInfo.wxml-->
-<view class='tip-box' wx:if="{{outage}}">
-  <text>{{labelName}}：{{outage}}</text>
+<view class='tip-box' wx:if="{{reason}}">
+  <text>出库原因：{{reason}}</text>
 </view>

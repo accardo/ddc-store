@@ -1,6 +1,6 @@
 <!--pages/uploadimg/uploadimg.wxml-->
 <view class='upload'>
-  <tip-info outage="{{outage}}" label-name="出库原因"></tip-info>
+  <tip-info reason="{{reason}}"></tip-info>
   <view class='upload-box' bindtap='openMedia'>
       <image  src='../../icons/camera1.png'></image>
       <text>上传图片</text>

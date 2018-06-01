@@ -25,13 +25,16 @@ Page({
 	  pageindex: 0,
 	  productStatus:'', // 判断订货详情
 	  tempShopListData: [], // 临时处理数据
+	  reason: '', // 出库原因
+	  outboundType: 0 // 1 报废 2 退货
   },
 	/**
-	 * Description: 读取商品列表 待派单
+	 * Description: 读取商品列表 待派单； 订货 状态 4 save待派单 状态 4 update ；部分收货 状态2 update ； 收货完毕 状态2 update
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/5/29
 	 */
 	getShopListData() {
+		wx.showLoading({ title: '加载中' });
 		let getData = {
 			purchaseId: this.data.purchaseId,
 			shopId:app.selectIndex,
@@ -44,12 +47,13 @@ Page({
 			console.log(res);
 			if (res.code == 0) {
 				let shopTempArray = this.shopListDataProcess(res.purchaseDetailVOList);
-				console.log(shopTempArray);
 				this.setData({
-					productType: 'goods',
 					productStatus: 'goodsdetail',
+					productType: 'goods',
 					productlist: shopTempArray
 				})
+				this.clearCache();
+				this._watchChange(); //商品数量
 			} else if (res.code == 401) {
 				config.logOutAll();
 				return
@@ -59,6 +63,7 @@ Page({
 					icon:'none'
 				})
 			}
+			wx.hideLoading();
 		})
 	},
 	/**
@@ -69,8 +74,8 @@ Page({
 	shopListDataProcess(data) {
 		console.log(data);
 		let shopTempArray = [];
-		let shopTempObject = {};
 		data.forEach((item) => {
+			let shopTempObject = {};
 			let tempObj = { // 原始数据 第一层循环数据 需要提炼出来 放到循环数组中，以便提交数据用  needNumber为 订货数量数据 循环时候需要用
 				id: item.id,
 				purchaseId: item.purchaseId,
@@ -78,6 +83,7 @@ Page({
 				needNumber: item.needNumber,
 				finalNumber: item.finalNumber,
 				deliveryCount: item.deliveryCount,
+				tempunitValue: item.shopItemSkuVO.item.unitValue,
 			}
 			item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues != null ? item.shopItemSkuVO.attrValues.split(',') : null;
 			Object.assign(shopTempObject, item.shopItemSkuVO, {tempObj: tempObj});
@@ -129,7 +135,7 @@ Page({
   setPostData(){
     let purchaseDetailVOList = [];
     let isComplete = [];
-    if (this.data.update !== '1') { // 1 为更新操作 处理原始数据，原始数据和后台传数据结构相差太大，很坑人的。
+    if (this.data.update != '1') { // 1 为更新操作 处理原始数据，原始数据和后台传数据结构相差太大，很坑人的。
 	    purchaseDetailVOList = wx.getStorageSync('goodsOrderCacheData');
 	    isComplete = purchaseDetailVOList.filter((item) =>{ // 过滤 没有填写数据
 		    if (item.item.unitValue !== 0) { // 提交数据整理
@@ -157,18 +163,50 @@ Page({
 		    }
 	    })
     } else {
-	    purchaseDetailVOList = wx.getStorageSync('productList-dh-confirm');
-	    isComplete = purchaseDetailVOList.map((item) => { // 属性 数组转字符串
-	      item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.toString();
-      })
+	    purchaseDetailVOList = wx.getStorageSync('goodsOrderCacheData');
+    	if (this.data.productStatus == 'goodsdetail') {
+		    purchaseDetailVOList = purchaseDetailVOList ? purchaseDetailVOList : this.data.productlist;
+		    console.log(purchaseDetailVOList, 'purchaseDetailVOList11111111111111');
+		    isComplete = purchaseDetailVOList.map((item) => {
+			    let tempObj1 = JSON.parse(JSON.stringify(item.tempObj));
+			    item.shopItemSkuVO = {
+			    	id : item.id,
+			      attrValues: item.attrValues != null ? item.attrValues.toString() : null,
+			    	item: item.item
+			    }
+			    item.shopItemSkuVO.item.unitValue = tempObj1.tempunitValue;
+			    Object.assign(item, tempObj1);
+			    delete item.attrValues;
+			    delete item.copyShopItemSkuId;
+			    delete item.costPrice;
+			    delete item.isExist;
+			    delete item.isSale;
+			    delete item.item;
+			    delete item.price;
+			    delete item.shopItemId;
+			    delete item.skuId;
+			    delete item.skuSn;
+			    delete item.stock;
+			    delete item.tempunitValue;
+			    delete item.thumb;
+			    delete item.valueIds;
+			    return item
+		    })
+	    } else {
+		    isComplete = purchaseDetailVOList.map((item) => { // 属性 数组转字符串
+		     item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.toString();
+		    })
+	    }
     }
+
     let promeData = {
 	    id: this.data.purchaseId || null, // 订单id
       shopId: app.selectIndex, // 店铺ID
       status: this.data.status || 0, // 状态 (1、待收货 2、部分收货 3、已收货 4、待派单)
 	    purchaseDetailVOList: isComplete
     }
-    if (this.data.update === '1') {
+		console.log(promeData, 'promeData222222');
+    if (this.data.update == '1') {
       sysService.purchase({
 	      url: 'update',
         method: "post",
@@ -179,6 +217,11 @@ Page({
         } else if(res.code == 401) {
 	        config.logOutAll();
 	        return
+        } else {
+	        wx.showToast({
+		        title: res.msg,
+		        icon: 'none'
+	        })
         }
       })
     } else {
@@ -216,19 +259,15 @@ Page({
 	},
   /* 前往照片上传页面 */
   nextGo(){
-    let _this = this;
-    let { outage, shopTotalN } = _this.data;
-    if (shopTotalN <=0){
-      wx.showToast({
-        title: '请选择商品',
-        icon:'none'
-      });
-      return 
-    }
-    
-    wx.redirectTo({
-      url: '../../pages/uploadimg/uploadimg?radiotxt=' + outage
-    })
+    let resultsOutboundCacheData = wx.getStorageSync('resultsOutboundCacheData');
+	  let tempOutboundCacheData = resultsOutboundCacheData.filter((item) => {
+		  return item.unitValue != '' || item.materialUnitValue != '';
+	  })
+	  if (tempOutboundCacheData.length > 0) {
+		  wx.navigateTo({
+			  url: `../../pages/uploadimg/uploadimg?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
+		  })
+	  }
   },
 
 	/**
@@ -239,12 +278,20 @@ Page({
 	_watchChange(){
 		let resultsGoodsOrderCacheData = [];
 		let shopPieceN = 0; // 选中多少件商品
-		if (this.data.productStatus == 'goodsdetail') {
-			resultsGoodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData'); // 读取订货缓存
-		} else {
-			resultsGoodsOrderCacheData = wx.getStorageSync('resultsGoodsOrderCacheData'); // 读取订货缓存
+		if (this.data.pageindex == 0) {
+			if (this.data.productStatus == 'goodsdetail') { // 订货
+				resultsGoodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData'); // 读取订货缓存
+			} else {
+				resultsGoodsOrderCacheData = wx.getStorageSync('resultsGoodsOrderCacheData'); // 读取订货结果页面缓存
+			}
+			if (this.data.productStatus == 'goodsdetail') {
+				this.data.productlist.forEach((item) => {
+					item.item.unitValue = item.tempObj.needNumber
+				})
+			}
 		}
 		resultsGoodsOrderCacheData = resultsGoodsOrderCacheData ? resultsGoodsOrderCacheData : this.data.productlist;
+		console.log(resultsGoodsOrderCacheData, 'watchRESULT');
 		let tempGoodsOrderData = resultsGoodsOrderCacheData.filter((item) => {
 			return item.item.unitValue != '' || item.item.unitValue != 0;
 		})
@@ -271,7 +318,23 @@ Page({
       productlist: tempgoodsOrderCacheData
     })
   },
-  /**
+	/**
+	 * Description: 出库页面 完全读取缓存显示 结果页面
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/31
+	 */
+	outboundResultePage() {
+		let outboundCacheData = wx.getStorageSync('outboundCacheData');
+		let tempoutboundCacheData = outboundCacheData.filter((item) => {
+				return item.unitValue && (item.unitValue != '') || item.materialUnitValue && (item.materialUnitValue != '');
+		})
+		wx.setStorageSync('resultsOutboundCacheData', tempoutboundCacheData); // 订单结果整合页数据需要提出来 在缓存
+		console.log(tempoutboundCacheData, 'tempoutboundCacheData')
+		this.setData({
+			productlist: tempoutboundCacheData
+		})
+	},
+	/**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
@@ -285,16 +348,24 @@ Page({
 	  }
     if (pageindex == 0) {
       this.setData({
-        conclusion: options.conclusion ? options.conclusion : null, // 是否进入订货结果页面
+	      update: options.update ? options.update :null,
+	      conclusion: options.conclusion ? options.conclusion : null, // 是否进入订货结果页面
         productType: options.productType ? options.productType : null,
 	      status: options.orderStatus ? options.orderStatus : null,  // 订货单状态
 	      purchaseId: options.orderId ? options.orderId : null, // 订货单id
       })
     }
+    if (pageindex == 2) {
+	  	this.setData({
+			  conclusion: options.conclusion ? options.conclusion : null, // 是否进入出库结果页面
+			  reason: options.reason ? options.reason : null, // 出库原因
+			  outboundType: options.outboundType ? options.outboundType : null // 1 报废 2 退货
+		  })
+	    this.outboundResultePage();
+	  	this._watchChange();
+    }
 	  if (options.goods == 'goodsdetail') {
 		  this.getShopListData();
-		  this.clearCache();
-		  this._watchChange(); //商品数量
 	  }
     this.setData({
 	    pageindex,

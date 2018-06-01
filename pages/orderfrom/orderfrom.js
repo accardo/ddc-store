@@ -10,32 +10,22 @@ Page({
   data: {
     pagetype:'orderfrom',
     pagetitle:'',
-    status: 0, // 订货状态
+    status: 0, // 订货状态 或 盘点状态
+	  purchaseId: 0, // 订货单id 或 盘点id 出库id
     imgList:[],
-	  receiptList: [],
-    stockquerylist:[
-      { img: "pro-img3.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 120, netcontent: 100, typelist: ["大杯", "黑色"],company: "g" },
-      { img: "pro-img2.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 130, netcontent: 100, company: "g" },
-      { img: "pro-img6.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 20, netcontent: 100, typelist: ["大杯", "黑色"], company: "g" },
-      {name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", current: 190, netcontent: 100, company: "g" },
-      { img: "pro-img3.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 10, netcontent: 100, company: "个" }
-    ],
-    outGoList: [
-      { img: "pro-img3.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 120, netcontent: 100, typelist: ["大杯", "黑色"], company: "g" },
-      { img: "pro-img2.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 130, netcontent: 100, company: "g" },
-      { img: "pro-img6.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 20, netcontent: 100, typelist: ["大杯", "黑色"], company: "g" },
-      { name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", current: 190, netcontent: 100, company: "g" },
-      { img: "pro-img3.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 10, netcontent: 100, company: "个" }
-    ]
+	  receiptList: [], // 初始化数据
   },
 
-  /* 获取订货单详情商品列表 */
+	/**
+	 * Description: 获取订货单详情商品列表 info
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/30
+	 */
   getPurchaseDetail(){
-    let _this = this;
-    let shopId = app.selectIndex;
+	  wx.showLoading({ title: '加载中' });
     let promseData = {
-      purchaseId: _this.data.purchaseId,
-      shopId,
+      purchaseId: this.data.purchaseId,
+      shopId: app.selectIndex
     }
     sysService.purchasedetail({
       url:'info',
@@ -43,42 +33,127 @@ Page({
       data: promseData
     }).then((res) => {
       if (res.code == '0') {
-	      _this.setData({
+	      this.setData({
 	        receiptList: res.purchaseDetailVOList // 订货列表数据
         })
+	      wx.hideLoading();
+      } else if(res.code == '401') {
+		    config.logOutAll();
+		    return
+	    } else {
+		    wx.showToast({
+			    title: res.msg,
+			    icon: 'none'
+		    })
       }
     })
   },
-
+	/**
+	 * Description: 获取盘点详情列表 info
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/30
+	 */
+	getInventoryData() {
+		wx.showLoading({ title: '加载中' });
+		let promseData = {
+			inventoryId: this.data.purchaseId,
+			shopId: app.selectIndex,
+      status: this.data.status
+		}
+		sysService.inventorydetail({
+			url:'info',
+			method:'get',
+			data: promseData
+		}).then((res) => {
+			if (res.code == '0') {
+				this.setData({
+					receiptList: res.inventoryDetailVOList // 订货列表数据
+				})
+				wx.hideLoading();
+			} else if(res.code == '401') {
+				config.logOutAll();
+				return
+			} else {
+				wx.showToast({
+					title: res.msg,
+					icon: 'none'
+				})
+			}
+		})
+  },
+	/**
+	 * Description: 获取出库详情列表 info
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/1
+	 */
+	getoutboundData() {
+		wx.showLoading({ title: '加载中' });
+		let promseData = {
+			deliveryId: this.data.purchaseId,
+			shopId: app.selectIndex,
+		}
+		sysService.deliverydetail({
+			url:'info',
+			method:'get',
+			data: promseData
+		}).then((res) => {
+			if (res.code == '0') {
+				this.setData({
+					receiptList: res.inventoryDetailVOList // 订货列表数据
+				})
+				wx.hideLoading();
+			} else if(res.code == '401') {
+				config.logOutAll();
+				return
+			} else {
+				wx.showToast({
+					title: res.msg,
+					icon: 'none'
+				})
+			}
+		})
+	},
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let _this = this;
-    let pageIndex = wx.getStorageSync('pageindex');
+    console.log(options, 'orderfrom'); // orderId 店铺id ，orderStatus 店铺状态 1、已完成， 2、待审核
+    let pageindex = wx.getStorageSync('pageindex');
     let pagetitle = wx.getStorageSync('pagetitle');
-    let imgList = wx.getStorageSync('imgList');
-    imgList = imgList.length > 0 ? imgList : ['../../icons/def-img.png'];
-    console.log(options)
-    if (pageIndex == 0) { // 0 订货页面
-	    _this.setData({
-		    purchaseId: options.orderId,
-		    status: options.orderStatus,
-      })
+    //let imgList = wx.getStorageSync('imgList');
+   // imgList = imgList.length > 0 ? imgList : ['../../icons/def-img.png'];
+
+    if (pageindex == 0) {
+	    this.setData({
+		    purchaseId: options.orderId, // 订货id 或 盘点id
+		    status: options.orderStatus, // 订货状态 或 盘点状态
+	    })
+	    this.getPurchaseDetail();
+    } else if(pageindex == 1) {
+	    this.setData({
+		    purchaseId: options.orderId, // 订货id 或 盘点id
+		    status: options.orderStatus, // 订货状态 或 盘点状态
+	    })
+	    this.getInventoryData();
+    } else if (pageindex == 2) {
+	    this.setData({
+		    purchaseId: options.orderId // 出库 id
+	    })
+	  	this.getoutboundData();
     }
-	  _this.getPurchaseDetail();
-    if(pageIndex == 1){
-      this.setData({
-        receiptList:this.data.stockquerylist
-      })
-    }else if(pageIndex == 2){
-      pagetitle = '出库';
-      this.setData({
-        pagetitle,
-        imgList,
-        receiptList: this.data.outGoList
-      })
-    }
+
+    // if(pageIndex == 1){
+    //   this.setData({
+    //     receiptList:this.data.stockquerylist
+    //   })
+    // }else if(pageIndex == 2){
+    //   pagetitle = '出库';
+    //   this.setData({
+    //     pagetitle,
+    //     imgList,
+    //     receiptList: this.data.outGoList
+    //   })
+    // }
     wx: wx.setNavigationBarTitle({
       title: pagetitle+'单'
     })

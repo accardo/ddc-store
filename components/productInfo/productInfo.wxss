@@ -113,7 +113,7 @@
   border:1px solid #ccc;
   margin:0 5rpx;
   text-align: center;
-  width: 60rpx;
+  width: 58rpx;
 }
 .want-box{
   display: flex;

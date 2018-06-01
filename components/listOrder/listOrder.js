@@ -14,7 +14,7 @@ Component({
 		    this.setData({
           pageindex,
 		    });
-        console.log(newVal)
+        console.log(newVal, 'newVal listOrder')
       }
     },
   },
@@ -51,7 +51,7 @@ Component({
   methods: {
     detail(e){
 	    let orderStatus = e.currentTarget.dataset.orderstatus; // orderStatus 订货单状态(1、待收货 2、部分收货 3、已收货 4、待派单)
-	    let orderId = e.currentTarget.dataset.orderid; // orderId 订货单id
+	    let orderId = e.currentTarget.dataset.orderid; // orderId 订货单id 和 盘点id 不同列表区分不同的id
       let pageName;
       let path;
       console.log(typeof orderStatus, typeof orderId, this.data.pageindex);
@@ -62,9 +62,11 @@ Component({
           pageName = orderStatus ==1 || orderStatus == 2 ? 'goodsreceipt' : ( orderStatus == 3 ? 'orderfrom':'goodsinfo' )
           break;
         case 1:
-          pageName = orderStatus == 1 ? 'inventoryreview' : 'orderfrom';
+          path = `?orderId=${orderId}&orderStatus=${orderStatus}` // orderStatus 盘点状态 1 已完成 2待审核 orderId 盘点id
+          pageName = orderStatus == 1 ? 'orderfrom' : 'inventoryreview';
           break;
         case 2:
+          path = `?orderId=${orderId}` // 出库单 id
           pageName = 'orderfrom';
           break;
         case 4:

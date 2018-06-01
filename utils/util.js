@@ -34,7 +34,7 @@ function limitClass(num) {
 			limitClass = '2,4,6';
 			break;
 		case 2: // 2 出库操作
-			limitClass = null;
+			limitClass = '2,4,6';
 			break;
 		case 3:  // 3 入库操作
 			limitClass = null;

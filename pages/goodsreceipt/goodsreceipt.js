@@ -131,6 +131,7 @@ Page({
 	 * Date: 2018/5/23
 	 */
   getSreceipt() {
+		wx.showLoading({ title: '加载中' });
 		let shopId = app.selectIndex;
 		let promseData = {
 			purchaseId: this.data.purchaseId, // 订货单ID
@@ -145,6 +146,7 @@ Page({
 				this.setData({
 					receiptList: res.purchaseDetailVOList // 订货列表数据
 				})
+				wx.hideLoading();
 			}
 		})
   },

@@ -4,23 +4,16 @@ Component({
    * 组件的属性列表
    */
   properties: {
-    outage:{
+	  reason:{
       type:String,
       value:''
     },
-    labelName:{
-      type:String,
-      value:''
-    }
   },
 
   /**
    * 组件的初始数据
    */
-  data: {
-    outage:'',
-    labelName:''
-  },
+  data: {},
 
   /**
    * 组件的方法列表

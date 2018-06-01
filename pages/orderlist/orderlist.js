@@ -10,61 +10,13 @@ Page({
   data: {
     titlename: '', // 按钮名称
     btntext:'', // 类型名，如订货，盘点，出库操作，置换，调拨，库存查询，课程消耗
-    isShow: false,
-    selectRadio:'',
+    isShow: false, // 报废 退货 遮罩层 显隐
+	  outboundType: 0, // 1 -> 报废； 2 ->退货
+    selectRadio: '',
 	  listData: [], // 总数据
     pagetListData: [], // 临时拼接数据需要合并到 lisData中
     pageindex: 0, // 缓存数据中取出 判断是哪个类型
-    radioList: [
-      [
-        { 'name': '商品破损', value: '1', checked:false},
-        { 'name': '商品过期', value: '2', checked: false },
-        { 'name': '商品变质', value: '3', checked: false }
-      ],
-      [
-        { 'name': '临期', value: '1', checked: false },
-        { 'name': '过期', value: '2', checked: false },
-        { 'name': '在库退货', value: '3', checked: false },
-        { 'name': '质量问题', value: '4', checked: false }
-      ]
-    ],
-    labelList:[],
-    orderGoodsList:[
-      {'order':'OOED243245678','uname':'赵三','time':'2018-04-17 18:19:20',type:1},
-      { 'order': 'OOED5234267', 'uname': '李四', 'time': '2018-04-17 18:19:20', type: 0 },
-      { 'order': 'OOED4123423111', 'uname': '王五', 'time': '2018-03-17 18:19:20', type: 2 },
-      { 'order': 'OOED452423422342', 'uname': '冯琪', 'time': '2018-04-19 18:19:20', type: 3 },
-    ],
-    inventoryList:[
-      { 'order': 'OOED452423422342', 'uname': '冯琪', examine:'小吴','time': '2018-04-19 18:19:20', type: 1 },
-      { 'order': 'OOED452423422342', 'uname': '冯琪', 'time': '2018-04-19 18:19:20', type: 0 },
-      { 'order': 'OOED452423422342', 'uname': '冯琪', examine: '小吴', 'time': '2018-04-19 18:19:20', type: 1 },
-      { 'order': 'OOED452423422342', 'uname': '冯琪', examine: '小吴', 'time': '2018-04-19 18:19:20', type: 1 },
-      { 'order': 'OOED452423422342', 'uname': '冯琪', 'time': '2018-04-19 18:19:20', type: 0 }
-    ],
-    consumeList:[
-      { 'order': 'OOED452423422342', 'uname': '冯琪', 'time': '2018-04-19 18:19:20'},
-      { 'order': 'OOED45242777772', 'uname': '娃哈哈', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'OOED45242555552', 'uname': '冯琪', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'OOED4524433443', 'uname': '王老吉', 'time': '2018-04-19 18:19:20' }
-    ],
-    outGoList:[
-      { 'order': 'OOED4524433443', outType: 0, outreason: 1, 'examine': '王老吉', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'OOED4524433443', outType: 0, outreason: 1, 'examine': '成龙', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'OOED412111443', outType: 1, outreason: 1, 'examine': '冯德瑞', 'time': '2018-03-19 18:19:20' },
-      { 'order': 'OOED4524433443', outType: 0, outreason: 2, 'examine': '冯德瑞', 'time': '2018-04-29 18:19:20' },
-    ],
-    displacesList:[
-      { 'order': 'DOC23456', type: 0, 'uname': '娃哈哈', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'DOC267896', type: 0, 'uname': '王老吉', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'DOC26756', type: 0, 'uname': '雪碧', 'time': '2018-04-19 18:19:20' }
-    ],
-    allotList:[
-      { 'order': 'DOC245676756', type: 0, ordertype: 1, allotOut: '上海K11烘焙课', allotEnter: '武汉K11烘焙课', 'subname': '雪碧', collect:'小吴', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'DOC245676756', type: 1, ordertype: 1, allotOut: '上海K11烘焙课', allotEnter: '武汉K11烘焙课', 'subname': '雪碧', collect: '小吴', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'DOC245676756', type: 1, ordertype: 0, allotOut: '上海K11烘焙课', allotEnter: '武汉K11烘焙课', 'subname': '雪碧', collect: '小吴', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'DOC245676756', type: 0, ordertype: 0, allotOut: '上海K11烘焙课', allotEnter: '武汉K11烘焙课', 'subname': '雪碧', collect: '小吴', 'time': '2018-04-19 18:19:20' }
-    ],
+    labelList:[], // 报废 退货 信息 前端字典
     currPage:1,
     pageSize:10,
   },
@@ -89,23 +41,21 @@ Page({
         wx.navigateTo({ // 订货
           url: '../../pages/ordergoods/ordergoods?productType=goods'
         })
+        // wx.removeStorageSync('goodsOrderCacheData');
+         wx.removeStorageSync('searchGoodsOrderCacheData');
+         wx.removeStorageSync('resultsGoodsOrderCacheData');
+      } else if (pageindex == 1) {
+	      wx.navigateTo({ // 盘点 出库操作 入库操作 库存查询
+		      url: '../../pages/ordergoods/ordergoods'
+	      })
       }
-      wx.navigateTo({ // 订货 盘点 出库操作 入库操作 库存查询
-        url: '../../pages/ordergoods/ordergoods'
-      })
     }
   },
-
-  /* 报废 */
-  scrapSelect(e){
-    let _this = this;
-    _this.setData({
-      isShow:true,
-      labelList: _this.data.radioList[0]
-    })
-  },
-
-  /* 获取订货信息 */
+	/**
+	 * Description: 获取订货信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/31
+	 */
   getOrderGoods() {
     wx.showLoading({ title: '加载中' });
     let getParm = {
@@ -130,6 +80,7 @@ Page({
           return
         }
         this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
+        console.log(this.data.pagetListData, 'this.data.pagetListData')
         this.setData({
           listData: this.data.pagetListData,
           currPage: this.data.currPage + 1
@@ -195,42 +146,102 @@ Page({
 			wx.hideLoading();
 		})
   },
-
-  /* 退货 */
-  returnGoods(e){
-    let _this = this;
-    _this.setData({
-      isShow: true,
-      labelList: _this.data.radioList[1]
-    })
-  },
-
-  /* 确定 */
+	/**
+	 * Description: 获取出库信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/31
+	 */
+	getOutbound() {
+		wx.showLoading({ title: '加载中' });
+		let getParm = {
+			currPage: this.data.currPage,
+			pageSize: this.data.pageSize,
+			shopId: app.selectIndex,
+		}
+		sysService.delivery({
+			url: 'list',
+			method: 'get',
+			data: getParm
+		}).then((res) => {
+			wx.stopPullDownRefresh();
+			if (res.code == '0') {
+				console.log(res, 'getOutbound');
+				if (res.page.list.length == 0) {
+					wx.hideLoading();
+					wx.showToast({
+						title: '没有更多数据',
+						icon:'none'
+					});
+					wx.stopPullDownRefresh();
+					return
+				}
+				this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
+				this.setData({
+					listData: this.data.pagetListData,
+					currPage: this.data.currPage + 1
+				})
+			} else if (res.code == '401') {
+				config.logOutAll();
+				return
+			} else {
+				wx.showToast({
+					title: res.msg,
+					icon: 'none'
+				})
+			}
+			wx.hideLoading();
+		}).catch(() => {
+			wx.hideLoading();
+		})
+	},
+	/* 报废 按钮 */
+	scrapSelect(){
+		this.setData({
+			isShow: true,
+			outboundType: 1,
+			labelList: config.dict.outGoType[0]
+		})
+	},
+	/* 退货 按钮*/
+	returnGoods(){
+		this.setData({
+			isShow: true,
+			outboundType: 2,
+			labelList: config.dict.outGoType[1]
+		})
+	},
+	/* 报废 或 退货  选中的值 radio */
+	radioChange(e){
+		this.setData({
+			selectRadio: e.detail.value
+		})
+	},
+  /* 确定 跳转到相对应的页面*/
   confirmFun(){
-    let _this = this;
-    _this.dialogClose();
-    let { selectRadio } = _this.data;
-    wx.navigateTo({
-      url: '../../pages/ordergoods/ordergoods?radiotxt=' + selectRadio
-    })
+    if (this.data.selectRadio !== '') {
+	    this.dialogClose();
+	    let reasonRadio = wx.getStorageSync('reasonRadio'); // 判断页面进入的是哪个类别
+	    if (reasonRadio != this.data.selectRadio) {
+		    wx.removeStorageSync('outboundCacheData');
+		    wx.removeStorageSync('searchOutboundCacheData');
+	    }
+	    wx.removeStorageSync('optionStorage');
+	    wx.removeStorageSync('searchOutboundCacheData');
+	    wx.removeStorageSync('resultsOutboundCacheData');
+	    wx.navigateTo({
+		    url: `../../pages/ordergoods/ordergoods?reason=${this.data.selectRadio}&outboundType=${this.data.outboundType}`
+	    })
+    } else {
+	    wx.showToast({
+		    title: '请选择类型',
+		    icon: 'none'
+	    })
+    }
   },
-
+	/* 关闭 遮罩层 取消*/
   dialogClose(){
     this.setData({
       isShow: false
-    })
-  },
-
-  dialogShow(){
-    this.setData({
-      isShow: true
-    })
-  },
-
-  /* radio 选中的 */
-  radioChange(e){
-    this.setData({
-      selectRadio: e.detail.value
     })
   },
 
@@ -249,10 +260,11 @@ Page({
           break;
         case 1: // 盘点
           btntext = options.titlename;
+	        this.getInventory();
           console.log(btntext);
-          // this.getInventory();
           break;
         case 2: // 出库操作
+	        this.getOutbound();
           break;
         case 4: // 置换
           btntext = '发起置换';
@@ -313,7 +325,13 @@ Page({
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function () {
-    this.getOrderGoods();
+    if (this.data.pageindex == 0) {
+	    this.getOrderGoods();
+    } else if(this.data.pageindex == 1) {
+      this.getInventory();
+    } else if (this.data.pageindex == 2) {
+	    this.getOutbound();
+    }
   },
 
   /**
