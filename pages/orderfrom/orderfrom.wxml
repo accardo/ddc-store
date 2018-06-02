@@ -1,6 +1,6 @@
 <!--pages/orderfrom/orderfrom.wxml-->
 <view class="order-from">
-  <view class='img-box' wx:if="{{pagetitle == '出库'}}">
+  <view class='img-box' wx:if="{{pageindex == 2}}">
     <view class='img-txt'>上传图片</view>
     <view class='img-list'>
       <image wx:for="{{ imgList }}" wx:key="index" src="{{item}}"></image>

@@ -16,14 +16,15 @@
   display: flex;
   flex-wrap: wrap;
   box-sizing: border-box;
-  justify-content: space-between;
+  /*justify-content: space-between;*/
   align-items: center;
 }
 .img-list image{
   width: 31%;
   height: 180rpx;
   margin-top: 30rpx;
-  margin-left: 0; 
+  margin-left: 0;
+  margin-right: 15rpx;
   border-radius: 10rpx;
 }
 .img-list image:last-child{

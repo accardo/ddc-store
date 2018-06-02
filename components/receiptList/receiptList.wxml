@@ -1,7 +1,7 @@
 <!--components/receiptList/receiptList.wxml-->
 <view class='goods-box'>
     <view class='goods-item' wx:for="{{receiptArr}}" wx:key="index">
-      <image class="goods-img" src='{{imgUrl}}{{!item.shopItemSkuVO.thumb ? item.shopItemSkuVO.thumb : defImg}}'></image> <!-- 正式的时候需要修改 绝对路径-->
+        <image class="goods-img" src='{{imgUrl}}{{!item.shopItemSkuVO.thumb ? item.shopItemSkuVO.thumb : defImg}}'></image> <!-- 正式的时候需要修改 绝对路径-->
         <!-- 订货 start-->
         <view class='goods-txt-box' wx:if="{{pageindex ==0}}">
             <view class='goods-txt'>
@@ -56,17 +56,23 @@
           </view>-->
         </view>
         <!--盘点 end-->
-      <view class='goods-txt-box' wx:if="{{pageindex == 2 }}">
-        <view class='goods-txt'>
-              <text class='goods-type' wx:if="{{item.typename}}">{{item.typename}}</text>
-              <text class='goods-name'>{{item.name}}</text>
-              <text>{{item.unit}}</text>
+        <!-- 出库 start-->
+        <view class='goods-txt-box' wx:if="{{pageindex == 2 }}">
+            <view class='goods-txt'>
+                <text class='goods-type' wx:if="{{configFl[item.shopItemSkuVO.item.itemType]}}">{{configFl[item.shopItemSkuVO.item.itemType]}}</text>
+                <text class='goods-name'>{{item.shopItemSkuVO.item.itemName}}</text>
+                <text>{{item.shopItemSkuVO.item.deductionType == 2 ? item.shopItemSkuVO.item.netWightValue + item.shopItemSkuVO.item.materialUnitName : '' }}</text>
+            </view>
+            <view class='goods-label' wx:if="{{item.shopItemSkuVO.attrValues && item.shopItemSkuVO.attrValues.length>0}}">
+                <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="ind" class='goods-label-txt'>{{item}}</text>
+            </view>
+            <view class='goods-num'>
+                出库数量：
+                <text>{{ item.shopItemSkuVO.item.unitValue }}{{ item.shopItemSkuVO.item.unitName }}</text>
+                <text wx:if="{{item.shopItemSkuVO.item.deductionType == 2}}">{{ item.shopItemSkuVO.item.materialUnitValue }}{{ item.shopItemSkuVO.item.materialUnitName }}</text>
+            </view>
         </view>
-        <view class='goods-label' wx:if="{{item.typelist && item.typelist.length>0}}">
-              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
-        </view>
-        <view class='goods-num'>出库数量：<text>{{item.stoknum}}</text> </view>
-      </view>
+        <!-- 出库 end-->
       <view class='goods-txt-box' wx:if="{{pageindex ==5 }}">
             <view class='goods-txt'>
                   <text class='goods-type' wx:if="{{item.typename}}">{{item.typename}}</text>

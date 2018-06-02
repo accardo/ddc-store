@@ -12,8 +12,9 @@ Page({
     pagetitle:'',
     status: 0, // 订货状态 或 盘点状态
 	  purchaseId: 0, // 订货单id 或 盘点id 出库id
-    imgList:[],
+    imgList:[], // 图片显示
 	  receiptList: [], // 初始化数据
+	  pageindex: null, // 判断显示哪一个页面  订单、盘点、出库 等
   },
 
 	/**
@@ -99,7 +100,8 @@ Page({
 		}).then((res) => {
 			if (res.code == '0') {
 				this.setData({
-					receiptList: res.inventoryDetailVOList // 订货列表数据
+					receiptList: res.deliveryDetailVOList, // 订货列表数据
+					imgList: res.imageUrls
 				})
 				wx.hideLoading();
 			} else if(res.code == '401') {
@@ -141,7 +143,9 @@ Page({
 	    })
 	  	this.getoutboundData();
     }
-
+    this.setData({
+	    pageindex,
+    })
     // if(pageIndex == 1){
     //   this.setData({
     //     receiptList:this.data.stockquerylist

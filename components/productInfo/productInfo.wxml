@@ -20,7 +20,7 @@
               <view class='product-count' >
                 <image class='input-icon' data-index="{{index}}" catchtap='countReduce' src='../../icons/jian.png'></image>
                 <view class='input-number'>
-                  <text class='input-num red'>{{item.item.unitValue }}</text>
+                  <text class='input-num red'>{{item.needNumber }}</text>
                   <text class='input-type'>{{item.item.unitName}}</text>
                 </view>
                 <image class='input-icon' data-index="{{index}}" catchtap='countAdd' src='../../icons/jia.png'></image>

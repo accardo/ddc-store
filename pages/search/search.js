@@ -58,7 +58,7 @@ Page({
       if (res.code == 0) {
         console.log(res.page.list);
 	      res.page.list.forEach((item) => {
-		      item.attrValues = item.attrValues.split(',');
+		      item.attrValues = item.attrValues ? item.attrValues.split(',') : null;
 	      })
 	      this.setData({
 		      showList: true,

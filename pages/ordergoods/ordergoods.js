@@ -27,6 +27,7 @@ Page({
     shopPieceN:0, // 选中多少件商品
 	  reason: '', //  出库原因  报废：商品破损、商品过期、商品变质； 退货：临期、过期、在库退货、质量问题；
 	  outboundType: 0, // 出库类型 1 报废  2 退货
+	  cacheArray: [],
   },
   //选择产品类别 - 导航
   selectNav(e){
@@ -34,6 +35,7 @@ Page({
       _index: e.currentTarget.dataset.index,
       scrollTop:0
     })
+	  wx.setStorageSync('selectNavIndex', e.currentTarget.dataset.index);
 	  this.data.categoryId = e.currentTarget.dataset.categoryid
     this.getProductByNav()
   },
@@ -60,7 +62,19 @@ Page({
       }
     })
   },
-  /* 获取产品信息 */
+	/**
+	 * Description: 分类缓存存储空间
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/2
+	 */
+	// cacheStorageSpace(spaceData) {
+	// 	spaceData.forEach( () => {
+	// 		this.data.cacheArray.push([]);
+	// 	})
+	// 	wx.setStorageSync('cacheData', this.data.cacheArray)
+	// //	console.log(spaceData, this.data.cacheArray,'cacheData 选中页面存储空间')
+	// },
+	/* 获取产品信息 */
   getProductByNav(){
 	  wx.showLoading({ title: '加载中' });
 	  let pageIndex = wx.getStorageSync('pageindex');
@@ -81,10 +95,6 @@ Page({
         res.page.list.forEach((item) => {
           item.attrValues = item.attrValues != null ? item.attrValues.split(',') : null;
         })
-	      if (this.data.index == 0) {
-		      this._watchChange(res.page.list);
-	      }
-        console.log(res.page.list, 'res.page.list')
         this.setData({
           productlist: res.page.list
         })
@@ -101,23 +111,23 @@ Page({
     })
   },
 
-  /**
+	/**
    * Description: 设置商品总数 只需要监听数据变化即可
    * Author: yanlichen <lichen.yan@daydaycook.com>
    * Date: 2018/5/27
    */
   _watchChange(productlist, shopShow){
-    let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData'); // 订单全部数据
-    let shopPieceN = 0; // 选中多少件商品
+		let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData'); // 订单全部数据
     let productlistData = goodsOrderCacheData ? goodsOrderCacheData : productlist; // 当第一次进入页面 读取页面数据 综合商品数量
+		let shopPieceN = 0; // 选中多少件商品
     if (shopShow == 'shopShow') { // 订单结果页面返回时候，读取订单结果页面数据进行重新计算
 	    productlistData = productlist
     }
     let tempGoodsOrderData = productlistData.filter((item) => {
-      return item.item.unitValue != '' || item.item.unitValue != 0;
+      return item.needNumber != '' || item.needNumber != 0;
     })
-    tempGoodsOrderData.forEach((item) => {
-      shopPieceN += item.item.unitValue
+		tempGoodsOrderData.forEach((item) => {
+      shopPieceN += item.needNumber
     })
     this.setData({
       shopTotalN: tempGoodsOrderData.length,
@@ -272,8 +282,8 @@ Page({
 	 * Date: 2018/5/28
 	 */
 	forDataComparison(data1, data2) {
-		 data1.forEach((item) => { // 结果缓存 和全部数据缓存对比 赋值 确定数据完整
-			 data2.forEach((itemA) => {
+		data1 && data1.forEach((item) => { // 结果缓存 和全部数据缓存对比 赋值 确定数据完整
+			data2 && data2.forEach((itemA) => {
 				if (item.id == itemA.id) {
 				  item.item.unitValue = itemA.item.unitValue;
 				}
@@ -287,8 +297,8 @@ Page({
 	 * Date: 2018/5/30
 	 */
 	forDataContrast(data1, data2) {
-		data1.forEach((item, index) => {
-			data2.forEach((itemA) =>{
+		data1 && data1.forEach((item, index) => {
+			data2 && data2.forEach((itemA) =>{
 				if (item.id == itemA.id) {
 					data1[index] = itemA;
 				}
@@ -357,11 +367,12 @@ Page({
     let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData'); // 读取订货 全部 缓存
     let resultsGoodsOrderCacheData = wx.getStorageSync('resultsGoodsOrderCacheData'); // 读取订货 结果页 缓存
     let searchGoodsOrderCacheData = wx.getStorageSync('searchGoodsOrderCacheData'); // 读取搜索 查询 缓存
-	  let tempProductlist = goodsOrderCacheData ? goodsOrderCacheData : this.data.productlist; // 有缓存读取缓存 否则 正常读数据
+	   let tempProductlist = goodsOrderCacheData ? goodsOrderCacheData : this.data.productlist; // 有缓存读取缓存 否则 正常读数据
 
 	  let tempArray = [];
     let tempProductlistData = []; // 用于商品数量的计算，搜索查询后，订单结果页面 两次分别计算
     if (pageindex == 0) { // 设置商品数量和件数
+	    this._watchChange(this.data.productlist)
 	    let tempArray1 = this.filterData(tempProductlist, 1); // 获取全部缓存数据为0的数据 有一种清空是直接搜索没有进行缓存
 	    let tempArray2 = this.filterData(searchGoodsOrderCacheData, 2); // 搜索数据获取数据输入不为0的数据
 	    if (optionStorage == 1) {
@@ -371,7 +382,9 @@ Page({
 	    } else if(optionStorage == 2) {
 		    tempArray = this.forDataContrast(tempProductlist, tempArray2); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
         tempProductlistData = this.forDataComparison(tempProductlist, tempArray2); // 搜索页面 和 订单结果页 数据比对过滤赋值
-        wx.setStorageSync('goodsOrderCacheData', tempArray);  // 搜索查询添加商品 需要把查出的商品处理后 重新 赋值给 全部商品缓存修改最后订单页面的值
+		    if (tempArray.length > 0) {
+			    wx.setStorageSync('goodsOrderCacheData', tempArray);  // 搜索查询添加商品 需要把查出的商品处理后 重新 赋值给 全部商品缓存修改最后订单页面的值
+		    }
 		    this._watchChange(tempProductlistData, 'shopShow'); // 当时shopShow的时候 读取综合数据 重置底部商品数量
 	    }
     }

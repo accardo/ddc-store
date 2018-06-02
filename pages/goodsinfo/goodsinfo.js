@@ -293,10 +293,10 @@ Page({
 		resultsGoodsOrderCacheData = resultsGoodsOrderCacheData ? resultsGoodsOrderCacheData : this.data.productlist;
 		console.log(resultsGoodsOrderCacheData, 'watchRESULT');
 		let tempGoodsOrderData = resultsGoodsOrderCacheData.filter((item) => {
-			return item.item.unitValue != '' || item.item.unitValue != 0;
+			return item.needNumber != '' || item.needNumber != 0;
 		})
 		tempGoodsOrderData.forEach((item) => {
-			shopPieceN += item.item.unitValue
+			shopPieceN += item.needNumber
 		})
 		this.setData({
 			shopTotalN: tempGoodsOrderData.length,
@@ -311,7 +311,7 @@ Page({
   orderResultsPage() {
     let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData');
     let tempgoodsOrderCacheData = goodsOrderCacheData.filter((item) => {
-      return item.item.unitValue != '' || item.item.unitValue != '0' || item.item.unitValue != 0;
+      return item.needNumber != '' || item.needNumber != '0' || item.needNumber != 0;
     })
     wx.setStorageSync('resultsGoodsOrderCacheData', tempgoodsOrderCacheData); // 订单结果整合页数据需要提出来 在缓存
     this.setData({
