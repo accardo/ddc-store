@@ -20,6 +20,7 @@ Page({
     pageSize:10,
     categoryId: '',
     productlist: [], // 搜索原始数据
+	  navClassIndex: 0,
   },
 
   /**
@@ -59,6 +60,8 @@ Page({
         console.log(res.page.list);
 	      res.page.list.forEach((item) => {
 		      item.attrValues = item.attrValues ? item.attrValues.split(',') : null;
+		      item.needNumber = 0;
+		      item.navClass = this.data.navClassIndex;
 	      })
 	      this.setData({
 		      showList: true,
@@ -105,7 +108,8 @@ Page({
       this.setData({
         shoptype: shopType ? shopType : '',
         categoryId,
-	      shopTypeSearch
+	      shopTypeSearch,
+	      navClassIndex: options.navClass
       });
     }
     wx: wx.setNavigationBarTitle({

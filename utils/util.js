@@ -91,6 +91,40 @@ function showToast(data) {
 		})
 	}, 800);
 }
+
+/**
+ * Description: 总结页面缓存 二维数组处理成一维
+ * Author: yanlichen <lichen.yan@daydaycook.com>
+ * Date: 2018/6/3
+ */
+function cacheDataDeal(data) {
+	let tempArray = [];
+	data.forEach((item) => {
+		return tempArray.push(...item)
+	})
+	return tempArray;
+}
+
+/**
+ * Description: 设置商品总数
+ * Author: yanlichen <lichen.yan@daydaycook.com>
+ * Date: 2018/6/3
+ */
+function setTotalNumber(data) {
+	let shopPieceN = 0;
+	let tempArray = [];
+	data.forEach((item) => {
+		return tempArray.push(...item)
+	})
+	tempArray.forEach((item) => {
+		shopPieceN += item.needNumber
+	})
+	return {
+		total: tempArray.length,
+		shopPieceN
+	}
+}
+
 module.exports = {
   formatTime,
   getType,
@@ -98,4 +132,6 @@ module.exports = {
 	ArrayDeepCopy,
 	dataSorting,
 	showToast,
+	cacheDataDeal,
+	setTotalNumber,
 }

@@ -24,59 +24,32 @@ Component({
         let optionStorage = wx.getStorageSync('optionStorage');
 		    console.log(newVal, pageindex, cacheData, 'newVal');
         newVal.forEach((item, index)=> {
-	        cacheData.forEach((itemA, indexA) => {
-		        if (pageindex == 0) { // 订货
-			        item.needNumber = 0; // 订货数量 【必填】 提交数据
-			        item.finalNumber = 0; // 实收数量 【必填】如果是update必填  提交数据
-			        item.deliveryCount = 0; // 收货数量 【必填】 如果是update必填  提交数据
-			        if (this.data.shopTypeSearch == 'search') {  // 当是search的时候走搜索页面 不走缓存数据 读取新的接口数据
-				        item.needNumber = 0; // 订货数量 【必填】  提交数据
-				        item.finalNumber = 0; // 实收数量 【必填】如果是update必填  提交数据
-				        item.deliveryCount = 0; // 收货数量 【必填】 如果是update必填  提交数据
-			        } else if(this.data.productConclusion == '1'){ // 判断订单结果页面 显示 下订单的数据
-				        item = resultsGoodsOrderCacheData[index];
-			        } else {
-				        if (optionStorage != 2) {
-					        if (!resultsGoodsOrderCacheData) {
-						        console.log(itemA, itemA[selectNavIndex][indexA].needNumber, 111111112222)
-						        if (item.skuId == itemA[selectNavIndex][indexA].skuId) {
-							        item.needNumber = itemA[selectNavIndex][indexA].needNumber;
-						        }
-						        // item.needNumber = goodsOrderCacheData ? goodsOrderCacheData[index].needNumber : item.needNumber; // 页面显示 数据
-					        }
-				        }
-				        if (this.data.productStatus == 'goodsdetail') {
-					        item.item.unitValue = item.tempObj.needNumber;
-				        }
-			        }
-		        }
-	        })
           console.log(this.data.productConclusion, 'productConclusion')
           if (pageindex == 0) { // 订货
-		          item.needNumber = 0; // 订货数量 【必填】 提交数据
-		          item.finalNumber = 0; // 实收数量 【必填】如果是update必填  提交数据
-		          item.deliveryCount = 0; // 收货数量 【必填】 如果是update必填  提交数据
-            if (this.data.shopTypeSearch == 'search') {  // 当是search的时候走搜索页面 不走缓存数据 读取新的接口数据
-              item.needNumber = 0; // 订货数量 【必填】  提交数据
-              item.finalNumber = 0; // 实收数量 【必填】如果是update必填  提交数据
-              item.deliveryCount = 0; // 收货数量 【必填】 如果是update必填  提交数据
-            } else if(this.data.productConclusion == '1'){ // 判断订单结果页面 显示 下订单的数据
-            	item = resultsGoodsOrderCacheData[index];
-            } else {
-              if (optionStorage != 2) {
-	              if (!resultsGoodsOrderCacheData) {
-	              	//  console.log(cacheData[selectNavIndex][index] && (item.skuId == cacheData[selectNavIndex][index].skuId))
-	              	// if (cacheData[selectNavIndex][index] && (item.skuId == cacheData[selectNavIndex][index].skuId)) {
-	              	// 	console.log(cacheData[selectNavIndex][index].needNumber)
-			             //  item.needNumber = cacheData[selectNavIndex][index].needNumber;
-		              // }
-		             // item.needNumber = goodsOrderCacheData ? goodsOrderCacheData[index].needNumber : item.needNumber; // 页面显示 数据
-	              }
-              }
-              if (this.data.productStatus == 'goodsdetail') {
-	              item.item.unitValue = item.tempObj.needNumber;
-              }
-            }
+		         //  item.needNumber = 0; // 订货数量 【必填】 提交数据
+		         //  item.finalNumber = 0; // 实收数量 【必填】如果是update必填  提交数据
+		         //  item.deliveryCount = 0; // 收货数量 【必填】 如果是update必填  提交数据
+            // if (this.data.shopTypeSearch == 'search') {  // 当是search的时候走搜索页面 不走缓存数据 读取新的接口数据
+            //   item.needNumber = 0; // 订货数量 【必填】  提交数据
+            //   item.finalNumber = 0; // 实收数量 【必填】如果是update必填  提交数据
+            //   item.deliveryCount = 0; // 收货数量 【必填】 如果是update必填  提交数据
+            // } else if(this.data.productConclusion == '1'){ // 判断订单结果页面 显示 下订单的数据
+            // 	item = resultsGoodsOrderCacheData[index];
+            // } else {
+            //   if (optionStorage != 2) {
+	           //    if (!resultsGoodsOrderCacheData) {
+	           //    	//  console.log(cacheData[selectNavIndex][index] && (item.skuId == cacheData[selectNavIndex][index].skuId))
+	           //    	// if (cacheData[selectNavIndex][index] && (item.skuId == cacheData[selectNavIndex][index].skuId)) {
+	           //    	// 	console.log(cacheData[selectNavIndex][index].needNumber)
+			       //       //  item.needNumber = cacheData[selectNavIndex][index].needNumber;
+		         //      // }
+		         //     // item.needNumber = goodsOrderCacheData ? goodsOrderCacheData[index].needNumber : item.needNumber; // 页面显示 数据
+	           //    }
+            //   }
+            //   if (this.data.productStatus == 'goodsdetail') {
+	           //    item.item.unitValue = item.tempObj.needNumber;
+            //   }
+            // }
           }
           if (pageindex == 1) { // 盘点
             if (this.data.shopTypeSearch == 'search') { // 当是search的时候走搜索页面 不走缓存数据 读取新的接口数据
@@ -126,7 +99,7 @@ Component({
     },
     productConclusion: { // 1 -- 订货单总结页面 所有下订单的结果页
       type: String,
-      value: ''
+      value: 0
     },
 	  shopTypeSearch: { // 判断缓存是否是搜索页面中内容
       type: String,
@@ -144,6 +117,11 @@ Component({
   },
 
   ready() {
+	  let cacheData = wx.getStorageSync('cacheData');
+	  if (cacheData.length > 0) {
+	  	this.data.cacheArray = wx.getStorageSync('cacheData');
+	  }
+	  console.log(this.data.cacheArray, '读取全部可用缓存');
     // ***
   },
   /**
@@ -237,13 +215,18 @@ Component({
 	   * Author: yanlichen <lichen.yan@daydaycook.com>
 	   * Date: 2018/6/2
 	   */
-	  cacheStorageSpace() {
-		  let selectNavIndex = wx.getStorageSync('selectNavIndex');
-		  let tempGoodsOrderData = this.data.productList.filter((item) => {
+	  cacheStorageSpace(navClassIndex) {
+		  let tempGoodsOrderData = [];
+		  tempGoodsOrderData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
 			  return item.needNumber != '' || item.needNumber != 0;
 		  })
-		  console.log(tempGoodsOrderData);
-		  this.data.cacheArray[selectNavIndex] = tempGoodsOrderData
+		  if (this.data.productConclusion == 1) { // 当是结果页面 返回 当前分类的数据 放入到对应的数据中
+		  	tempGoodsOrderData = this.data.productList.filter((item) => {
+				  return item.navClass == navClassIndex;
+			  })
+		  }
+		  console.log(this.data.productList, tempGoodsOrderData,  '设置数据 用navclass');
+		  this.data.cacheArray[navClassIndex] = tempGoodsOrderData
 		  wx.setStorageSync('cacheData', this.data.cacheArray);
 	  },
     /**
@@ -270,6 +253,7 @@ Component({
      */
     setCurrentNum(e,isAddRed) {
       // let current = this.getCurrent(e);
+	    console.log(e);
       let index = e.currentTarget.dataset.index;
       if ( isAddRed) {// 加法
         if (this.data.productType == 'goods') { // 订货详情
@@ -277,12 +261,11 @@ Component({
             if (this.data.productStatus == 'goodsdetail') { // 因为订货详情页面字段不一样需要另加
               ++ this.data.productList[index].tempObj.needNumber;
             }
-           if(this.data.productConclusion == '1') { // 订单结果页面 数据
-	           wx.setStorageSync('resultsGoodsOrderCacheData', this.data.productList); // 结果页面缓存，下次需要合并
-           } else if(this.data.shopTypeSearch == 'search') {
+           if(this.data.shopTypeSearch == 'search') {
 	           wx.setStorageSync('searchGoodsOrderCacheData', this.data.productList); // 搜索页面的缓存数据 需要处理
            } else {
 	           wx.setStorageSync('goodsOrderCacheData', this.data.productList); // 设置缓存数据 下次进来加载
+	           this.cacheStorageSpace(e.currentTarget.dataset.navclassindex);
            }
 
         }
@@ -293,12 +276,11 @@ Component({
 	          if (this.data.productStatus == 'goodsdetail') { // 因为订货详情页面字段不一样需要另加
 		          -- this.data.productList[index].tempObj.needNumber;
 	          }
-	          if(this.data.productConclusion == '1') { // 订单结果页面 数据
-		          wx.setStorageSync('resultsGoodsOrderCacheData', this.data.productList); // 结果页面缓存，下次需要合并
-	          } else if(this.data.shopTypeSearch == 'search') {
+	          if(this.data.shopTypeSearch == 'search') {
 		          wx.setStorageSync('searchGoodsOrderCacheData', this.data.productList); // 搜索页面的缓存数据 需要处理
             } else {
 		          wx.setStorageSync('goodsOrderCacheData', this.data.productList); // 设置缓存数据 下次进来加载
+		          this.cacheStorageSpace(e.currentTarget.dataset.navclassindex);
 	          }
 
           }
@@ -307,7 +289,6 @@ Component({
       this.setData({
         productList: this.data.productList
       })
-	    this.cacheStorageSpace();
       this.triggerEvent("watchChange", "click");
     },
 

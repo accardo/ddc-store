@@ -20,7 +20,7 @@ Page({
 	  update: 0, // 判断更新操作
     status: 0,
     productlist:[],
-    conclusion: '',
+    conclusion: 0,
     productType: '', // 类型
 	  pageindex: 0,
 	  productStatus:'', // 判断订货详情
@@ -136,13 +136,13 @@ Page({
     let purchaseDetailVOList = [];
     let isComplete = [];
     if (this.data.update != '1') { // 1 为更新操作 处理原始数据，原始数据和后台传数据结构相差太大，很坑人的。
-	    purchaseDetailVOList = wx.getStorageSync('goodsOrderCacheData');
+	//    purchaseDetailVOList = wx.getStorageSync('goodsOrderCacheData');
+	    purchaseDetailVOList = wx.getStorageSync('cacheData');
+	    purchaseDetailVOList = utils.cacheDataDeal(purchaseDetailVOList);
 	    isComplete = purchaseDetailVOList.filter((item) =>{ // 过滤 没有填写数据
-		    if (item.item.unitValue !== 0) { // 提交数据整理
 			    item.goodsId = item.skuId;
-			    item.needNumber = item.item.unitValue;
 			    item.shopItemSkuVO = {
-				    attrValues: item.attrValues.toString(),
+				    attrValues: item.attrValues ? item.attrValues.toString() : null,
 				    id: item.id,
 				    item: item.item
 			    }
@@ -159,11 +159,12 @@ Page({
 			    delete item.thumb;
 			    delete item.valueIds;
 			    delete item.costPrice;
+			    delete item.navClass;
 			    return item;
-		    }
 	    })
     } else {
 	    purchaseDetailVOList = wx.getStorageSync('goodsOrderCacheData');
+
     	if (this.data.productStatus == 'goodsdetail') {
 		    purchaseDetailVOList = purchaseDetailVOList ? purchaseDetailVOList : this.data.productlist;
 		    console.log(purchaseDetailVOList, 'purchaseDetailVOList11111111111111');
@@ -254,7 +255,7 @@ Page({
 	 */
 	clearCache() {
 		wx.removeStorageSync('goodsOrderCacheData');
-		wx.removeStorageSync('resultsGoodsOrderCacheData');
+		wx.removeStorageSync('cacheData');
 		wx.removeStorageSync('searchGoodsOrderCacheData');
 	},
   /* 前往照片上传页面 */
@@ -276,31 +277,14 @@ Page({
 	 * Date: 2018/5/27
 	 */
 	_watchChange(){
-		let resultsGoodsOrderCacheData = [];
-		let shopPieceN = 0; // 选中多少件商品
-		if (this.data.pageindex == 0) {
-			if (this.data.productStatus == 'goodsdetail') { // 订货
-				resultsGoodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData'); // 读取订货缓存
-			} else {
-				resultsGoodsOrderCacheData = wx.getStorageSync('resultsGoodsOrderCacheData'); // 读取订货结果页面缓存
-			}
-			if (this.data.productStatus == 'goodsdetail') {
-				this.data.productlist.forEach((item) => {
-					item.item.unitValue = item.tempObj.needNumber
-				})
-			}
+		let cacheData = wx.getStorageSync('cacheData'); // 读取缓存中所有选中数据
+		let setShop = {};
+		if (cacheData) {
+			setShop = utils.setTotalNumber(cacheData)
 		}
-		resultsGoodsOrderCacheData = resultsGoodsOrderCacheData ? resultsGoodsOrderCacheData : this.data.productlist;
-		console.log(resultsGoodsOrderCacheData, 'watchRESULT');
-		let tempGoodsOrderData = resultsGoodsOrderCacheData.filter((item) => {
-			return item.needNumber != '' || item.needNumber != 0;
-		})
-		tempGoodsOrderData.forEach((item) => {
-			shopPieceN += item.needNumber
-		})
 		this.setData({
-			shopTotalN: tempGoodsOrderData.length,
-			shopPieceN: shopPieceN
+			shopTotalN: setShop.total,
+			shopPieceN: setShop.shopPieceN
 		})
 	},
   /**
@@ -309,13 +293,13 @@ Page({
    * Date: 2018/5/27
    */
   orderResultsPage() {
-    let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData');
-    let tempgoodsOrderCacheData = goodsOrderCacheData.filter((item) => {
-      return item.needNumber != '' || item.needNumber != '0' || item.needNumber != 0;
-    })
-    wx.setStorageSync('resultsGoodsOrderCacheData', tempgoodsOrderCacheData); // 订单结果整合页数据需要提出来 在缓存
+	  let cacheData = wx.getStorageSync('cacheData'); // 所有结果数据
+	  let resultsCacheData = []
+	  if (cacheData) {
+		  resultsCacheData = utils.cacheDataDeal(cacheData);
+	  }
     this.setData({
-      productlist: tempgoodsOrderCacheData
+      productlist: resultsCacheData
     })
   },
 	/**
@@ -341,7 +325,7 @@ Page({
   	console.log(options, 'status');
     let pageindex = wx.getStorageSync('pageindex');
     let pagetitle = wx.getStorageSync('pagetitle');
-	  let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData');
+    let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData');
 	  if (pageindex == 0 && goodsOrderCacheData) {
 		  this.orderResultsPage(); // 订单结果页面重新缓存新数据
 		  this._watchChange(); //商品数量
