@@ -57,25 +57,25 @@ Component({
       console.log(typeof orderStatus, typeof orderId, this.data.pageindex);
       // 0 订货 - goodsreceipt - 待收货、部分收获路径名， orderfrom - 已收货路径名， goodsinfo - 待派单路径名
       switch (this.data.pageindex){
-        case 0:
+        case 0: // 出库
 	        path = `?orderId=${orderId}&update=1&orderStatus=${orderStatus}&goods=goodsdetail`; // goods 待派单 和 订货页面缓存区别
           pageName = orderStatus ==1 || orderStatus == 2 ? 'goodsreceipt' : ( orderStatus == 3 ? 'orderfrom':'goodsinfo' )
           break;
-        case 1:
+        case 1: // 盘点
           path = `?orderId=${orderId}&orderStatus=${orderStatus}` // orderStatus 盘点状态 1 已完成 2待审核 orderId 盘点id
           pageName = orderStatus == 1 ? 'orderfrom' : 'inventoryreview';
           break;
-        case 2:
+        case 2: // 出库
           path = `?orderId=${orderId}` // 出库单 id
           pageName = 'orderfrom';
           break;
-        case 4:
+        case 3: // 置换
           pageName = 'displaceslist';
           break;
-        case 5:
+        case 4:
           pageName = orderStatus == 1 ? 'orderfrom' : 'allotcollect';
           break;
-        case 7:
+        case 6:
           pageName = 'expenddetail';
           break;
       }

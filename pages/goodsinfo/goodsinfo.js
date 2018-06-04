@@ -47,13 +47,14 @@ Page({
 			console.log(res);
 			if (res.code == 0) {
 				let shopTempArray = this.shopListDataProcess(res.purchaseDetailVOList);
+				console.log(res.purchaseDetailVOList, shopTempArray, '读取列表');
 				this.setData({
 					productStatus: 'goodsdetail',
 					productType: 'goods',
 					productlist: shopTempArray
 				})
 				this.clearCache();
-				this._watchChange(); //商品数量
+				this._watchChangeDetial(); //详情商品数量
 			} else if (res.code == 401) {
 				config.logOutAll();
 				return
@@ -80,13 +81,11 @@ Page({
 				id: item.id,
 				purchaseId: item.purchaseId,
 				goodsId: item.goodsId,
-				needNumber: item.needNumber,
 				finalNumber: item.finalNumber,
 				deliveryCount: item.deliveryCount,
-				tempunitValue: item.shopItemSkuVO.item.unitValue,
 			}
 			item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues != null ? item.shopItemSkuVO.attrValues.split(',') : null;
-			Object.assign(shopTempObject, item.shopItemSkuVO, {tempObj: tempObj});
+			Object.assign(shopTempObject, item.shopItemSkuVO, {needNumber: item.needNumber}, {tempObj:tempObj});
 			shopTempArray.push(shopTempObject);
 		})
 		return shopTempArray;
@@ -136,13 +135,12 @@ Page({
     let purchaseDetailVOList = [];
     let isComplete = [];
     if (this.data.update != '1') { // 1 为更新操作 处理原始数据，原始数据和后台传数据结构相差太大，很坑人的。
-	//    purchaseDetailVOList = wx.getStorageSync('goodsOrderCacheData');
 	    purchaseDetailVOList = wx.getStorageSync('cacheData');
 	    purchaseDetailVOList = utils.cacheDataDeal(purchaseDetailVOList);
 	    isComplete = purchaseDetailVOList.filter((item) =>{ // 过滤 没有填写数据
 			    item.goodsId = item.skuId;
 			    item.shopItemSkuVO = {
-				    attrValues: item.attrValues ? item.attrValues.toString() : null,
+				    attrValues: item.attrValues != null ? item.attrValues.toString() : null,
 				    id: item.id,
 				    item: item.item
 			    }
@@ -163,7 +161,7 @@ Page({
 			    return item;
 	    })
     } else {
-	    purchaseDetailVOList = wx.getStorageSync('goodsOrderCacheData');
+	    purchaseDetailVOList = wx.getStorageSync('cacheDataDetial');
 
     	if (this.data.productStatus == 'goodsdetail') {
 		    purchaseDetailVOList = purchaseDetailVOList ? purchaseDetailVOList : this.data.productlist;
@@ -195,7 +193,7 @@ Page({
 		    })
 	    } else {
 		    isComplete = purchaseDetailVOList.map((item) => { // 属性 数组转字符串
-		     item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.toString();
+		     item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues != null ? item.shopItemSkuVO.attrValues.toString() : null;
 		    })
 	    }
     }
@@ -257,18 +255,25 @@ Page({
 		wx.removeStorageSync('goodsOrderCacheData');
 		wx.removeStorageSync('cacheData');
 		wx.removeStorageSync('searchGoodsOrderCacheData');
+		wx.removeStorageSync('cacheDataDetial');
 	},
   /* 前往照片上传页面 */
   nextGo(){
-    let resultsOutboundCacheData = wx.getStorageSync('resultsOutboundCacheData');
-	  let tempOutboundCacheData = resultsOutboundCacheData.filter((item) => {
-		  return item.unitValue != '' || item.materialUnitValue != '';
-	  })
-	  if (tempOutboundCacheData.length > 0) {
-		  wx.navigateTo({
-			  url: `../../pages/uploadimg/uploadimg?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
-		  })
-	  }
+    let outboundCacheData = wx.getStorageSync('outboundCacheData');
+	      outboundCacheData = utils.cacheDataDeal(outboundCacheData);
+	  let outboundCacheArray = outboundCacheData.filter((item) => {
+		      return item.unitValue != '' || item.materialUnitValue != '';
+	      })
+		  if (outboundCacheData.length == outboundCacheArray.length) {
+			  wx.navigateTo({
+				  url: `../../pages/uploadimg/uploadimg?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
+			  })
+		  } else {
+			  wx.showToast({
+				  title: '原料商品，必填一项',
+				  icon: 'none'
+			  })
+		  }
   },
 
 	/**
@@ -287,6 +292,27 @@ Page({
 			shopPieceN: setShop.shopPieceN
 		})
 	},
+	/**
+	 * Description: 详情 设置商品数量
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/4
+	 */
+	_watchChangeDetial() {
+		let cacheDataDetial = wx.getStorageSync('cacheDataDetial');
+				cacheDataDetial = cacheDataDetial ? cacheDataDetial : this.data.productlist;
+		let shopPieceN = 0;
+		let tempArray = [];
+		tempArray = cacheDataDetial.filter((item) => {
+			return item.needNumber != 0 || item.needNumber != '';
+		})
+		tempArray.forEach((item) => {
+				shopPieceN += item.needNumber
+			})
+		this.setData({
+			shopTotalN: tempArray.length,
+			shopPieceN: shopPieceN
+		})
+	},
   /**
    * Description: 订单结果页 完全读取缓存显示
    * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -297,6 +323,9 @@ Page({
 	  let resultsCacheData = []
 	  if (cacheData) {
 		  resultsCacheData = utils.cacheDataDeal(cacheData);
+		  resultsCacheData = resultsCacheData.filter((item) => {
+		  	return item.needNumber != 0
+		  })
 	  }
     this.setData({
       productlist: resultsCacheData
@@ -308,14 +337,16 @@ Page({
 	 * Date: 2018/5/31
 	 */
 	outboundResultePage() {
-		let outboundCacheData = wx.getStorageSync('outboundCacheData');
-		let tempoutboundCacheData = outboundCacheData.filter((item) => {
-				return item.unitValue && (item.unitValue != '') || item.materialUnitValue && (item.materialUnitValue != '');
-		})
-		wx.setStorageSync('resultsOutboundCacheData', tempoutboundCacheData); // 订单结果整合页数据需要提出来 在缓存
-		console.log(tempoutboundCacheData, 'tempoutboundCacheData')
+		let outboundCacheData = wx.getStorageSync('outboundCacheData'); // 所有结果数据
+		let resultsCacheData = []
+		if (outboundCacheData) {
+			resultsCacheData = utils.cacheDataDeal(outboundCacheData);
+			resultsCacheData = resultsCacheData.filter((item) => {
+				return item.unitValue != '' || item.materialUnitValue != '';
+			})
+		}
 		this.setData({
-			productlist: tempoutboundCacheData
+			productlist: resultsCacheData
 		})
 	},
 	/**
@@ -346,7 +377,7 @@ Page({
 			  outboundType: options.outboundType ? options.outboundType : null // 1 报废 2 退货
 		  })
 	    this.outboundResultePage();
-	  	this._watchChange();
+	  	// this._watchChange();
     }
 	  if (options.goods == 'goodsdetail') {
 		  this.getShopListData();

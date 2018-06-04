@@ -24,15 +24,15 @@ Page({
   /* 商品详情 */
   ordergoods(){
     let pageindex = wx.getStorageSync('pageindex');
-    if (pageindex == 7) { // 课程消耗
+    if (pageindex == 6) { // 课程消耗
       wx.navigateTo({
         url: '../../pages/expendtrim/expendtrim'
       })
-    } else if (pageindex == 4){ // 置换
+    } else if (pageindex == 3){ // 置换
       wx.navigateTo({
         url: '../../pages/displacesgoods/displacesgoods'
       })
-    } else if (pageindex == 5) { // 调拨
+    } else if (pageindex == 4) { // 调拨
       wx.navigateTo({
         url: '../../pages/allocation/allocation'
       })
@@ -194,6 +194,54 @@ Page({
 			wx.hideLoading();
 		})
 	},
+	/**
+	 * Description: 获取置换信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/4
+	 */
+	getSubstitution() {
+		wx.showLoading({ title: '加载中' });
+		let getParm = {
+			currPage: this.data.currPage,
+			pageSize: this.data.pageSize,
+			shopId: app.selectIndex,
+		}
+		sysService.displace({
+			url: 'list',
+			method: 'get',
+			data: getParm
+		}).then((res) => {
+			wx.stopPullDownRefresh();
+			if (res.code == '0') {
+				console.log(res, 'getSubstitution');
+				if (res.page.list.length == 0) {
+					wx.hideLoading();
+					wx.showToast({
+						title: '没有更多数据',
+						icon:'none'
+					});
+					wx.stopPullDownRefresh();
+					return
+				}
+				this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
+				this.setData({
+					listData: this.data.pagetListData,
+					currPage: this.data.currPage + 1
+				})
+			} else if (res.code == '401') {
+				config.logOutAll();
+				return
+			} else {
+				wx.showToast({
+					title: res.msg,
+					icon: 'none'
+				})
+			}
+			wx.hideLoading();
+		}).catch(() => {
+			wx.hideLoading();
+		})
+	},
 	/* 报废 按钮 */
 	scrapSelect(){
 		this.setData({
@@ -266,13 +314,14 @@ Page({
         case 2: // 出库操作
 	        this.getOutbound();
           break;
-        case 4: // 置换
-          btntext = '发起置换';
+        case 3: // 置换
+          btntext = options.titlename;
+	        this.getSubstitution();
           break;
-        case 5: // 调拨
+        case 4: // 调拨
           btntext = '调拨出库';
           break;
-        case 7: // 课程消耗
+        case 6: // 课程消耗
           btntext = '消耗调整';
           titlename = '课程消耗调整';
           break;
@@ -331,6 +380,8 @@ Page({
       this.getInventory();
     } else if (this.data.pageindex == 2) {
 	    this.getOutbound();
+    } else if (this.data.pageindex == 3 ) {
+    	this.getSubstitution();
     }
   },
 

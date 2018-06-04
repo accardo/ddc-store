@@ -67,7 +67,9 @@ Page({
 	  wx.showLoading({ title: '加载中' });
 	  let productlist = [];
 	  let pageIndex = wx.getStorageSync('pageindex');
-	  let cacheData = wx.getStorageSync('cacheData'); // 读取分类中所有选中的数据
+	  let cacheData = wx.getStorageSync('cacheData'); // 读取分类中订货所有选中的数据
+	  let inventoryCacheData = wx.getStorageSync('inventoryCacheData'); // 读取分类中盘点所有选中的数据
+	  let outboundCacheData = wx.getStorageSync('outboundCacheData'); // 读取分类中出库所有选中的数据
 	  let itemTypes = utils.limitClass(pageIndex);
     let promdData = {
       currPage: this.data.currPage,
@@ -84,13 +86,24 @@ Page({
       if (res.code == '0' && res.page.list) {
 	      productlist = res.page.list.map((item) => {
           item.attrValues = item.attrValues != null ? item.attrValues.split(',') : null;
-          item.needNumber = 0;
+          if (pageIndex == 0) { // 订货
+	          item.needNumber = 0;
+          } else if(pageIndex == 1 || pageIndex == 2) { // 盘点 出库
+          	item.unitValue = '';
+          	item.materialUnitValue = '';
+          }
           item.navClass = this.data._index;
           return item;
         })
 
-	      if (cacheData[this.data._index]) {
+	      if (cacheData[this.data._index]) { // 订货
 		      productlist = this.forDataContrast(productlist, cacheData[this.data._index]);
+	      }
+	      if (inventoryCacheData[this.data._index]) { // 盘点
+		      productlist = this.forDataContrast(productlist, inventoryCacheData[this.data._index]);
+	      }
+	      if (outboundCacheData[this.data._index]) { //出库
+		      productlist = this.forDataContrast(productlist, outboundCacheData[this.data._index]);
 	      }
 	      console.log(productlist, cacheData, 'getProductByNavproductlist')
         this.setData({
@@ -136,6 +149,8 @@ Page({
     wx.navigateTo({
       url: `../../pages/search/search?categoryId=${this.data.categoryId}&shopType=goods&shopTypeSearch=search&navClass=${this.data._index}`
     })
+	  wx.removeStorageSync('searchGoodsOrderCacheData');
+	  wx.removeStorageSync('searchInventoryCacheData');
 	  wx.setStorageSync('optionStorage', 2) // 用于判断进入不同页面 在返回获取数据 1是进入订单总结页面，2是进入搜索查询页面
   },
 
@@ -163,8 +178,9 @@ Page({
   getInventory() {
     //处理数据结构 start
     let tempInventList = wx.getStorageSync('inventoryCacheData');
-    let inventoryDetailVOList = utils.ArrayDeepCopy(tempInventList);
-		    inventoryDetailVOList = inventoryDetailVOList ? inventoryDetailVOList : this.data.productlist;
+        tempInventList = tempInventList ? tempInventList : this.data.productlist;
+		let inventoryDetailVOList = utils.ArrayDeepCopy(tempInventList);
+				inventoryDetailVOList = utils.cacheDataDeal(inventoryDetailVOList);
     let isComplete = inventoryDetailVOList.filter((item) =>{ // 过滤 没有填写数据
       if (item.unitValue !== '' || item.materialUnitValue !== '') { // 提交数据整理
           item.goodsId = item.skuId;
@@ -194,6 +210,7 @@ Page({
 			shopId: app.selectIndex, // 店铺ID
 			inventoryDetailVOList: isComplete,
 		}
+		console.log(promdData, 'promdData111222333')
 	  //处理数据结构 end
        return new Promise((resolve) => {
          sysService.inventory({
@@ -269,21 +286,6 @@ Page({
     }
   },
 	/**
-	 * Description: 搜索页面 和 订单结果页 数据比对过滤赋值
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/5/28
-	 */
-	forDataComparison(data1, data2) {
-		data1 && data1.forEach((item) => { // 结果缓存 和全部数据缓存对比 赋值 确定数据完整
-			data2 && data2.forEach((itemA) => {
-				if (item.id == itemA.id) {
-				  item.item.unitValue = itemA.item.unitValue;
-				}
-			})
-		})
-    return data1;
-  },
-	/**
 	 * Description: 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/5/30
@@ -298,6 +300,11 @@ Page({
 		})
     return data1;
   },
+	/**
+	 * Description: 搜索结果对比 链接 去重
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/4
+	 */
 	forDataContrastSearch(data1, data2) {
 		let data3 = [];
 		data1 && data1.forEach((item) => {
@@ -365,16 +372,14 @@ Page({
 	* 0、通用
 	*     wx.getStorageSync('optionStorage') -> 读取判断进入哪一个页面 1、为结果页面；2、搜索查询页面
 	* 1、订货
-	*     wx.getStorageSync('goodsOrderCacheData') -> 读取订货全部数据
-	*     wx.getStorageSync('searchGoodsOrderCacheData') -> 读取订货搜索查询数据
-	*     wx.getStorageSync('resultsGoodsOrderCacheData') ->  读取订货结果页面数据
+	*     wx.getStorageSync('cacheData') -> 读取盘订货中全部数据
+	*     wx.getStorageSync('searchGoodsOrderCacheData') -> 读取订货 搜索查询数据
 	* 2、盘点
-	*     wx.getStorageSync('inventoryCacheData') -> 读取盘点全部数据
-	*     wx.getStorageSync('searchInventoryCacheData') -> 读取盘点搜索查询数据
+	*     wx.getStorageSync('inventoryCacheData') -> 读取盘点选中全部数据
+	*     wx.getStorageSync('searchInventoryCacheData') -> 读取盘点 搜索查询数据
 	* 3、出库
-	*     wx.getStorageSync('outboundCacheData') -> 读取出库全部数据
-	*     wx.getStorageSync('searchOutboundCacheData') -> 读取出库搜索查询数据
-	*     wx.getStorageSync('resultsOutboundCacheData') -> 读取出库结果页面数据
+	*     wx.getStorageSync('outboundCacheData') -> 读取出库选中全部数据
+	*     wx.getStorageSync('searchOutboundCacheData') -> 读取出库 搜索查询数据
 	*
 	* */
   /**
@@ -383,76 +388,70 @@ Page({
   onShow () {
     let pageindex = wx.getStorageSync('pageindex');
 	  let optionStorage = wx.getStorageSync('optionStorage'); // 判断进入是哪个一个页面 1、订单结果页 2、搜索查询页
-	  let cacheData = wx.getStorageSync('cacheData'); // 读取分类中所有选中的数据
 
-   // let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData'); // 读取订货 全部 缓存
+	  // 订货
+	  let cacheData = wx.getStorageSync('cacheData') ? wx.getStorageSync('cacheData') : []; // 读取分类订货中所有选中的数据
+    let searchGoodsOrderCacheData = wx.getStorageSync('searchGoodsOrderCacheData'); // 订货 搜索缓存
 
-    let resultsGoodsOrderCacheData = wx.getStorageSync('resultsGoodsOrderCacheData'); // 读取订货 结果页 缓存
-    let searchGoodsOrderCacheData = wx.getStorageSync('searchGoodsOrderCacheData'); // 读取搜索 查询 缓存
-	 // let tempProductlist = cacheData ? cacheData : this.data.productlist; // 有缓存读取缓存 否则 正常读数据
+	  // 盘点
+	  let inventoryCacheData = wx.getStorageSync('inventoryCacheData') ? wx.getStorageSync('inventoryCacheData') : []; // 读取分类中盘点所有选中数据
+		let searchInventoryCacheData = wx.getStorageSync('searchInventoryCacheData'); // 盘点 搜索缓存
+
+		// 出库
+	  let outboundCacheData = wx.getStorageSync('outboundCacheData') ? wx.getStorageSync('outboundCacheData') : []; // 读取分类中出库所有选中数据
+	  let searchOutboundCacheData = wx.getStorageSync('searchOutboundCacheData'); // 出库 搜索缓存
 
 	  let tempArray = [];
-    //let tempProductlistData = []; // 用于商品数量的计算，搜索查询后，订单结果页面 两次分别计算
     if (pageindex == 0) {
-    	if (optionStorage == 2) {
+    	if (optionStorage == 2) { // 进入搜索页面
 		    let tempArray1 = this.filterData(searchGoodsOrderCacheData, 2); // 搜索数据获取数据输入不为0的数据
-    		if (cacheData) { // 有缓存先读取缓存数据后在和 当前数据对比赋值
+    		if (cacheData.length >0) { // 有缓存先读取缓存数据后在和 当前数据对比赋值
 			    cacheData[this.data._index] = this.forDataContrastSearch(cacheData[this.data._index], tempArray1); // 搜索结果和总数据对比，如果有skuId相同责替换
 			    tempArray = this.forDataContrast(this.data.productlist, cacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 			    wx.setStorageSync('cacheData', cacheData); // 搜索结束后 需要把搜索结果放入到总的结果缓存中
 		    } else { // 当页面没有缓存 直接搜索时候当前数据对比赋值
-    			cacheData[this.data._index] = this.forDataContrastSearch(this.data.productlist, tempArray1); // 搜索结果和总数据对比，如果有skuId相同责替换
-			    tempArray = this.forDataContrast(this.data.productlist, cacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
-			    console.log(this.data._index, cacheData, tempArray, ' 没有缓存的时候执行');
+			    cacheData[this.data._index] = tempArray1;
+    			tempArray = this.forDataContrastSearch(this.data.productlist, tempArray1); // 搜索结果和总数据对比，如果有skuId相同责替换
+			    console.log(cacheData, tempArray, ' 没有缓存的时候执行');
 			    wx.setStorageSync('cacheData', cacheData); // 搜索结束后 需要把搜索结果放入到总的结果缓存中
 		    }
-	    } else if (optionStorage == 1) {
+	    } else if (optionStorage == 1) { // 多分类综合页面
     		  tempArray = this.forDataContrast(this.data.productlist, cacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 	    }
 	    this._watchChange();
-	    console.log(tempArray, 'tempArray tempArray')
-	    // let tempArray1 = this.filterData(tempProductlist, 1); // 获取全部缓存数据为0的数据 有一种清空是直接搜索没有进行缓存
-	    // let tempArray2 = this.filterData(searchGoodsOrderCacheData, 2); // 搜索数据获取数据输入不为0的数据
-	    // if (optionStorage == 1) {
-		   //  tempProductlistData = this.forDataComparison(tempProductlist, resultsGoodsOrderCacheData); // 缓存数据 和 订单结果页 数据比对过滤赋值
-		   //  tempArray = tempArray1.concat(resultsGoodsOrderCacheData); // 两个缓存数据 过滤后进行合并
-		   //  this._watchChange(tempProductlistData, 'shopShow'); // 当时shopShow的时候 读取综合数据 重置底部商品数量
-	    // } else if(optionStorage == 2) {
-		   //  tempArray = this.forDataContrast(tempProductlist, tempArray2); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
-       //  tempProductlistData = this.forDataComparison(tempProductlist, tempArray2); // 搜索页面 和 订单结果页 数据比对过滤赋值
-		   //  if (tempArray.length > 0) {
-			 //    wx.setStorageSync('goodsOrderCacheData', tempArray);  // 搜索查询添加商品 需要把查出的商品处理后 重新 赋值给 全部商品缓存修改最后订单页面的值
-		   //  }
-		   //  this._watchChange(tempProductlistData, 'shopShow'); // 当时shopShow的时候 读取综合数据 重置底部商品数量
-	    // }
     }
     // 盘点缓存数据操作
     if(pageindex == 1) {
-      let inventoryCacheData = wx.getStorageSync('inventoryCacheData'); // 读取盘点 全部数据
-      let searchInventoryCacheData = wx.getStorageSync('searchInventoryCacheData'); // 读取搜索 查询 缓存
-	    let tempSearchProductlist = inventoryCacheData ? inventoryCacheData : this.data.productlist; // 有缓存读取缓存 否则 正常读数据
-	    let tempArray3 = this.filterData(searchInventoryCacheData, 3); // 搜索数据获取数据 输入不为空的数据
-	    if(optionStorage == 2) {
-		    tempArray = this.forDataContrast(tempSearchProductlist, tempArray3) // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
-		    wx.setStorageSync('inventoryCacheData', tempArray);  // 搜索查询添加商品 需要把查出的商品处理后 重新 赋值给 全部商品缓存修改最后盘点页面的值
-      }
+    	if (optionStorage == 2) {
+		    let tempArray1 = this.filterData(searchInventoryCacheData, 3); // 搜索数据获取数据输入不为0的数据
+		    if (inventoryCacheData.length > 0) { //有缓存数据 先读取缓存数据 后在和当前数据对比 赋值
+			    inventoryCacheData[this.data._index] = this.forDataContrastSearch(inventoryCacheData[this.data._index], tempArray1);
+			    tempArray = this.forDataContrast(this.data.productlist, inventoryCacheData[this.data._index]);
+			    wx.setStorageSync('inventoryCacheData', inventoryCacheData);
+		    } else { // 当前页面没有缓存数据 直接搜索和当前数据对比赋值
+			    inventoryCacheData[this.data._index] = tempArray1;
+			    tempArray = this.forDataContrastSearch(this.data.productlist, tempArray1);
+			    console.log(inventoryCacheData, tempArray, ' 没有缓存的时候执行');
+			    wx.setStorageSync('inventoryCacheData', inventoryCacheData);
+		    }
+	    }
     }
     // 出库缓存数据操作
     if (pageindex == 2) {
-	    let outboundCacheData = wx.getStorageSync('outboundCacheData'); // 读取出库 全部数据
-	    let searchOutboundCacheData = wx.getStorageSync('searchOutboundCacheData'); // 读取搜索 查询 缓存
-	    let resultsOutboundCacheData = wx.getStorageSync('resultsOutboundCacheData') // 读取出库结果页面
-	    let tempProductlist1 = outboundCacheData ? outboundCacheData : this.data.productlist; // 有缓存读取缓存 否则 正常读数据
-	    let tempArray1 = this.filterData(tempProductlist1, 4); // 获取全部数据为空的 数据
-	    let tempArray3 = this.filterData(searchOutboundCacheData, 3); // 搜索数据获取数据 输入不为空的数据
-	    console.log(tempArray1, 'tempArray1')
-	    if (optionStorage == 1) {
-		    tempArray = this.forDataContrast(tempProductlist1, resultsOutboundCacheData); // 搜索页面 和 订单结果页 数据比对过滤赋值
-		    //tempArray = tempArray1.concat(resultsOutboundCacheData); // 两个缓存数据 过滤后进行合并
-		    console.log(tempArray, resultsOutboundCacheData, 'tempProductlist1temp')
-	    } else if (optionStorage == 2) {
-		    tempArray = this.forDataContrast(tempProductlist1, tempArray3) // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
-		    wx.setStorageSync('outboundCacheData', tempArray);  // 搜索查询添加商品 需要把查出的商品处理后 重新 赋值给 全部商品缓存修改最后盘点页面的值
+	    let tempArray1 = this.filterData(searchOutboundCacheData, 3); // 搜索数据获取数据输入不为0的数据
+	    if (optionStorage == 2) {
+		    if (outboundCacheData.length > 0) { // 有缓存数据 先读取缓存数据
+			    outboundCacheData[this.data._index] = this.forDataContrastSearch(outboundCacheData[this.data._index], tempArray1);
+			    tempArray = this.forDataContrast(this.data.productlist, outboundCacheData[this.data._index]);
+			    wx.setStorageSync('outboundCacheData', outboundCacheData);
+		    } else { // 当前页面没有缓存数据 直接搜索和当前数据对比赋值
+			    outboundCacheData[this.data._index] = tempArray1;
+			    tempArray = this.forDataContrastSearch(this.data.productlist, tempArray1);
+			    console.log(outboundCacheData, tempArray, ' 没有缓存的时候执行');
+			    wx.setStorageSync('outboundCacheData', outboundCacheData);
+		    }
+	    } else if(optionStorage == 1) {
+		    tempArray = this.forDataContrast(this.data.productlist, outboundCacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 	    }
     }
 	  this.setData({

@@ -36,20 +36,17 @@ Component({
         case '出库操作':
           wx.setStorageSync('pageindex', 2);
           break;
-        case '入库操作':
+        case '置换':
           wx.setStorageSync('pageindex', 3);
           break;
-        case '置换':
+        case '调拨':
           wx.setStorageSync('pageindex', 4);
           break;
-        case '调拨':
+        case '库存查询':
           wx.setStorageSync('pageindex', 5);
           break;
-        case '库存查询':
-          wx.setStorageSync('pageindex', 6);
-          break;
         case '课程消耗':
-          wx.setStorageSync('pageindex', 7);
+          wx.setStorageSync('pageindex', 6);
           break;
       }
       if (txt == '退出'){

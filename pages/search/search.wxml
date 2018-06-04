@@ -10,7 +10,12 @@
   </view>
   <view class='scroll-box' wx:if="{{showList}}">
     <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
-    <product-info product-type="{{shoptype}}" shop-type-search="{{shopTypeSearch}}" product-list="{{productlist}}"></product-info>
+    <product-info
+            product-type="{{shoptype}}"
+            shop-type-search="{{shopTypeSearch}}"
+            product-list="{{productlist}}"
+            input-show="{{inputShow}}"
+    ></product-info>
   </scroll-view>
   </view>
   <view class='search-no' wx:if="{{searchReset}}">

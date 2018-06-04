@@ -45,11 +45,11 @@
           <view class='goods-stock stock-num'>
             盘点数量:
               <view class="number-box" wx:if="{{item.item.deductionType == 2}}">
-                  <input type="number" bindinput="setScattered1" data-index="{{index}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
-                  <input type='number' bindinput="setScattered2" data-index="{{index}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
+                  <input type="number" bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
+                  <input type='number' bindinput="setScattered2" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
               </view>
               <view class="number-box" wx:if="{{item.item.deductionType == 1}}">
-                 <input type='number' bindinput="setScattered1" data-index="{{index}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
+                 <input type='number' bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
               </view>
           </view>
         </view>
@@ -76,11 +76,11 @@
             <view class='goods-stock stock-num'>
               出库数量:
                 <view class="number-box" wx:if="{{item.item.deductionType == 1}}">
-                    <input type='number' bindinput="setScattered1" data-index="{{index}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
+                    <input type='number' bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
                 </view>
                 <view class="number-box" wx:if="{{item.item.deductionType == 2}}">
-                    <input type="number" bindinput="setScattered1" data-index="{{index}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
-                    <input type='number' bindinput="setScattered2" data-index="{{index}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
+                    <input type="number" bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
+                    <input type='number' bindinput="setScattered2" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
                 </view>
                 <!--<view class="number-box" wx:if="{{item.company !='个'}}">
                 <input type='number' />袋
@@ -92,30 +92,31 @@
             </view>
         </view>
           <!-- 出库操作 end-->
-        <view wx:if="{{productType =='want' || productType == 'cover' }}" data-ind="{{index}}" catchtap='clickShop' class='goods-txt-box'>
+        <view wx:if="{{pageindex == 3}}" catchtap='clickShop' data-index="{{index}}" class='goods-txt-box'>
             <view class='goods-txt'>
-              <text class='goods-type'>{{item.typename}}</text>
-              <text class='goods-name'>{{item.name}}</text>
-              <text>{{item.unit}}</text>
+                <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
+                <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
+                <text>{{item.item.deductionType ==2 ? ( item.item.netWightValue +''+ item.item.materialUnitName):''}}</text>
             </view>
-            <view class='goods-label' 
-              wx:if="{{item.typelist && item.typelist.length>0}}">
-              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+            <view class='goods-label'
+                  wx:if="{{item.attrValues && item.attrValues.length>0}}"
+            >
+                <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
             </view>
-            <view class='goods-stock' wx:if="{{productStatus != 'over'}}">
-              当前库存：<text>{{item.current}}{{item.company}}</text>
+            <view class='goods-stock'>
+              当前库存：<text>{{ item.item.unitValue }} {{ item.item.unitName }}</text>
             </view>
-            <view class='goods-stock' wx:if="{{productStatus == 'over'}}">
-                转换数量：<text>{{item.wannum}}{{item.company}}</text>
+            <view class='goods-stock' wx:if="{{ inputShow }}">
+                转换数量：<input type='number' data-name='wantNum' value="{{item.resultNumber}}" bindinput='setWantNum'/>{{ item.item.unitName }}
             </view>  
           </view>
-          <view wx:if="{{productType =='displace' }}" class='goods-txt-box'>
+          <!--<view wx:if="{{productType =='displace' }}" class='goods-txt-box'>
               <view class='goods-txt'>
                 <text class='goods-type'>{{item.typename}}</text>
                 <text class='goods-name'>{{item.name}}</text>
                 <text>{{item.unit}}</text>
               </view>
-              <view class='goods-label' 
+              <view class='goods-label'
                 wx:if="{{item.typelist && item.typelist.length>0}}">
                 <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
               </view>
@@ -125,7 +126,7 @@
               <view class='goods-stock want-box'>
                   转化数量：<input type='number' data-name='wantNum' data-ind="{{index}}" bindinput='setWantNum'></input>{{item.company}}
                 </view>
-            </view>
+            </view>-->
         <view wx:if="{{pagetitle=='调拨' && productType==''}}" class='goods-txt-box'>
             <view class='goods-txt'>
               <text class='goods-type'>{{item.typename}}</text>

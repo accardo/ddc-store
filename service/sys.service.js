@@ -34,6 +34,11 @@ function delivery({ url, method, params, data }) {
 function deliverydetail({ url, method, params, data }) {
 	return baseService.service({ url: "sys/deliverydetail/" + url, method, params, data })
 }
+/* 置换接口*/
+function displace({ url, method, params, data }) {
+	return baseService.service({ url: "sys/displace/" + url, method, params, data })
+}
+
 module.exports = {
   api,
   category,
@@ -44,4 +49,5 @@ module.exports = {
 	inventorydetail,
 	delivery,
 	deliverydetail,
+	displace,
 }

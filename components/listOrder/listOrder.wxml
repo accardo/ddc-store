@@ -79,20 +79,28 @@
     </view>
   </view>
   <!-- 出库 end-->
-  <view class='list-item' wx:if="{{ pageindex == 4 }}" data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+  <!-- 置换 start-->
+  <view class='list-item'
+        wx:if="{{ pageindex == 3 }}"
+        data-orderid="{{item.id}}"
+        bindtap='detail'
+        wx:key="index"
+        wx:for="{{list}}"
+  >
     <view class='list-title'>
       <text class='label-txt'>置换单：</text>
-      <text class='label-order'>{{item.order}}</text>
-      <text class='list-type'>{{ getTypeName[item.type]}}</text>
+      <text class='label-order'>{{ item.displaceSn }}</text>
+      <text class='list-type'>{{ item.statusStr }}</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>提交人：</text>
-      <text class='label-name'>{{item.uname}}</text>
+      <text class='label-name'>{{ item.createName }}</text>
     </view>
     <view class='list-time'>
-      <text class='label-time'>{{item.time}}</text>
+      <text class='label-time'>{{ item.createTime }}</text>
     </view>
   </view>
+  <!-- 置换 end-->
   <view class='list-item' wx:if="{{ pageindex == 5 }}" data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
     <view class='list-title'>
       <text class='label-txt'>调拨单：</text>

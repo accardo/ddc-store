@@ -38,7 +38,7 @@ Page({
 		}).then((res) => {
 			if (res.code == '0') {
 				res.inventoryDetailVOList.forEach((item) => {
-					if (item.shopItemSkuVO.attrValues !== null) {
+					if (item.shopItemSkuVO !== null && item.shopItemSkuVO.attrValues !== null) {
 						item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.split(',');
 					}
 				})

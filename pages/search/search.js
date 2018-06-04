@@ -21,6 +21,7 @@ Page({
     categoryId: '',
     productlist: [], // 搜索原始数据
 	  navClassIndex: 0,
+	  inputShow: false,
   },
 
   /**
@@ -60,13 +61,21 @@ Page({
         console.log(res.page.list);
 	      res.page.list.forEach((item) => {
 		      item.attrValues = item.attrValues ? item.attrValues.split(',') : null;
-		      item.needNumber = 0;
+		      if (pageIndex == 0) { // 订货
+			      item.needNumber = 0;
+		      } else if(pageIndex == 1 || pageIndex == 2) { // 盘点
+			      item.unitValue = '';
+			      item.materialUnitValue = '';
+		      } else if (pageIndex == 3) {
+			      item.resultNumber = '';
+          }
 		      item.navClass = this.data.navClassIndex;
 	      })
 	      this.setData({
 		      showList: true,
           searchReset: res.page.list.length == 0 ? true : false,
-		      productlist: res.page.list
+		      productlist: res.page.list,
+          inputShow: false, // 置换页面中用 是否显示input框
         })
       }
     })
@@ -102,14 +111,13 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let { shopType, categoryId, shopTypeSearch } = options;
-    console.log(options)
-    if (shopType){
+    console.log(options, '')
+    if (options.shopType){
       this.setData({
-        shoptype: shopType ? shopType : '',
-        categoryId,
-	      shopTypeSearch,
-	      navClassIndex: options.navClass
+        shoptype: options.shopType ? options.shopType : '',
+        categoryId: options.categoryId,
+	      shopTypeSearch: options.shopTypeSearch,
+	      navClassIndex: options.navClass,
       });
     }
     wx: wx.setNavigationBarTitle({

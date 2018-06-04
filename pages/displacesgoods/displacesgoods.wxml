@@ -4,16 +4,22 @@
     <scroll-view class='displace-view'>
       <view class='scroll-title'>
         <text>要转换商品</text>
-        <button size='mini' data-name="want"  bindtap='goSearch'>选择商品</button>
+        <button size='mini' data-convert="from" bindtap='goSearch'>选择商品</button>
       </view>
       <product-info product-type="displace" product-click="{{isSelect}}" product-list="{{wantShop}}"></product-info>
+      <view class="default-img">
+        <image src="{{ defaultImg }}"></image>
+      </view>
     </scroll-view>
     <scroll-view class='displace-view mt20'>
       <view class='scroll-title'>
         <text>转化为商品</text>
-        <button size='mini' data-name="cover" bindtap='goSearch'>选择商品</button>
+        <button size='mini' data-convert="into" bindtap='goSearch'>选择商品</button>
       </view>
       <product-info product-type="cover" product-click="{{isSelect}}"  product-list="{{coverShop}}"></product-info>
+      <view class="default-img">
+        <image src="{{ defaultImg }}"></image>
+      </view>
     </scroll-view>
   </view>
   <view class='btn-review'>

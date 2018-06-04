@@ -10,6 +10,7 @@
             product-conclusion="{{conclusion}}"
             product-status = "{{productStatus}}"
             bind:watchChange="_watchChange"
+            bind:watchChangeDetial="_watchChangeDetial"
     ></product-info>
   </scroll-view>
   </view>

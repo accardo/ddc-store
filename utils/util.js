@@ -36,19 +36,16 @@ function limitClass(num) {
 		case 2: // 2 出库操作
 			limitClass = '2,4,6';
 			break;
-		case 3:  // 3 入库操作
+		case 3:  // 3 置换
+			limitClass = '2,4,6';
+			break;
+		case 4:  // 4 调拨
 			limitClass = null;
 			break;
-		case 4:  // 4 置换
+		case 5:  // 5 库存查询
 			limitClass = null;
 			break;
-		case 5:  // 5 调拨
-			limitClass = null;
-			break;
-		case 6:  // 6 库存查询
-			limitClass = null;
-			break;
-		case 7:  // 7 课程消耗
+		case 6:  // 6 课程消耗
 			limitClass = null;
 			break;
 	}

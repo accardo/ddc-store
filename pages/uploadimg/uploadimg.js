@@ -16,9 +16,10 @@ Page({
 
   /* 提交信息 */
   subInfo(){
-    let resultsOutboundCacheData = wx.getStorageSync('resultsOutboundCacheData');
-    console.log(resultsOutboundCacheData);
-	  let isComplete = resultsOutboundCacheData.map((item) => { // 提交数据整理
+    let outboundCacheData = wx.getStorageSync('outboundCacheData');
+	      outboundCacheData = utils.cacheDataDeal(outboundCacheData);
+    console.log(outboundCacheData);
+	  let isComplete = outboundCacheData.map((item) => { // 提交数据整理
 			  item.goodsId = item.skuId;
 			  item.shopItemSkuVO = {
 				  attrValues: item.attrValues != null ? item.attrValues.toString() : null,

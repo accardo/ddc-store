@@ -8,14 +8,15 @@ Page({
     btnDisabled:true,
     wantShop:[],
     coverShop:[],
-    isSelect:1
+    isSelect:1,
+    defaultImg: '../../icons/shop.png'
   },
 
   /* 选择商品 */
   goSearch(e){
-    let shoptype = e.currentTarget.dataset.name;
+    // convert = from: 要转换商品, convert = info: 转化为商品
     wx.navigateTo({
-      url: '../../pages/search/search?shoptype=' + shoptype,
+      url: `../../pages/search/search?convert=${e.currentTarget.dataset.name}`
     })
   },
 
@@ -60,7 +61,11 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    console.log(options, '置换')
     this.setShopFun();
+	  wx.setNavigationBarTitle({
+		  title: wx.getStorageSync('pagetitle')
+	  })
   },
 
   /**
