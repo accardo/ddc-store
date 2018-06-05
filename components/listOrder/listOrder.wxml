@@ -101,38 +101,46 @@
     </view>
   </view>
   <!-- 置换 end-->
-  <view class='list-item' wx:if="{{ pageindex == 5 }}" data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+  <!-- 调拨 start-->
+  <view class='list-item'
+        wx:if="{{ pageindex == 4 }}"
+        data-orderid="{{item.id}}"
+        bindtap='detail'
+        wx:key="index"
+        wx:for="{{list}}"
+  >
     <view class='list-title'>
       <text class='label-txt'>调拨单：</text>
-      <text class='label-order'>{{item.order}}</text>
-      <text class='list-type'>{{ getTypeName[item.type]}}</text>
+      <text class='label-order'>{{ item.transferSn }}</text>
+      <text class='list-type'>{{ item.statusStr }}</text>
     </view>
      <view class='list-name'>
       <text class='label-txt'>订单类型：</text>
-      <text class='label-name'>{{getOrderType[item.ordertype]}}</text>
+      <text class='label-name'>{{ item.typeStr }}</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>调出店铺：</text>
-      <text class='label-name'>{{item.allotOut }}</text>
+      <text class='label-name'>{{item.outShopName }}</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>调入店铺：</text>
-      <text class='label-name'>{{item.allotEnter }}</text>
+      <text class='label-name'>{{item.inShopName }}</text>
     </view>
     <view class='allot-box'>
       <view class='list-name'>
         <text class='label-txt'>提交人：</text>
-        <text class='label-name'>{{item.subname}}</text>
+        <text class='label-name'>{{ item.createName }}</text>
       </view>
       <view class='list-name'>
         <text class='label-txt'>收货人：</text>
-        <text class='label-name'>{{item.collect}}</text>
+        <text class='label-name'>{{ item.updateName }}</text>
       </view>
     </view>
     <view class='list-time'>
-      <text class='label-time'>{{item.time}}</text>
+      <text class='label-time'>{{ item.createTime }}</text>
     </view>
   </view>
+  <!-- 调拨 end-->
   <view class='list-item' wx:if="{{ pageindex == 7 }}"  data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
     <view class='list-title'>
       <text class='label-txt'>调整单：</text>

@@ -15,6 +15,7 @@
             shop-type-search="{{shopTypeSearch}}"
             product-list="{{productlist}}"
             input-show="{{inputShow}}"
+            from-into="{{fromInto}}"
     ></product-info>
   </scroll-view>
   </view>

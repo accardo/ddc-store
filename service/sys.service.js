@@ -34,10 +34,19 @@ function delivery({ url, method, params, data }) {
 function deliverydetail({ url, method, params, data }) {
 	return baseService.service({ url: "sys/deliverydetail/" + url, method, params, data })
 }
-/* 置换接口*/
+/* 置换列表接口*/
 function displace({ url, method, params, data }) {
 	return baseService.service({ url: "sys/displace/" + url, method, params, data })
 }
+/* 置换详情接口*/
+function displacedetail({ url, method, params, data }) {
+	return baseService.service({ url: "sys/displacedetail/" + url, method, params, data })
+}
+/* 调拨列表接口 */
+function transfer({ url, method, params, data }) {
+	return baseService.service({ url: "sys/transfer/" + url, method, params, data })
+}
+
 
 module.exports = {
   api,
@@ -50,4 +59,6 @@ module.exports = {
 	delivery,
 	deliverydetail,
 	displace,
+	displacedetail,
+	transfer,
 }

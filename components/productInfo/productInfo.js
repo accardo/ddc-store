@@ -41,6 +41,10 @@ Component({
 	  inputShow: { // 默认搜索 不显示input框
     	type: Boolean,
 		  value: false
+	  },
+	  fromInto: { // 要被转的商品 和 转换为的商品
+		  type: String,
+		  value: ''
 	  }
   },
 
@@ -238,7 +242,37 @@ Component({
 		    this.triggerEvent("watchChange", "click");
 	    }
     },
-
+	  /**
+	   * Description: 调拨 加
+	   * Author: yanlichen <lichen.yan@daydaycook.com>
+	   * Date: 2018/6/5
+	   */
+	  transferAdd(e) {
+	  	this.transferSetCurrentNum(e, true)
+	  },
+	  /**
+	   * Description: 调拨 减
+	   * Author: yanlichen <lichen.yan@daydaycook.com>
+	   * Date: 2018/6/5
+	   */
+	  transferReduce(e) {
+    	this.transferSetCurrentNum(e, false)
+	  },
+	  transferSetCurrentNum(e,isAddRed) {
+		  let index = e.currentTarget.dataset.index;
+		  console.log(e, this.data.productList);
+	  	if (isAddRed ) { // 加
+			  ++ this.data.productList[index].needNumber;
+		  } else { // 减
+	  		if (this.data.productList[index].needNumber > 0) {
+				  -- this.data.productList[index].needNumber;
+			  }
+		  }
+		  wx.setStorageSync('transferCacheData', this.data.productList);
+		  this.setData({
+			  productList: this.data.productList
+		  })
+	  },
     /* 设置调拨收货 输入数量 */
     setCollect(e) {
       let val = e.detail.value;
@@ -251,32 +285,34 @@ Component({
       }
     },
 
-    /* 设置转化数量 */
-    setWantNum(e){
-      let val = e.detail.value;
-      let wantList = wx.getStorageSync('want');
-      wantList['wannum'] = val;
-      wx.setStorageSync('want', wantList);
+	  /**
+	   * Description: 设置转化数量
+	   * Author: yanlichen <lichen.yan@daydaycook.com>
+	   * Date: 2018/6/5
+	   */
+	  setConverNum(e){
+		  this.data.productList[e.currentTarget.dataset.index].resultNumber = e.detail.value;
+      wx.setStorageSync('setConverFrom', this.data.productList);
     },
 
-    /* 保存当前选中的商品 */
+	  /**
+	   * Description: 保存当前选中的商品
+	   * Author: yanlichen <lichen.yan@daydaycook.com>
+	   * Date: 2018/6/5
+	   */
     clickShop(e){
+    	if (this.data.productClick == 1) { // 当是转换显示页面不执行点击事件操作
+    		return;
+	    }
 	    let index = e.currentTarget.dataset.index;
-    	console.log(this.data.productList[index], '需要保持当前商品');
-    	wx.setStorageSync('', '');
-      // let { productList, productType, productClick} = this.data;
-      // let { ind } = e.currentTarget.dataset;
-      // if (productClick ==1){
-      //   return
-      // }
-      // let selectData = this.data.productList[ind];
-      // if(productType == 'want'){
-      //   selectData['wannum'] = 0;
-      // }
-      // wx.setStorageSync(productType, selectData);
-      // wx.navigateBack({
-      //   delta:1
-      // })
+    	if (this.data.fromInto == 'from') {
+		    wx.setStorageSync('setConverFrom', [this.data.productList[index]]);
+	    } else if (this.data.fromInto == 'into') {
+		    wx.setStorageSync('setConverInto', [this.data.productList[index]]);
+	    }
+			wx.navigateBack({
+	      delta:1
+	    })
     }
   }
 })

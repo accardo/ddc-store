@@ -34,6 +34,7 @@ Page({
         _this.setData({
           shopArray:shopList
         })
+        wx.setStorageSync('shopAddress', shopList);
       }else{
         wx.showToast({
           title: res.msg,

@@ -6,13 +6,13 @@
       <view class='scroll-title'>
         <text>要转换商品</text>
       </view>
-      <product-info product-type="want" product-status="over" product-click="{{isSelect}}" product-list="{{wantShop}}"></product-info>
+      <product-info product-click="{{isSelect}}" from-into="from" product-type="dispDetail" product-list="{{converFromShop}}"></product-info>
     </scroll-view>
     <scroll-view class='displace-view mt20'>
       <view class='scroll-title'>
         <text>转化为商品</text>
       </view>
-      <product-info product-type="cover" product-click="{{isSelect}}"  product-list="{{coverShop}}"></product-info>
+      <product-info product-click="{{isSelect}}" from-into="into" product-type="dispDetail" product-list="{{converIntoShop}}"></product-info>
     </scroll-view>
   </view>
 </view>

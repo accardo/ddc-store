@@ -29,6 +29,8 @@ Page({
         url: '../../pages/expendtrim/expendtrim'
       })
     } else if (pageindex == 3){ // 置换
+	    wx.removeStorageSync('setConverFrom');
+	    wx.removeStorageSync('setConverInto');
       wx.navigateTo({
         url: '../../pages/displacesgoods/displacesgoods'
       })
@@ -165,7 +167,6 @@ Page({
 		}).then((res) => {
 			wx.stopPullDownRefresh();
 			if (res.code == '0') {
-				console.log(res, 'getOutbound');
 				if (res.page.list.length == 0) {
 					wx.hideLoading();
 					wx.showToast({
@@ -213,7 +214,54 @@ Page({
 		}).then((res) => {
 			wx.stopPullDownRefresh();
 			if (res.code == '0') {
-				console.log(res, 'getSubstitution');
+				if (res.page.list.length == 0) {
+					wx.hideLoading();
+					wx.showToast({
+						title: '没有更多数据',
+						icon:'none'
+					});
+					wx.stopPullDownRefresh();
+					return
+				}
+				this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
+				this.setData({
+					listData: this.data.pagetListData,
+					currPage: this.data.currPage + 1
+				})
+			} else if (res.code == '401') {
+				config.logOutAll();
+				return
+			} else {
+				wx.showToast({
+					title: res.msg,
+					icon: 'none'
+				})
+			}
+			wx.hideLoading();
+		}).catch(() => {
+			wx.hideLoading();
+		})
+	},
+	/**
+	 * Description: 获取调拨信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/5
+	 */
+	gettransfers() {
+		wx.showLoading({ title: '加载中' });
+		let getParm = {
+			currPage: this.data.currPage,
+			pageSize: this.data.pageSize,
+			shopId: app.selectIndex,
+		}
+		sysService.transfer({
+			url: 'list',
+			method: 'get',
+			data: getParm
+		}).then((res) => {
+			wx.stopPullDownRefresh();
+			if (res.code == '0') {
+				console.log(res, 'gettransfers');
 				if (res.page.list.length == 0) {
 					wx.hideLoading();
 					wx.showToast({
@@ -275,7 +323,6 @@ Page({
 	    }
 	    wx.removeStorageSync('optionStorage');
 	    wx.removeStorageSync('searchOutboundCacheData');
-	    wx.removeStorageSync('resultsOutboundCacheData');
 	    wx.navigateTo({
 		    url: `../../pages/ordergoods/ordergoods?reason=${this.data.selectRadio}&outboundType=${this.data.outboundType}`
 	    })
@@ -320,6 +367,7 @@ Page({
           break;
         case 4: // 调拨
           btntext = '调拨出库';
+          this.gettransfers();
           break;
         case 6: // 课程消耗
           btntext = '消耗调整';
@@ -382,6 +430,8 @@ Page({
 	    this.getOutbound();
     } else if (this.data.pageindex == 3 ) {
     	this.getSubstitution();
+    } else if (this.data.pageindex == 4) {
+    	this.gettransfers();
     }
   },
 

@@ -22,6 +22,7 @@ Page({
     productlist: [], // 搜索原始数据
 	  navClassIndex: 0,
 	  inputShow: false,
+	  fromInto: '', // form  要转换的商品  info 转换为的商品
   },
 
   /**
@@ -66,9 +67,11 @@ Page({
 		      } else if(pageIndex == 1 || pageIndex == 2) { // 盘点
 			      item.unitValue = '';
 			      item.materialUnitValue = '';
-		      } else if (pageIndex == 3) {
+		      } else if (pageIndex == 3) { // 出库
 			      item.resultNumber = '';
-          }
+          } else if (pageIndex == 4) { // 调拨
+			      item.needNumber = 0;
+		      }
 		      item.navClass = this.data.navClassIndex;
 	      })
 	      this.setData({
@@ -111,7 +114,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log(options, '')
+    console.log(options, 'search options')
+	  let pageIndex = wx.getStorageSync('pageindex');
     if (options.shopType){
       this.setData({
         shoptype: options.shopType ? options.shopType : '',
@@ -119,6 +123,11 @@ Page({
 	      shopTypeSearch: options.shopTypeSearch,
 	      navClassIndex: options.navClass,
       });
+    }
+    if(pageIndex == 3) {
+      this.setData({
+	      fromInto: options.convert
+      })
     }
     wx: wx.setNavigationBarTitle({
       title: '搜索'

@@ -67,10 +67,6 @@ Page({
 			  })
 		  }
 	  })
-	  console.log(promdData, 'uploadimg')
-    // wx.redirectTo({
-    //   url: '../../pages/orderfrom/orderfrom'
-    // })
   },
 
   /* 图片上传 */

@@ -70,6 +70,7 @@ Component({
           pageName = 'orderfrom';
           break;
         case 3: // 置换
+          path = `?orderId=${orderId}` // 置换单 id
           pageName = 'displaceslist';
           break;
         case 4:

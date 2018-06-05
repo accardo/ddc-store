@@ -40,7 +40,7 @@ function limitClass(num) {
 			limitClass = '2,4,6';
 			break;
 		case 4:  // 4 调拨
-			limitClass = null;
+			limitClass = '2,4,6';
 			break;
 		case 5:  // 5 库存查询
 			limitClass = null;

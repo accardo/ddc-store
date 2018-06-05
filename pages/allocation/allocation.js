@@ -9,32 +9,38 @@ Page({
   data: {
     shopAds: '',
     selectIndex: 0,
-    shopArray: [
-      '上海淮海路店铺',
-      '上海中山公园店铺',
-      '上海人民广场店铺'
-    ],
-    productlist: [
-      { img: "pro-img4.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "54", company: "kg" },
-      { img: "pro-img5.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "65", company: "kg" },
-      { img: "pro-img6.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", current: "76", company: "kg" }
-    ]
+    shopArray: [], // 店铺地址
+    productlist: [], // 初始化数据
+	  defaultImg: '../../icons/shop.png', // 商品在没选择前 默认图片
+	  imgDefault: true, // 控制要转换商品默认图
+    tempCacheData: [] // 累加存储数据
   },
-
+	/**
+	 * Description: 处理店铺地址
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/5
+	 */
+	shopAddress() {
+		let shopAddress = wx.getStorageSync('shopAddress');
+		    shopAddress = shopAddress.filter((item) => {
+		      return item.id != app.selectIndex
+        })
+    this.setData({
+	    shopArray: shopAddress
+    })
+  },
   /* 选择门店 */
   selectShop(e) {
-    let selectIndex = e.detail.value;
     this.setData({
-      selectIndex,
-      shopAds: this.data.shopArray[parseInt(selectIndex)]
+	    selectIndex: this.data.shopArray[e.detail.value].id,
+	    shopName: this.data.shopArray[e.detail.value].shopName
     })
-    app.selectIndex = selectIndex;
   },
 
   /* 添加调拨 商品 */
   searchShop(){
     wx.navigateTo({
-      url:'../../pages/search/search?source=allocation'
+      url:'../../pages/search/search'
     })
   },
 
@@ -57,16 +63,47 @@ Page({
       }
     });
   },
-
+	/**
+	 * Description: 搜索结果对比 链接 去重
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/5
+	 */
+	forDataContrastSearch(data1, data2) {
+		// let data3 = [];
+		//     data3 = data1.concat(data2);
+		// let data3 = [];
+		 data1.forEach((item) => {
+			 data2.forEach((itemA, index) =>{
+				if (itemA.skuId == item.skuId) {
+				  console.log(item,1)
+					data2[index] = item
+				} else {
+				  console.log(item,2)
+					data2.push(item);
+				}
+			})
+		})
+		// 去除重复skuId
+		Array.prototype.distinct = function(){
+			var arr = this, result = [], i, j, len = arr.length;
+			for(i = 0; i < len; i++){
+				for(j = i + 1; j < len; j++){
+					if(arr[i].skuId === arr[j].skuId){
+						j = ++i;
+					}
+				}
+				result.push(arr[i]);
+			}
+			return result;
+		}
+		return data2.distinct();
+		console.log(data2.distinct(), '返回 过滤后数据 需要 给 结果页面')
+	},
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let selectIndex = app.selectIndex;
-    this.setData({
-      selectIndex,
-      shopAds: this.data.shopArray[parseInt(selectIndex)]
-    })
+    this.shopAddress() // 获取店铺列表
   },
 
   /**
@@ -80,7 +117,26 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-  
+    let transferCacheData = wx.getStorageSync('transferCacheData');
+    if (transferCacheData) {
+	    transferCacheData = transferCacheData.filter((item) => {
+		    return item.needNumber != 0;
+	    })
+      if (this.data.productlist.length == 0) {
+	      this.setData({
+		      imgDefault: false,
+		      productlist: transferCacheData
+	      })
+      } else {
+	      this.data.productlist = this.forDataContrastSearch(transferCacheData, this.data.productlist);
+	      console.log(this.data.productlist, 'tempcachedata');
+	      this.setData({
+		      imgDefault: false,
+		      productlist: this.data.productlist,
+        })
+
+      }
+    }
   },
 
   /**

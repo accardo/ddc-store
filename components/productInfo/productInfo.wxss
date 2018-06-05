@@ -123,6 +123,13 @@
   width: 180rpx;
   border:1px solid #ccc;
   border-radius: 8rpx;
-  padding-left:10rpx; 
+  padding-left:10rpx;
   margin-right: 10rpx;
+}
+.cover-input {
+  width:80rpx;
+  border:#ccc solid 1px;
+  height:40rpx;
+  min-height:40rpx;
+  margin-right:10rpx;
 }
