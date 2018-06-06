@@ -247,7 +247,7 @@ Page({
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/6/5
 	 */
-	gettransfers() {
+	getTransfers() {
 		wx.showLoading({ title: '加载中' });
 		let getParm = {
 			currPage: this.data.currPage,
@@ -261,7 +261,54 @@ Page({
 		}).then((res) => {
 			wx.stopPullDownRefresh();
 			if (res.code == '0') {
-				console.log(res, 'gettransfers');
+				if (res.page.list.length == 0) {
+					wx.hideLoading();
+					wx.showToast({
+						title: '没有更多数据',
+						icon:'none'
+					});
+					wx.stopPullDownRefresh();
+					return
+				}
+				this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
+				this.setData({
+					listData: this.data.pagetListData,
+					currPage: this.data.currPage + 1
+				})
+			} else if (res.code == '401') {
+				config.logOutAll();
+				return
+			} else {
+				wx.showToast({
+					title: res.msg,
+					icon: 'none'
+				})
+			}
+			wx.hideLoading();
+		}).catch(() => {
+			wx.hideLoading();
+		})
+	},
+	/**
+	 * Description: 获取课程消耗信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/6
+	 */
+	getConsumption() {
+		wx.showLoading({ title: '加载中' });
+		let getParm = {
+			currPage: this.data.currPage,
+			pageSize: this.data.pageSize,
+			shopId: app.selectIndex,
+		}
+		sysService.coursebill({
+			url: 'list',
+			method: 'get',
+			data: getParm
+		}).then((res) => {
+			wx.stopPullDownRefresh();
+			if (res.code == '0') {
+				console.log(res, 'getConsumption');
 				if (res.page.list.length == 0) {
 					wx.hideLoading();
 					wx.showToast({
@@ -345,7 +392,6 @@ Page({
    */
   onLoad: function (options) {
 	   let btntext = ''; // 拼接按钮提示
-	   let titlename = ''; // title 按钮名称
 	   let pageindex = wx.getStorageSync('pageindex');
 	   console.log(pageindex, options);
 	   switch(pageindex){
@@ -367,11 +413,11 @@ Page({
           break;
         case 4: // 调拨
           btntext = '调拨出库';
-          this.gettransfers();
+          this.getTransfers();
           break;
         case 6: // 课程消耗
-          btntext = '消耗调整';
-          titlename = '课程消耗调整';
+          btntext = options.titlename;
+          this.getConsumption();
           break;
 	   }
 	   this.setData({
@@ -431,7 +477,7 @@ Page({
     } else if (this.data.pageindex == 3 ) {
     	this.getSubstitution();
     } else if (this.data.pageindex == 4) {
-    	this.gettransfers();
+    	this.getTransfers();
     }
   },
 

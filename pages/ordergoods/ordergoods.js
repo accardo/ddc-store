@@ -454,6 +454,9 @@ Page({
 		    tempArray = this.forDataContrast(this.data.productlist, outboundCacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 	    }
     }
+    if (pageindex == 5) {
+	    tempArray = this.data.productlist
+    }
 	  this.setData({
 		  productlist: tempArray
 	  })

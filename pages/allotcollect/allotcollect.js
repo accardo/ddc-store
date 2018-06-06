@@ -1,19 +1,51 @@
 // pages/allotcollect/allotcollect.js
 const app = getApp();
+const sysService = require('../../service/sys.service.js');
+const utils = require('../../utils/util');
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    productlist:[
-      { img: "pro-img4.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", order: "48", collect: 0, company: "袋" },
-      { img: "pro-img5.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", order: "48", collect: 0, company: "袋" },
-      { img: "pro-img6.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", order: "48", collect: 0, company: "袋" }
-    ],
-    productType:'调拨收货'
+    productlist: [],
+    productType: '调拨收货',
+    status: '',
+	  transferId: '',
   },
-
+	/**
+	 * Description: 获取调拨详情列表 info
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/6
+	 */
+	gettransferData() {
+		wx.showLoading({ title: '加载中' });
+		let promseData = {
+			transferId: this.data.transferId,
+			shopId: app.selectIndex,
+			type: this.data.status
+		}
+		sysService.transferdetail({
+			url:'info',
+			method:'get',
+			data: promseData
+		}).then((res) => {
+			if (res.code == '0') {
+				this.setData({
+					receiptList: res.transferVO, // 订货列表数据
+				})
+				wx.hideLoading();
+			} else if(res.code == '401') {
+				config.logOutAll();
+				return
+			} else {
+				wx.showToast({
+					title: res.msg,
+					icon: 'none'
+				})
+			}
+		})
+	},
   /* 收货完毕 */
   subAllot(){
     let productList = wx.getStorageSync('productList');
@@ -45,7 +77,12 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) { 
+  onLoad: function (options) {
+	  this.setData({
+		  transferId: options.orderId, // 调拨单id
+		  status: options.orderStatus  // 调拨点状态
+	  })
+	  this.gettransferData();
   },
 
   /**

@@ -46,7 +46,18 @@ function displacedetail({ url, method, params, data }) {
 function transfer({ url, method, params, data }) {
 	return baseService.service({ url: "sys/transfer/" + url, method, params, data })
 }
-
+/* 调拨详情接口 */
+function transferdetail({ url, method, params, data }) {
+	return baseService.service({ url: "sys/transferdetail/" + url, method, params, data })
+}
+/* 课程消列表接口 */
+function coursebill({ url, method, params, data }) {
+	return baseService.service({ url: "sys/coursebill/" + url, method, params, data })
+}
+/* 课程消详情接口 */
+function coursebilldetail({ url, method, params, data }) {
+	return baseService.service({ url: "sys/coursebilldetail/" + url, method, params, data })
+}
 
 module.exports = {
   api,
@@ -61,4 +72,7 @@ module.exports = {
 	displace,
 	displacedetail,
 	transfer,
+	transferdetail,
+	coursebill,
+	coursebilldetail,
 }

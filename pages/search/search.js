@@ -70,7 +70,7 @@ Page({
 		      } else if (pageIndex == 3) { // 出库
 			      item.resultNumber = '';
           } else if (pageIndex == 4) { // 调拨
-			      item.needNumber = 0;
+			      item.outNumber = 0;
 		      }
 		      item.navClass = this.data.navClassIndex;
 	      })
@@ -124,10 +124,15 @@ Page({
 	      navClassIndex: options.navClass,
       });
     }
-    if(pageIndex == 3) {
+	  if(pageIndex == 3) {
       this.setData({
-	      fromInto: options.convert
+	      fromInto: options.convert,
       })
+    }
+    if (pageIndex == 4) {
+    	this.setData({
+		    shopTypeSearch: options.shopTypeSearch
+	    })
     }
     wx: wx.setNavigationBarTitle({
       title: '搜索'

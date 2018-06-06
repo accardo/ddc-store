@@ -115,6 +115,39 @@ Page({
 			}
 		})
 	},
+	/**
+	 * Description: 获取调拨详情列表 info
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/6
+	 */
+	gettransferData() {
+		wx.showLoading({ title: '加载中' });
+		let promseData = {
+			transferId: this.data.purchaseId,
+			shopId: app.selectIndex,
+			type: this.data.status
+		}
+		sysService.transferdetail({
+			url:'info',
+			method:'get',
+			data: promseData
+		}).then((res) => {
+			if (res.code == '0') {
+				this.setData({
+					receiptList: res.transferVO, // 订货列表数据
+				})
+				wx.hideLoading();
+			} else if(res.code == '401') {
+				config.logOutAll();
+				return
+			} else {
+				wx.showToast({
+					title: res.msg,
+					icon: 'none'
+				})
+			}
+		})
+	},
   /**
    * 生命周期函数--监听页面加载
    */
@@ -142,6 +175,12 @@ Page({
 		    purchaseId: options.orderId // 出库 id
 	    })
 	  	this.getoutboundData();
+    } else if (pageindex == 4) {
+	    this.setData({
+		    purchaseId: options.orderId, // 调拨单id
+		    status: options.orderStatus  // 调拨点状态
+	    })
+	    this.gettransferData();
     }
     this.setData({
 	    pageindex,

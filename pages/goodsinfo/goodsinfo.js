@@ -162,10 +162,8 @@ Page({
 	    })
     } else {
 	    purchaseDetailVOList = wx.getStorageSync('cacheDataDetial');
-
     	if (this.data.productStatus == 'goodsdetail') {
 		    purchaseDetailVOList = purchaseDetailVOList ? purchaseDetailVOList : this.data.productlist;
-		    console.log(purchaseDetailVOList, 'purchaseDetailVOList11111111111111');
 		    isComplete = purchaseDetailVOList.map((item) => {
 			    let tempObj1 = JSON.parse(JSON.stringify(item.tempObj));
 			    item.shopItemSkuVO = {

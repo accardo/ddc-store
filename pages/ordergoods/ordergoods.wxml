@@ -7,7 +7,7 @@
       <text>搜索查询</text>
     </view>
   </view>
-  <view class="category-product {{ showbtnbox ? '':'active' }}">
+  <view class="category-product {{ pageindex == 5 ? 'active' : '' }}">
     <view class='category-nav'>
       <view wx:for="{{navlist}}"
             bindtap='selectNav'

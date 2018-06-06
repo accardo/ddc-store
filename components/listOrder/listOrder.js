@@ -62,21 +62,23 @@ Component({
           pageName = orderStatus ==1 || orderStatus == 2 ? 'goodsreceipt' : ( orderStatus == 3 ? 'orderfrom':'goodsinfo' )
           break;
         case 1: // 盘点
-          path = `?orderId=${orderId}&orderStatus=${orderStatus}` // orderStatus 盘点状态 1 已完成 2待审核 orderId 盘点id
+          path = `?orderId=${orderId}&orderStatus=${orderStatus}`; // orderStatus 盘点状态 1 已完成 2待审核 orderId 盘点id
           pageName = orderStatus == 1 ? 'orderfrom' : 'inventoryreview';
           break;
         case 2: // 出库
-          path = `?orderId=${orderId}` // 出库单 id
+          path = `?orderId=${orderId}`; // 出库单 id
           pageName = 'orderfrom';
           break;
         case 3: // 置换
-          path = `?orderId=${orderId}` // 置换单 id
+          path = `?orderId=${orderId}`; // 置换单 id
           pageName = 'displaceslist';
           break;
-        case 4:
+        case 4: // 调拨
+          path = `?orderId=${orderId}&orderStatus=${orderStatus}`;
           pageName = orderStatus == 1 ? 'orderfrom' : 'allotcollect';
           break;
         case 6:
+          path = `?orderId=${orderId}`;
           pageName = 'expenddetail';
           break;
       }

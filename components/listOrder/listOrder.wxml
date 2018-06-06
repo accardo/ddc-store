@@ -105,6 +105,7 @@
   <view class='list-item'
         wx:if="{{ pageindex == 4 }}"
         data-orderid="{{item.id}}"
+        data-orderstatus="{{item.status}}"
         bindtap='detail'
         wx:key="index"
         wx:for="{{list}}"
@@ -141,17 +142,23 @@
     </view>
   </view>
   <!-- 调拨 end-->
-  <view class='list-item' wx:if="{{ pageindex == 7 }}"  data-order="{{item.order}}" data-typenum="{{item.type}}" bindtap='detail' wx:key="index" wx:for="{{list}}">
+  <view class='list-item'
+        wx:if="{{ pageindex == 6 }}"
+        data-orderid="{{item.id}}"
+        bindtap='detail'
+        wx:key="index"
+        wx:for="{{list}}"
+  >
     <view class='list-title'>
       <text class='label-txt'>调整单：</text>
-      <text class='label-order'>{{item.order}}</text>
+      <text class='label-order'>{{ item.courseBillSn }}</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>最后修改人：</text>
-      <text class='label-name'>{{item.uname }}</text>
+      <text class='label-name'>{{ item.updateName }}</text>
     </view>
     <view class='list-time'>
-      <text class='label-time'>{{item.time}}</text>
+      <text class='label-time'>{{ item.createTime }}</text>
     </view>
   </view>
 </view>

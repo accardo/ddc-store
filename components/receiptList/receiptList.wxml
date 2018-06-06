@@ -73,7 +73,8 @@
             </view>
         </view>
         <!-- 出库 end-->
-      <view class='goods-txt-box' wx:if="{{pageindex ==5 }}">
+        <!-- 调拨 start-->
+      <view class='goods-txt-box' wx:if="{{pageindex == 4 }}">
             <view class='goods-txt'>
                   <text class='goods-type' wx:if="{{item.typename}}">{{item.typename}}</text>
                   <text class='goods-name'>{{item.name}}</text>
@@ -88,5 +89,6 @@
             <text>{{item.company}}</text> 
             </view>
       </view>
+        <!-- 调拨 end-->
     </view>
   </view>

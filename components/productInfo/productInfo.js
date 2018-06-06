@@ -1,4 +1,4 @@
-4// components/productInfo/productInfo.js
+// components/productInfo/productInfo.js
 var config = require('../../config/config.js');
 Component({
   /**
@@ -57,6 +57,7 @@ Component({
 	  cacheArray: [],
 	  inventoryCacheArray: [],
 	  outboundCacheArray: [],
+	  transferCacheArray: [],
   },
 
   ready() {
@@ -68,6 +69,8 @@ Component({
 	  let cacheData = wx.getStorageSync('cacheData');
 	  let inventoryCacheData = wx.getStorageSync('inventoryCacheData');
 	  let outboundCacheData = wx.getStorageSync('outboundCacheData');
+	  let transferCacheData = wx.getStorageSync('transferCacheData');
+
 	  if (cacheData.length > 0) { // 订货
 	  	this.data.cacheArray = wx.getStorageSync('cacheData');
 	  }
@@ -76,6 +79,9 @@ Component({
 	  }
 	  if (outboundCacheData.length > 0) { // 出库
 		  this.data.outboundCacheArray = wx.getStorageSync('outboundCacheData');
+	  }
+	  if (transferCacheData.length >0) { // 调拨
+	  	this.data.transferCacheArray = wx.getStorageSync('transferCacheData');
 	  }
   },
   /**
@@ -243,6 +249,24 @@ Component({
 	    }
     },
 	  /**
+	   * Description: 调拨独立设置
+	   * Author: yanlichen <lichen.yan@daydaycook.com>
+	   * Date: 2018/6/6
+	   */
+	  transfercacheStorageSpace() {
+		  let tempGoodsOrderData = [];
+		  tempGoodsOrderData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
+			  return item.outNumber != '' || item.outNumber != 0;
+		  })
+		  console.log(this.data.productList, tempGoodsOrderData,  '设置数据 用navclass');
+		  this.data.transferCacheArray = tempGoodsOrderData
+		  wx.setStorageSync('transferCacheData', this.data.transferCacheArray);
+		  this.setData({
+			  productList: this.data.transferCacheArray
+
+		  })
+	  },
+	  /**
 	   * Description: 调拨 加
 	   * Author: yanlichen <lichen.yan@daydaycook.com>
 	   * Date: 2018/6/5
@@ -260,15 +284,23 @@ Component({
 	  },
 	  transferSetCurrentNum(e,isAddRed) {
 		  let index = e.currentTarget.dataset.index;
-		  console.log(e, this.data.productList);
 	  	if (isAddRed ) { // 加
-			  ++ this.data.productList[index].needNumber;
+			  ++ this.data.productList[index].outNumber;
+	  		if (this.data.shopTypeSearch == 'search') {
+				  wx.setStorageSync('searchTransferCacheData', this.data.productList);
+			  } else {
+	  			this.transfercacheStorageSpace();
+			  }
 		  } else { // 减
-	  		if (this.data.productList[index].needNumber > 0) {
-				  -- this.data.productList[index].needNumber;
+	  		if (this.data.productList[index].outNumber > 0) {
+				  -- this.data.productList[index].outNumber;
+				  if (this.data.shopTypeSearch == 'search') {
+					  wx.setStorageSync('searchTransferCacheData', this.data.productList);
+				  } else {
+					  this.transfercacheStorageSpace()
+				  }
 			  }
 		  }
-		  wx.setStorageSync('transferCacheData', this.data.productList);
 		  this.setData({
 			  productList: this.data.productList
 		  })

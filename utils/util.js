@@ -43,7 +43,7 @@ function limitClass(num) {
 			limitClass = '2,4,6';
 			break;
 		case 5:  // 5 库存查询
-			limitClass = null;
+			limitClass = '2,4,6';
 			break;
 		case 6:  // 6 课程消耗
 			limitClass = null;
