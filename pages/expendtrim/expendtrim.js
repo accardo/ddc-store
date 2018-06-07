@@ -11,13 +11,16 @@ Page({
     isShow:false,
 	  pagetListData: [], // 临时数据
     courseList:[], // 初始化数据
+	  courseBillId: null, //消耗课程id
+	  isupdate: false, // 判断是否可以调整
+	  isExpend: 0, // 判断是否是直接点击课程消耗按钮
+	  outShopId: 0, // 调出店铺 id
+	  inShopId: 0,  // 调入店铺id
+	  outTransferId: 0, // 调拨出库单id
 	  currPage:1,
 	  pageSize:10,
-    id: 0,
-    number: 0,
-    useCount: 0,
-    scrapCount: 0,
 	  nIndex: 0,
+	  name: ''
   },
 	/**
 	 * Description: 获取课程消耗 列表
@@ -26,10 +29,20 @@ Page({
 	 */
 	getExpendtrim() {
 		wx.showLoading({ title: '加载中' });
-		let getParm = {
-			currPage: this.data.currPage,
-			pageSize: this.data.pageSize,
+		let getParm = {}
+		if (this.data.isExpend == '1') {
+			getParm = {
+				currPage: this.data.currPage,
+				pageSize: this.data.pageSize,
+			}
+		} else {
+			getParm = {
+				currPage: this.data.currPage,
+				pageSize: this.data.pageSize,
+				courseBillId: this.data.courseBillId
+			}
 		}
+
 		sysService.coursebilldetail({
 			url: 'list',
 			method: 'get',
@@ -37,7 +50,6 @@ Page({
 		}).then((res) => {
 			wx.stopPullDownRefresh();
 			if (res.code == '0') {
-				console.log(res, 'getExpenddetail');
 				if (res.page.list.length == 0) {
 					wx.hideLoading();
 					wx.showToast({
@@ -66,89 +78,103 @@ Page({
 			wx.hideLoading();
 		})
   },
-  //设置Input 框 的值
+	/**
+	 * Description: 设置Input 框 的值
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/7
+	 */
   setValue(e){
 	  // number 实际上课人 useCount 正常消耗量 scrapCount 制作报废量
-    console.log()
-	  if (number == 'number') {
-
-    } else if(number == 'useCount') {
-
-    } else if (number == 'useCount') {
-
+    if (this.data.name == 'number') {
+	    this.data.courseList[this.data.nIndex].number = e.detail.value
+    } else if(this.data.name == 'useCount') {
+	    this.data.courseList[this.data.nIndex].useCount = e.detail.value
+    } else if (this.data.name == 'scrapCount') {
+	    this.data.courseList[this.data.nIndex].scrapCount = e.detail.value
     }
-    // let val = e.detail.value;
-    // let tempCourseList = this.data.courseList[this.data.nIndex][this.data.number];
-    // console.log(tempCourseList);
-    // this.setData({
-	   //  courseList[this.data.nIndex].number: e.detail.value
-    // })
   },
 
-  //修改 数值
+	/**
+	 * Description: 点击弹出框 修改 数值
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/7
+	 */
   editNum(e){
-	  console.log(e, '点击数值');
+  	if (this.data.isupdate == 'false') {
+  		return
+	  }
     this.setData({
 	   nIndex: e.currentTarget.dataset.index,
-	   number: e.currentTarget.dataset.number,
+	   name: e.currentTarget.dataset.name,
 	   isShow: true
     })
   },
 
-  // 确定调整
-  confimNum(e){
-    let _this = this;
-    let { ind, num, mold, val, courseList } = _this.data;
-    if (val ==0){
-      wx.showToast({
-        title: '请输入数量',
-        icon:'none'
-      })
-      return 
-    }
-    let actualN = parseInt(courseList[ind].actual);
-    switch (mold){
-      case 'actual':
-        courseList[ind].actual = val;
-        _this.setListData(courseList);
-        break;
-      case 'normal':
-        if (actualN > val) {
-          wx.showToast({
-            title: '正常消耗，不能小于实际上课人数',
-            icon: 'none'
-          })
-          return
-        }else{
-          courseList[ind].normal = val;
-          _this.setListData(courseList);
-        }
-        break;
-      case 'scrap':
-        courseList[ind].scrap = val;
-        _this.setListData(courseList);
-        break;
-    }
-    _this.setData({
-      val:0
-    })
-  },
-
-  //设置 修改后的列表
-  setListData(courseList){
-    let _this = this;
-    _this.setData({
-      courseList,
-      isShow: false
-    })
+	/**
+	 * Description: 更新调整数据
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/7
+	 */
+  confimNum(){
+	  let course = this.data.courseList[this.data.nIndex]; // 当前选中的哪一条
+	  if (course[this.data.name] == 0 || course[this.data.name] == '') {
+		    wx.showToast({
+		      title: '请输入数量',
+		      icon:'none'
+		    })
+		    return
+	  }
+	  if (course.useCount < course.number) {
+        wx.showToast({
+          title: '正常消耗，不能小于实际上课人数',
+          icon: 'none'
+        })
+        return
+	  }
+	  let postParm = {
+	  	id: this.data.courseList[this.data.nIndex].id,
+		  courseBillId: this.data.courseList[this.data.nIndex].courseBillId, //  调整单id
+		  number: this.data.courseList[this.data.nIndex].number,
+		  useCount: this.data.courseList[this.data.nIndex].useCount,
+		  scrapCount: this.data.courseList[this.data.nIndex].scrapCount
+	  }
+	  sysService.coursebilldetail({
+		  url: 'update',
+		  method: 'post',
+		  data: postParm
+	  }).then((res) => {
+		  if (res.code == '0') {
+			  wx.showToast({
+				  title: '修改成功'
+			  })
+			  this.setData({
+				  isShow: false,
+				  courseList: this.data.courseList
+			  })
+		  } else if (res.code == '401') {
+			  config.logOutAll();
+			  return
+		  } else {
+			  wx.showToast({
+				  title: res.msg,
+				  icon: 'none'
+			  })
+		  }
+	  })
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+	  let pagetitle = wx.getStorageSync('pagetitle');
+  	console.log(options, '课程消耗')
+	  this.setData({
+		  courseBillId: options.orderId, // 课程消耗id
+		  isupdate: options.isupdate,  // 判断是否显示可调整
+		  isExpend: options.isExpend, // 判断是否是直接点击课程消耗按钮
+	  })
     this.getExpendtrim();
-    let pagetitle = wx.getStorageSync('pagetitle');
     wx.setNavigationBarTitle({
       title: pagetitle == '课程消耗' ? '课程消耗调整' : pagetitle
     })

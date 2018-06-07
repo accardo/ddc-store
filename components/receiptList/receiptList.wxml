@@ -75,19 +75,24 @@
         <!-- 出库 end-->
         <!-- 调拨 start-->
       <view class='goods-txt-box' wx:if="{{pageindex == 4 }}">
-            <view class='goods-txt'>
-                  <text class='goods-type' wx:if="{{item.typename}}">{{item.typename}}</text>
-                  <text class='goods-name'>{{item.name}}</text>
-                  <text>{{item.unit}}</text>
-            </view>
-            <view class='goods-label' wx:if="{{item.typelist && item.typelist.length>0}}">
-                  <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
-            </view>
-            <view class='goods-num'>订货数量：<text>{{item.ordercurrent}}</text><text>{{item.company}}</text> </view>
-            <view class='goods-num'>{{titlename}}：<text>{{item.actul ? item.actul : '-' }}</text><text wx:if="{{item.actul}}">{{item.company}}</text> </view>
-            <view class='goods-num goods-inp' wx:if="{{pageType !='orderfrom'}}">收货数量：<input data-index="index" bindinput="setNumber" type='number' confirm-type="done" value="{{item.current}}" placeholder="数量"></input>
-            <text>{{item.company}}</text> 
-            </view>
+          <view class='goods-txt'>
+              <text class='goods-type' wx:if="{{configFl[item.shopItemSkuVO.item.itemType]}}">{{configFl[item.shopItemSkuVO.item.itemType]}}</text>
+              <text class='goods-name'>{{item.shopItemSkuVO.item.itemName}}</text>
+              <text>{{item.shopItemSkuVO.item.deductionType == 2 ? item.shopItemSkuVO.item.netWightValue + item.shopItemSkuVO.item.materialUnitName : '' }}</text>
+          </view>
+          <view class='goods-label' wx:if="{{item.shopItemSkuVO.attrValues && item.shopItemSkuVO.attrValues.length>0}}">
+              <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="ind" class='goods-label-txt'>{{item}}</text>
+          </view>
+          <view class='goods-num'>
+              订货数量：
+              <text>{{ item.outNumber }}</text>
+              <text>{{ item.shopItemSkuVO.item.unitName }}</text>
+          </view>
+          <view class='goods-num goods-inp'>
+              收货数量：
+              <text>{{ item.inNumber }}</text>
+              <text>{{ item.shopItemSkuVO.item.unitName }}</text>
+          </view>
       </view>
         <!-- 调拨 end-->
     </view>

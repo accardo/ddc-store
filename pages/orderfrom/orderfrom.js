@@ -15,6 +15,7 @@ Page({
     imgList:[], // 图片显示
 	  receiptList: [], // 初始化数据
 	  pageindex: null, // 判断显示哪一个页面  订单、盘点、出库 等
+	  type: '', // 调拨 状态 1、调拨入库 2、调拨出库
   },
 
 	/**
@@ -125,7 +126,7 @@ Page({
 		let promseData = {
 			transferId: this.data.purchaseId,
 			shopId: app.selectIndex,
-			type: this.data.status
+			type: this.data.type
 		}
 		sysService.transferdetail({
 			url:'info',
@@ -134,7 +135,7 @@ Page({
 		}).then((res) => {
 			if (res.code == '0') {
 				this.setData({
-					receiptList: res.transferVO, // 订货列表数据
+					receiptList: res.transferVO.transferDetailVOList, // 订货列表数据
 				})
 				wx.hideLoading();
 			} else if(res.code == '401') {
@@ -155,9 +156,6 @@ Page({
     console.log(options, 'orderfrom'); // orderId 店铺id ，orderStatus 店铺状态 1、已完成， 2、待审核
     let pageindex = wx.getStorageSync('pageindex');
     let pagetitle = wx.getStorageSync('pagetitle');
-    //let imgList = wx.getStorageSync('imgList');
-   // imgList = imgList.length > 0 ? imgList : ['../../icons/def-img.png'];
-
     if (pageindex == 0) {
 	    this.setData({
 		    purchaseId: options.orderId, // 订货id 或 盘点id
@@ -178,26 +176,15 @@ Page({
     } else if (pageindex == 4) {
 	    this.setData({
 		    purchaseId: options.orderId, // 调拨单id
-		    status: options.orderStatus  // 调拨点状态
+		    type: options.orderType  // 调拨点状态
 	    })
 	    this.gettransferData();
     }
     this.setData({
 	    pageindex,
     })
-    // if(pageIndex == 1){
-    //   this.setData({
-    //     receiptList:this.data.stockquerylist
-    //   })
-    // }else if(pageIndex == 2){
-    //   pagetitle = '出库';
-    //   this.setData({
-    //     pagetitle,
-    //     imgList,
-    //     receiptList: this.data.outGoList
-    //   })
-    // }
-    wx: wx.setNavigationBarTitle({
+
+    wx.setNavigationBarTitle({
       title: pagetitle+'单'
     })
   },

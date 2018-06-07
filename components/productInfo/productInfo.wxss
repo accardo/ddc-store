@@ -133,3 +133,8 @@
   min-height:40rpx;
   margin-right:10rpx;
 }
+
+.number-box-acc input {
+  height: 40rpx;
+  min-height: 40rpx;
+}

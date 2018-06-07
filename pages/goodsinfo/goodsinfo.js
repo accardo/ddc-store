@@ -10,10 +10,7 @@ Page({
    */
   data: {
     scrollTop:0,
-    outage: '',
     pagetitle:'',
-    ordernumber:'',
-    listtype:'goods',
 	  purchaseId: 0,
     shopTotalN: 0,
     shopPieceN: 0,
@@ -24,7 +21,6 @@ Page({
     productType: '', // 类型
 	  pageindex: 0,
 	  productStatus:'', // 判断订货详情
-	  tempShopListData: [], // 临时处理数据
 	  reason: '', // 出库原因
 	  outboundType: 0 // 1 报废 2 退货
   },
@@ -233,7 +229,7 @@ Page({
 			    return
 		    }
 		    if(code == 0){
-			    utils.showToast({title: '订货成功', page: '2'});
+			    utils.showToast({title: '订货成功', page: 3});
 			    this.clearCache();
 		    }else{
 			    wx.showToast({
@@ -336,7 +332,7 @@ Page({
 	 */
 	outboundResultePage() {
 		let outboundCacheData = wx.getStorageSync('outboundCacheData'); // 所有结果数据
-		let resultsCacheData = []
+		let resultsCacheData = [];
 		if (outboundCacheData) {
 			resultsCacheData = utils.cacheDataDeal(outboundCacheData);
 			resultsCacheData = resultsCacheData.filter((item) => {
@@ -354,8 +350,8 @@ Page({
   	console.log(options, 'status');
     let pageindex = wx.getStorageSync('pageindex');
     let pagetitle = wx.getStorageSync('pagetitle');
-    let goodsOrderCacheData = wx.getStorageSync('goodsOrderCacheData');
-	  if (pageindex == 0 && goodsOrderCacheData) {
+    let cacheData = wx.getStorageSync('cacheData');
+	  if (pageindex == 0 && cacheData) {
 		  this.orderResultsPage(); // 订单结果页面重新缓存新数据
 		  this._watchChange(); //商品数量
 	  }

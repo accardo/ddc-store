@@ -9,9 +9,10 @@ Component({
       type: Array,
       value: [],
 	    observer: function(newVal, oldVal) {
+      	console.log(newVal, 'newVal')
         if (newVal) {
-	        newVal.map((item) => {
-	          if (item.shopItemSkuVO !== null) {
+	        newVal.forEach((item) => {
+	          if (item.shopItemSkuVO.attrValues && item.shopItemSkuVO.attrValues !== null) {
 		          item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.split(',');
             }
           })

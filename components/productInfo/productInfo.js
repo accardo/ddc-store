@@ -305,16 +305,15 @@ Component({
 			  productList: this.data.productList
 		  })
 	  },
-    /* 设置调拨收货 输入数量 */
+	  /**
+	   * Description: 设置调拨收货 输入数量
+	   * Author: yanlichen <lichen.yan@daydaycook.com>
+	   * Date: 2018/6/7
+	   */
     setCollect(e) {
-      let val = e.detail.value;
-      let listArr = this.data.productList;
-      let { ind, name } = e.target.dataset;
-      val = val ? parseInt(val) : 0;
-      if (val){
-        listArr[ind][name] = val;
-        wx.setStorageSync('productList', JSON.stringify(listArr))
-      }
+	    let index = e.currentTarget.dataset.index;
+      this.data.productList[index].inNumber = e.detail.value
+	    wx.setStorageSync('collectCacheData', this.data.productList);
     },
 
 	  /**

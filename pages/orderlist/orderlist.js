@@ -26,7 +26,7 @@ Page({
     let pageindex = wx.getStorageSync('pageindex');
     if (pageindex == 6) { // 课程消耗
       wx.navigateTo({
-        url: '../../pages/expendtrim/expendtrim'
+        url: '../../pages/expendtrim/expendtrim?&isupdate=true&isExpend=1'
       })
     } else if (pageindex == 3){ // 置换
 	    wx.removeStorageSync('setConverFrom');

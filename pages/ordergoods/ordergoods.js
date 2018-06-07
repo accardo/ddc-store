@@ -95,15 +95,18 @@ Page({
           item.navClass = this.data._index;
           return item;
         })
-
-	      if (cacheData[this.data._index]) { // 订货
-		      productlist = this.forDataContrast(productlist, cacheData[this.data._index]);
-	      }
-	      if (inventoryCacheData[this.data._index]) { // 盘点
-		      productlist = this.forDataContrast(productlist, inventoryCacheData[this.data._index]);
-	      }
-	      if (outboundCacheData[this.data._index]) { //出库
-		      productlist = this.forDataContrast(productlist, outboundCacheData[this.data._index]);
+	      if (pageIndex == 0) {
+		      if (cacheData[this.data._index]) { // 订货
+			      productlist = this.forDataContrast(productlist, cacheData[this.data._index]);
+		      }
+	      } else if (pageIndex == 1) {
+		      if (inventoryCacheData[this.data._index]) { // 盘点
+			      productlist = this.forDataContrast(productlist, inventoryCacheData[this.data._index]);
+		      }
+	      } else if (pageIndex == 2) {
+		      if (outboundCacheData[this.data._index]) { //出库
+			      productlist = this.forDataContrast(productlist, outboundCacheData[this.data._index]);
+		      }
 	      }
 	      console.log(productlist, cacheData, 'getProductByNavproductlist')
         this.setData({

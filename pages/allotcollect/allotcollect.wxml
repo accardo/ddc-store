@@ -3,7 +3,10 @@
   <scroll-view scroll-top="0" scroll-y style="height:100%;" class="scroll-box">
      <product-info product-type="{{productType}}" product-list="{{productlist}}"></product-info>
   </scroll-view>
-  <view class='btn-review'>
-    <button class='nobordr' bindtap='subAllot' >收货完毕</button>
+  <view class='btn-review' wx:if="{{type != 2}}" >
+      <button class='nobordr' bindtap='subAllot'>收货完毕</button>
   </view>
+    <view class='btn-review btn-review-disable'  wx:else>
+      <button class='nobordr' >等待他人收货</button>
+    </view>
 </view>

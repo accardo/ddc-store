@@ -12,6 +12,7 @@ Page({
 	  pagetListData: [], // 临时数组
     courseList: [],
 	  courseBillId: '', // 课程消耗id
+	  isupdate: false, // 判断是否可调整
 	  currPage:1,
 	  pageSize:10,
   },
@@ -69,7 +70,8 @@ Page({
   onLoad: function (options) {
     console.log(options, '课程消耗');
     this.setData({
-	    courseBillId: options.orderId // 课程消耗id
+	    courseBillId: options.orderId, // 课程消耗id
+	    isupdate: options.isupdate  // 判断是否显示可调整
     })
     this.getExpenddetail()
   },

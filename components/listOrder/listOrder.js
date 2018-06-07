@@ -23,26 +23,11 @@ Component({
    * 组件的初始数据
    */
   data: {
-    typeName:'',
-    getTypeName: [],
-    getOutType:['报废','退货'],
-    getOrderType:['调拨入库','调拨出库'],
-	  statusName: config.dict.inventoryStatus,
     pageindex: 0, // 判断页面类型
   },
 
   //组件初始化
   ready() {
-    // let pagetitle = wx.getStorageSync('pagetitle');
-
-
-    // if (!pagetitle.includes('课程消耗')) {
-    //   _this.setData({
-    //     getTypeName: config.dict[this.data.typeName]
-    //   })
-    // }
-  //  console.log(pagetTypeIndex, typeof pagetTypeIndex)
-
   },
 
   /**
@@ -54,7 +39,10 @@ Component({
 	    let orderId = e.currentTarget.dataset.orderid; // orderId 订货单id 和 盘点id 不同列表区分不同的id
       let pageName;
       let path;
-      console.log(typeof orderStatus, typeof orderId, this.data.pageindex);
+      let outShopId = e.currentTarget.dataset.outshopid;
+      let inShopId = e.currentTarget.dataset.inshopid;
+      let orderType = e.currentTarget.dataset.ordertype;
+      let outTransferId = e.currentTarget.dataset.outtransferid
       // 0 订货 - goodsreceipt - 待收货、部分收获路径名， orderfrom - 已收货路径名， goodsinfo - 待派单路径名
       switch (this.data.pageindex){
         case 0: // 出库
@@ -74,12 +62,12 @@ Component({
           pageName = 'displaceslist';
           break;
         case 4: // 调拨
-          path = `?orderId=${orderId}&orderStatus=${orderStatus}`;
+          path = `?orderId=${orderId}&orderStatus=${orderStatus}&orderType=${orderType}&outShopId=${outShopId}&inShopId=${inShopId}&outTransferId=${outTransferId}`;
           pageName = orderStatus == 1 ? 'orderfrom' : 'allotcollect';
           break;
-        case 6:
-          path = `?orderId=${orderId}`;
-          pageName = 'expenddetail';
+        case 6: // 课程消耗
+          path = `?orderId=${orderId}&isupdate=${e.currentTarget.dataset.isupdate}`; //isupdate 判断是否需要修改操作
+          pageName = 'expendtrim';
           break;
       }
       wx.navigateTo({

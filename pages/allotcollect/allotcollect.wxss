@@ -14,3 +14,6 @@ page,.cllect{
   margin: 0;
   background-color: rgba(255,0,0,.7);
 }
+.btn-review-disable > button {
+  background-color: rgba(144, 144, 144, 1);
+}

@@ -5,8 +5,13 @@ const apiPrefix = url + 'wms/';
 const apiPrefixList = {
   WMS: apiPrefix
 }
-
-let formData;
+//var domainAdd = window.location.protocol + "//" + window.location.host;
+// if(domainAdd.indexOf('localhost') > -1 || domainAdd.indexOf('127') > -1 || domainAdd.indexOf('mobile-test') > -1 || domainAdd.indexOf('mobile-staging') > -1 || domainAdd.indexOf('test') > -1){
+// 	domainAdd = "https://test.daydaycook.com.cn";
+// }else{
+// 	domainAdd = "//api.daydaycook.com.cn";
+// }
+//
 
 /* 拼接请求参数 */
 function qrstring(url,params){
@@ -23,7 +28,7 @@ function qrstring(url,params){
 
 /* 设置 请求信息 */
 
-function service({ formType, apiPrefix, url, method = "GET", params = { token: wx.getStorageSync('getusertoken') }, data = {}, header={'content-type':'application/json'},fromH5 = true}){
+function service({ formType, apiPrefix, url, method = "GET", params = { token: wx.getStorageSync('getusertoken') }, data = {}, header={'content-type':'application/json'}}){
   return new Promise((resolve, reject) => {
     apiPrefix = apiPrefixList[apiPrefix] || apiPrefixList.WMS;
     var urlData = url ? apiPrefix + url + qrstring(url, params) : apiPrefix ;
@@ -32,7 +37,6 @@ function service({ formType, apiPrefix, url, method = "GET", params = { token: w
       header,
       method,
       data,
-      formData,
       formType,
       // complete(res){
       //   //接口请求结束执行
