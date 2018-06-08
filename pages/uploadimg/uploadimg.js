@@ -1,4 +1,5 @@
 const sysService = require('../../service/sys.service.js');
+const baseService = require('../../service/base.service.js');
 const utils = require('../../utils/util');
 const app = getApp();
 // pages/uploadimg/uploadimg.js
@@ -8,8 +9,8 @@ Page({
    * 页面的初始数据
    */
   data: {
-    maxUpNum:5,
-    imgList:[],
+    maxUpNum: 5, // 上传最大的数量
+    imgList: [],  // 图片存储
 	  reason: '', //  出库原因  报废：商品破损、商品过期、商品变质； 退货：临期、过期、在库退货、质量问题；
 	  outboundType: 0, // 出库类型 1 报废  2 退货
   },
@@ -18,7 +19,6 @@ Page({
   subInfo(){
     let outboundCacheData = wx.getStorageSync('outboundCacheData');
 	      outboundCacheData = utils.cacheDataDeal(outboundCacheData);
-    console.log(outboundCacheData);
 	  let isComplete = outboundCacheData.map((item) => { // 提交数据整理
 			  item.goodsId = item.skuId;
 			  item.shopItemSkuVO = {
@@ -55,9 +55,9 @@ Page({
 		  method: "post",
 		  data: promdData
 	  }).then((res) => {
-		  if (res.code == 0) {
+		  if (res.code =='0') {
 			  utils.showToast({title: '保存成功', page: 3})
-		  } else if(res.code == 401) {
+		  } else if(res.code == '401') {
 			  config.logOutAll();
 			  return
 		  } else {
@@ -90,7 +90,7 @@ Page({
 	uploadDIY(filePaths,i,length) {
 		   let token = wx.getStorageSync('getusertoken');
        wx.uploadFile({
-        url: 'https://wms-d.daydaycook.com.cn/wms/sys/oss/upload', //仅为示例，非真实的接口地址
+        url: `${baseService.apiPrefix}sys/oss/upload`,
         filePath: filePaths[i],
         name: 'file',
         formData:{
@@ -119,13 +119,12 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log(options, 'uploadimg');
     let pagetitle = wx.getStorageSync('pagetitle');
     this.setData({
 	    reason: options.reason, // 出库原因
 	    outboundType: options.outboundType, // 1 报废 2 退货
     })
-    wx: wx.setNavigationBarTitle({
+    wx.setNavigationBarTitle({
       title: pagetitle
     })
   },

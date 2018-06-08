@@ -65,5 +65,7 @@ function service({ formType, apiPrefix, url, method = "GET", params = { token: w
 }
 
 module.exports = {
-  service
+  service,
+  url,
+	apiPrefix
 }

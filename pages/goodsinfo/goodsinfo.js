@@ -25,7 +25,7 @@ Page({
 	  outboundType: 0 // 1 报废 2 退货
   },
 	/**
-	 * Description: 读取商品列表 待派单； 订货 状态 4 save待派单 状态 4 update ；部分收货 状态2 update ； 收货完毕 状态2 update
+	 * Description: 读取商品列表 待派单； 订货 状态 4 save; 待派单 状态 4 update; 部分收货 状态2 update ; 收货完毕 状态2 update
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/5/29
 	 */
@@ -40,7 +40,6 @@ Page({
 			method:'get',
 			data: getData
 		}).then((res) => {
-			console.log(res);
 			if (res.code == 0) {
 				let shopTempArray = this.shopListDataProcess(res.purchaseDetailVOList);
 				console.log(res.purchaseDetailVOList, shopTempArray, '读取列表');
@@ -80,7 +79,7 @@ Page({
 				finalNumber: item.finalNumber,
 				deliveryCount: item.deliveryCount,
 			}
-			item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues != null ? item.shopItemSkuVO.attrValues.split(',') : null;
+			item.shopItemSkuVO.attrValues = utils.attrValuesSplit(item.shopItemSkuVO); // attrValues string 转 array
 			Object.assign(shopTempObject, item.shopItemSkuVO, {needNumber: item.needNumber}, {tempObj:tempObj});
 			shopTempArray.push(shopTempObject);
 		})
@@ -136,7 +135,7 @@ Page({
 	    isComplete = purchaseDetailVOList.filter((item) =>{ // 过滤 没有填写数据
 			    item.goodsId = item.skuId;
 			    item.shopItemSkuVO = {
-				    attrValues: item.attrValues != null ? item.attrValues.toString() : null,
+				    attrValues: utils.attrValuesToString(item), // attrValues array 转 string
 				    id: item.id,
 				    item: item.item
 			    }
@@ -164,7 +163,7 @@ Page({
 			    let tempObj1 = JSON.parse(JSON.stringify(item.tempObj));
 			    item.shopItemSkuVO = {
 			    	id : item.id,
-			      attrValues: item.attrValues != null ? item.attrValues.toString() : null,
+			      attrValues: utils.attrValuesToString(item), // attrValues array 转 string ,
 			    	item: item.item
 			    }
 			    item.shopItemSkuVO.item.unitValue = tempObj1.tempunitValue;
@@ -187,7 +186,7 @@ Page({
 		    })
 	    } else {
 		    isComplete = purchaseDetailVOList.map((item) => { // 属性 数组转字符串
-		     item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues != null ? item.shopItemSkuVO.attrValues.toString() : null;
+		       item.shopItemSkuVO.attrValues = utils.attrValuesToString(item.shopItemSkuVO); // attrValues array 转 string
 		    })
 	    }
     }

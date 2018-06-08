@@ -37,13 +37,9 @@ Page({
 			data: promseData
 		}).then((res) => {
 			if (res.code == '0') {
-				res.inventoryDetailVOList.forEach((item) => {
-					if (item.shopItemSkuVO !== null && item.shopItemSkuVO.attrValues !== null) {
-						item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.split(',');
-					}
-				})
+				let receiptList = utils.attrValuesSkuSplit(res.inventoryDetailVOList); // attrValues  string 转 array 页面铺数据
 				this.setData({
-					receiptList: res.inventoryDetailVOList // 订货列表数据
+					receiptList // 订货列表数据
 				})
 				wx.hideLoading();
 			} else if(res.code == '401') {
@@ -93,10 +89,7 @@ Page({
 	},
   /* 提交审核 */
   subReview(){
-	  let inventoryDetailVOList = this.data.receiptList.filter((item) => {
-		    item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues !== null ? item.shopItemSkuVO.attrValues.toString() : null;
-			  return item;
-	  })
+	  let inventoryDetailVOList = utils.attrValuesSkuToString(this.data.receiptList); // attrValues array 转 string 提交数据
 	  let promeData = {
 		  id: this.data.inventoryId || null, // 盘点id
 		  shopId: app.selectIndex, // 店铺ID

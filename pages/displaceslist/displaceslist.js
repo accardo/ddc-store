@@ -2,6 +2,7 @@
 const app = getApp();
 const config = require('../../config/config.js');
 const sysService = require('../../service/sys.service.js');
+const utils = require('../../utils/util');
 Page({
 
   /**
@@ -31,10 +32,10 @@ Page({
 		}).then((res) => {
 		  console.log(res, '置换单数据');
 			if (res.code == '0') {
-			  let needAttrValues = res.displaceDetailVOList[0].needShopItemSkuVO;
-			  let shopAttrValues = res.displaceDetailVOList[0].shopItemSkuVO;
-			  needAttrValues.attrValues = needAttrValues.attrValues != null ? needAttrValues.attrValues.split(',') : null;
-			  shopAttrValues.attrValues = shopAttrValues.attrValues != null ? shopAttrValues.attrValues.split(',') : null;
+			  let needAttrValues = res.displaceDetailVOList[0].needShopItemSkuVO; // 要转换商品
+			  let shopAttrValues = res.displaceDetailVOList[0].shopItemSkuVO; // 转化为商品
+			  needAttrValues.attrValues = utils.attrValuesSplit(needAttrValues); // string 转 array 铺页面数据
+			  shopAttrValues.attrValues = utils.attrValuesSplit(shopAttrValues);  // string 转 array 铺页面数据
 				res.displaceDetailVOList[0].needShopItemSkuVO.resultNumber = res.displaceDetailVOList[0].resultNumber;
 				this.setData({
 					converFromShop: [res.displaceDetailVOList[0].needShopItemSkuVO],

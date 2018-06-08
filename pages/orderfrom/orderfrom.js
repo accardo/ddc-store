@@ -17,7 +17,28 @@ Page({
 	  pageindex: null, // 判断显示哪一个页面  订单、盘点、出库 等
 	  type: '', // 调拨 状态 1、调拨入库 2、调拨出库
   },
-
+	/**
+	 * Description: 统一回调处理 返回信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/8
+	 */
+	requestReturnInfo(res, data, img = null) {
+		if (res.code == '0') {
+			this.setData({
+				receiptList: data, // 订货列表数据
+				imgList: img
+			})
+			wx.hideLoading();
+		} else if(res.code == '401') {
+			config.logOutAll();
+			return
+		} else {
+			wx.showToast({
+				title: res.msg,
+				icon: 'none'
+			})
+		}
+	},
 	/**
 	 * Description: 获取订货单详情商品列表 info
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -34,20 +55,7 @@ Page({
       method:'get',
       data: promseData
     }).then((res) => {
-      if (res.code == '0') {
-	      this.setData({
-	        receiptList: res.purchaseDetailVOList // 订货列表数据
-        })
-	      wx.hideLoading();
-      } else if(res.code == '401') {
-		    config.logOutAll();
-		    return
-	    } else {
-		    wx.showToast({
-			    title: res.msg,
-			    icon: 'none'
-		    })
-      }
+      this.requestReturnInfo(res, res.purchaseDetailVOList);
     })
   },
 	/**
@@ -67,20 +75,7 @@ Page({
 			method:'get',
 			data: promseData
 		}).then((res) => {
-			if (res.code == '0') {
-				this.setData({
-					receiptList: res.inventoryDetailVOList // 订货列表数据
-				})
-				wx.hideLoading();
-			} else if(res.code == '401') {
-				config.logOutAll();
-				return
-			} else {
-				wx.showToast({
-					title: res.msg,
-					icon: 'none'
-				})
-			}
+			this.requestReturnInfo(res, res.inventoryDetailVOList);
 		})
   },
 	/**
@@ -99,21 +94,8 @@ Page({
 			method:'get',
 			data: promseData
 		}).then((res) => {
-			if (res.code == '0') {
-				this.setData({
-					receiptList: res.deliveryDetailVOList, // 订货列表数据
-					imgList: res.imageUrls
-				})
-				wx.hideLoading();
-			} else if(res.code == '401') {
-				config.logOutAll();
-				return
-			} else {
-				wx.showToast({
-					title: res.msg,
-					icon: 'none'
-				})
-			}
+			this.requestReturnInfo(res, res.deliveryDetailVOList, res.imageUrls);
+
 		})
 	},
 	/**
@@ -133,20 +115,7 @@ Page({
 			method:'get',
 			data: promseData
 		}).then((res) => {
-			if (res.code == '0') {
-				this.setData({
-					receiptList: res.transferVO.transferDetailVOList, // 订货列表数据
-				})
-				wx.hideLoading();
-			} else if(res.code == '401') {
-				config.logOutAll();
-				return
-			} else {
-				wx.showToast({
-					title: res.msg,
-					icon: 'none'
-				})
-			}
+			this.requestReturnInfo(res, res.transferVO.transferDetailVOList);
 		})
 	},
   /**

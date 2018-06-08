@@ -12,7 +12,7 @@ Component({
       	console.log(newVal, 'newVal')
         if (newVal) {
 	        newVal.forEach((item) => {
-	          if (item.shopItemSkuVO.attrValues && item.shopItemSkuVO.attrValues !== null) {
+	          if (item.shopItemSkuVO !== null && item.shopItemSkuVO.attrValues !== null) {
 		          item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.split(',');
             }
           })

@@ -13,10 +13,7 @@ Page({
     pageSize:10,
     shopId:0,
     categoryId:0,
-    goodsName:'',
-    showbtnbox:1,
     scrollTop:0,
-    selectProductList:[],
     navlist:[],  // 侧边导航
     stockquerylist:[],
     productlist: [], // 初始化数据
@@ -27,7 +24,6 @@ Page({
     shopPieceN:0, // 选中多少件商品
 	  reason: '', //  出库原因  报废：商品破损、商品过期、商品变质； 退货：临期、过期、在库退货、质量问题；
 	  outboundType: 0, // 出库类型 1 报废  2 退货
-	  cacheArray: [],
   },
   //选择产品类别 - 导航
   selectNav(e){
@@ -35,7 +31,6 @@ Page({
       _index: e.currentTarget.dataset.index,
       scrollTop:0
     })
-	  wx.setStorageSync('selectNavIndex', e.currentTarget.dataset.index);
 	  this.data.categoryId = e.currentTarget.dataset.categoryid
     this.getProductByNav()
   },
@@ -76,7 +71,7 @@ Page({
       pageSize: this.data.pageSize,
       shopId: app.selectIndex, // 店铺ID
       categoryId: this.data.categoryId, // 产品分类ID
-	    itemTypes, // 订货为 2,4,5,6 限制商品  盘点为 2,4,6
+	    itemTypes, // 订货为 2,4,5,6 限制商品  盘点为 2,4,6 其他都是2,4,6
     }
     sysService.category({
       url:'listProduct',
@@ -108,7 +103,6 @@ Page({
 			      productlist = this.forDataContrast(productlist, outboundCacheData[this.data._index]);
 		      }
 	      }
-	      console.log(productlist, cacheData, 'getProductByNavproductlist')
         this.setData({
           productlist,
         })
@@ -182,13 +176,13 @@ Page({
     //处理数据结构 start
     let tempInventList = wx.getStorageSync('inventoryCacheData');
         tempInventList = tempInventList ? tempInventList : this.data.productlist;
-		let inventoryDetailVOList = utils.ArrayDeepCopy(tempInventList);
-				inventoryDetailVOList = utils.cacheDataDeal(inventoryDetailVOList);
+		let inventoryDetailVOList = utils.ArrayDeepCopy(tempInventList);  // 数组深层拷贝
+				inventoryDetailVOList = utils.cacheDataDeal(inventoryDetailVOList); // 二维数组结构为一维数组进行 过滤
     let isComplete = inventoryDetailVOList.filter((item) =>{ // 过滤 没有填写数据
       if (item.unitValue !== '' || item.materialUnitValue !== '') { // 提交数据整理
           item.goodsId = item.skuId;
           item.shopItemSkuVO = {
-              attrValues: item.attrValues != null ? item.attrValues.toString() : null,
+              attrValues: utils.attrValuesToString(item), //  array 转 string 提交数据
               id: item.id,
               item: item.item
           }
@@ -213,7 +207,7 @@ Page({
 			shopId: app.selectIndex, // 店铺ID
 			inventoryDetailVOList: isComplete,
 		}
-		console.log(promdData, 'promdData111222333')
+		console.log(promdData, 'promdData')
 	  //处理数据结构 end
        return new Promise((resolve) => {
          sysService.inventory({
@@ -339,7 +333,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log(options, 'ordergoods');
     this.getMenuList();
     let pageindex = wx.getStorageSync('pageindex');
 	  if (pageindex == 0) {
@@ -357,7 +350,6 @@ Page({
     this.setData({
       pageindex,
     })
-	  wx.setStorageSync('selectNavIndex', 0);
     /* 根据页面标题 获取对应的数据源 */
     wx.setNavigationBarTitle({
       title: wx.getStorageSync('pagetitle')
@@ -408,7 +400,7 @@ Page({
     if (pageindex == 0) {
     	if (optionStorage == 2) { // 进入搜索页面
 		    let tempArray1 = this.filterData(searchGoodsOrderCacheData, 2); // 搜索数据获取数据输入不为0的数据
-    		if (cacheData.length >0) { // 有缓存先读取缓存数据后在和 当前数据对比赋值
+    		if (cacheData.length > 0) { // 有缓存先读取缓存数据后在和 当前数据对比赋值
 			    cacheData[this.data._index] = this.forDataContrastSearch(cacheData[this.data._index], tempArray1); // 搜索结果和总数据对比，如果有skuId相同责替换
 			    tempArray = this.forDataContrast(this.data.productlist, cacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 			    wx.setStorageSync('cacheData', cacheData); // 搜索结束后 需要把搜索结果放入到总的结果缓存中

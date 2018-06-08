@@ -11,7 +11,6 @@ Component({
 	    observer: function(newVal, oldVal) {
 		    let pageindex = wx.getStorageSync('pageindex');
 		    console.log(newVal, pageindex, 'newVal');
-		    console.log(this.data.productConclusion, 'productConclusion')
         this.setData({
           pageindex,
           productList: newVal
@@ -210,7 +209,6 @@ Component({
      */
     setCurrentNum(e,isAddRed) {
       // let current = this.getCurrent(e);
-	    console.log(e);
       let index = e.currentTarget.dataset.index;
       if ( isAddRed) {// 加法
         if (this.data.productType == 'goods') { // 订货详情

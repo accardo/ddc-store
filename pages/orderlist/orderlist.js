@@ -54,52 +54,67 @@ Page({
     }
   },
 	/**
+	 * Description: 统一处理 返回信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/8
+	 */
+	requestReturnInfo (res) {
+		wx.stopPullDownRefresh();
+		if (res.code = '0') {
+			if (res.page.list.length == 0) {
+				wx.hideLoading();
+				wx.showToast({
+					title: '没有更多数据',
+					icon:'none'
+				});
+				wx.stopPullDownRefresh();
+				return
+			}
+			this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
+			this.setData({
+				listData: this.data.pagetListData,
+				currPage: this.data.currPage + 1
+			})
+		} else if (res.code == '401') {
+			config.logOutAll();
+			return
+		} else {
+			wx.showToast({
+				title: res.msg,
+				icon: 'none'
+			})
+		}
+		wx.hideLoading();
+	},
+	/**
+	 * Description: 请求数据 整合
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/8
+	 */
+	getData() {
+		let getParm = {
+			currPage: this.data.currPage,
+			pageSize: this.data.pageSize,
+			shopId: app.selectIndex,
+		}
+		return getParm
+	},
+	/**
 	 * Description: 获取订货信息
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/5/31
 	 */
   getOrderGoods() {
     wx.showLoading({ title: '加载中' });
-    let getParm = {
-      currPage: this.data.currPage,
-      pageSize: this.data.pageSize,
-      shopId: app.selectIndex,
-    }
     sysService.purchase({
       url: 'list',
       method: 'get',
-      data: getParm
+      data: this.getData()
     }).then((res) => {
-      wx.stopPullDownRefresh();
-      if (res.code = '0') {
-        if (res.page.list.length == 0) {
-          wx.hideLoading();
-          wx.showToast({
-            title: '没有更多数据',
-            icon:'none'
-          });
-          wx.stopPullDownRefresh();
-          return
-        }
-        this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
-        console.log(this.data.pagetListData, 'this.data.pagetListData')
-        this.setData({
-          listData: this.data.pagetListData,
-          currPage: this.data.currPage + 1
-        })
-      } else if (res.code == '401') {
-        config.logOutAll();
-        return
-      } else {
-        wx.showToast({
-          title: res.msg,
-          icon: 'none'
-        })
-      }
-      wx.hideLoading();
-      }).catch(() => {
-        wx.hideLoading();
-      })
+    	this.requestReturnInfo(res);
+    }).catch(() => {
+    	wx.hideLoading();
+    })
   },
 	/**
 	 * Description: 获取盘点信息
@@ -108,42 +123,12 @@ Page({
 	 */
   getInventory() {
 		wx.showLoading({ title: '加载中' });
-		let getParm = {
-			currPage: this.data.currPage,
-			pageSize: this.data.pageSize,
-			shopId: app.selectIndex,
-		}
 		sysService.inventory({
 			url: 'list',
 			method: 'get',
-			data: getParm
+			data: this.getData()
 		}).then((res) => {
-			wx.stopPullDownRefresh();
-			if (res.code == '0') {
-				if (res.page.list.length == 0) {
-					wx.hideLoading();
-					wx.showToast({
-						title: '没有更多数据',
-						icon:'none'
-					});
-					wx.stopPullDownRefresh();
-					return
-				}
-				this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
-				this.setData({
-					listData: this.data.pagetListData,
-					currPage: this.data.currPage + 1
-				})
-			} else if (res.code == '401') {
-        config.logOutAll();
-        return
-      } else {
-				wx.showToast({
-					title: res.msg,
-					icon: 'none'
-				})
-			}
-			wx.hideLoading();
+			this.requestReturnInfo(res);
 		}).catch(() => {
 			wx.hideLoading();
 		})
@@ -155,42 +140,12 @@ Page({
 	 */
 	getOutbound() {
 		wx.showLoading({ title: '加载中' });
-		let getParm = {
-			currPage: this.data.currPage,
-			pageSize: this.data.pageSize,
-			shopId: app.selectIndex,
-		}
 		sysService.delivery({
 			url: 'list',
 			method: 'get',
-			data: getParm
+			data: this.getData()
 		}).then((res) => {
-			wx.stopPullDownRefresh();
-			if (res.code == '0') {
-				if (res.page.list.length == 0) {
-					wx.hideLoading();
-					wx.showToast({
-						title: '没有更多数据',
-						icon:'none'
-					});
-					wx.stopPullDownRefresh();
-					return
-				}
-				this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
-				this.setData({
-					listData: this.data.pagetListData,
-					currPage: this.data.currPage + 1
-				})
-			} else if (res.code == '401') {
-				config.logOutAll();
-				return
-			} else {
-				wx.showToast({
-					title: res.msg,
-					icon: 'none'
-				})
-			}
-			wx.hideLoading();
+			this.requestReturnInfo(res);
 		}).catch(() => {
 			wx.hideLoading();
 		})
@@ -202,42 +157,12 @@ Page({
 	 */
 	getSubstitution() {
 		wx.showLoading({ title: '加载中' });
-		let getParm = {
-			currPage: this.data.currPage,
-			pageSize: this.data.pageSize,
-			shopId: app.selectIndex,
-		}
 		sysService.displace({
 			url: 'list',
 			method: 'get',
-			data: getParm
+			data: this.getData()
 		}).then((res) => {
-			wx.stopPullDownRefresh();
-			if (res.code == '0') {
-				if (res.page.list.length == 0) {
-					wx.hideLoading();
-					wx.showToast({
-						title: '没有更多数据',
-						icon:'none'
-					});
-					wx.stopPullDownRefresh();
-					return
-				}
-				this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
-				this.setData({
-					listData: this.data.pagetListData,
-					currPage: this.data.currPage + 1
-				})
-			} else if (res.code == '401') {
-				config.logOutAll();
-				return
-			} else {
-				wx.showToast({
-					title: res.msg,
-					icon: 'none'
-				})
-			}
-			wx.hideLoading();
+			this.requestReturnInfo(res);
 		}).catch(() => {
 			wx.hideLoading();
 		})
@@ -249,42 +174,12 @@ Page({
 	 */
 	getTransfers() {
 		wx.showLoading({ title: '加载中' });
-		let getParm = {
-			currPage: this.data.currPage,
-			pageSize: this.data.pageSize,
-			shopId: app.selectIndex,
-		}
 		sysService.transfer({
 			url: 'list',
 			method: 'get',
-			data: getParm
+			data: this.getData()
 		}).then((res) => {
-			wx.stopPullDownRefresh();
-			if (res.code == '0') {
-				if (res.page.list.length == 0) {
-					wx.hideLoading();
-					wx.showToast({
-						title: '没有更多数据',
-						icon:'none'
-					});
-					wx.stopPullDownRefresh();
-					return
-				}
-				this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
-				this.setData({
-					listData: this.data.pagetListData,
-					currPage: this.data.currPage + 1
-				})
-			} else if (res.code == '401') {
-				config.logOutAll();
-				return
-			} else {
-				wx.showToast({
-					title: res.msg,
-					icon: 'none'
-				})
-			}
-			wx.hideLoading();
+			this.requestReturnInfo(res);
 		}).catch(() => {
 			wx.hideLoading();
 		})
@@ -296,43 +191,12 @@ Page({
 	 */
 	getConsumption() {
 		wx.showLoading({ title: '加载中' });
-		let getParm = {
-			currPage: this.data.currPage,
-			pageSize: this.data.pageSize,
-			shopId: app.selectIndex,
-		}
 		sysService.coursebill({
 			url: 'list',
 			method: 'get',
-			data: getParm
+			data: this.getData()
 		}).then((res) => {
-			wx.stopPullDownRefresh();
-			if (res.code == '0') {
-				console.log(res, 'getConsumption');
-				if (res.page.list.length == 0) {
-					wx.hideLoading();
-					wx.showToast({
-						title: '没有更多数据',
-						icon:'none'
-					});
-					wx.stopPullDownRefresh();
-					return
-				}
-				this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
-				this.setData({
-					listData: this.data.pagetListData,
-					currPage: this.data.currPage + 1
-				})
-			} else if (res.code == '401') {
-				config.logOutAll();
-				return
-			} else {
-				wx.showToast({
-					title: res.msg,
-					icon: 'none'
-				})
-			}
-			wx.hideLoading();
+			this.requestReturnInfo(res);
 		}).catch(() => {
 			wx.hideLoading();
 		})
@@ -393,7 +257,6 @@ Page({
   onLoad: function (options) {
 	   let btntext = ''; // 拼接按钮提示
 	   let pageindex = wx.getStorageSync('pageindex');
-	   console.log(pageindex, options);
 	   switch(pageindex){
         case 0: // 订货
           btntext = options.titlename;
@@ -402,7 +265,6 @@ Page({
         case 1: // 盘点
           btntext = options.titlename;
 	        this.getInventory();
-          console.log(btntext);
           break;
         case 2: // 出库操作
 	        this.getOutbound();
@@ -478,6 +340,8 @@ Page({
     	this.getSubstitution();
     } else if (this.data.pageindex == 4) {
     	this.getTransfers();
+    } else if (this.data.pageindex == 6) {
+    	this.getConsumption();
     }
   },
 

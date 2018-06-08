@@ -18,13 +18,6 @@ Page({
 	  tempReceiptList: [], // 子组件返回父组件临时数据待提交用
     purchaseId: '' // 订货单ID
   },
-
-  /* 根据订单号获取订单详情 */
-  getOrderDetailByNum(){
-  
-
-  },
-
 	/**
 	 * Description: 子组件返回的订货数据
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -42,7 +35,7 @@ Page({
 	 */
 	partialReceipt(){
 		let	ArrayDeepCopyData = utils.ArrayDeepCopy(this.data.tempReceiptList);  // 深层拷贝防止子组件数据联动
-		let purchaseDetailVOList = utils.dataSorting(ArrayDeepCopyData); // 属性 数组转字符串
+		let purchaseDetailVOList = utils.attrValuesSkuToString(ArrayDeepCopyData); // array 转 string 提交数据
 		    purchaseDetailVOList = purchaseDetailVOList.filter((item) => {
 					if (item.deliveryCount !== null && item.deliveryCount !== '') {
 						delete item.createTime;
@@ -82,7 +75,7 @@ Page({
   //全部收货
   completeReceipt(){
 	  let	ArrayDeepCopyData = utils.ArrayDeepCopy(this.data.tempReceiptList);  // 深层拷贝防止子组件数据联动
-	  let purchaseDetailVOList = utils.dataSorting(ArrayDeepCopyData); // 属性 数组转字符串
+	  let purchaseDetailVOList = utils.attrValuesSkuToString(ArrayDeepCopyData); // 属性 数组转字符串
 	  let isComplete = ArrayDeepCopyData.filter((item) => { // 过滤是否有 - 的商品，有如果判断收货数量是否填写，返回为[]责为全部收货
 		  if (item.finalNumber == 0) {
 			  if (item.deliveryCount == '' || item.deliveryCount == null ) {
@@ -154,14 +147,13 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
-    let _this = this;
 	  let pageindex = wx.getStorageSync('pageindex');
 	  if (pageindex == 0) { // 0 订货页面
-		  _this.setData({
+		  this.setData({
 			  purchaseId: options.orderId, // 订货单id
 			  status: options.orderStatus,
 		  })
-		  _this.getSreceipt();
+		  this.getSreceipt();
 	  }
     wx.setNavigationBarTitle({
       title: '收货'

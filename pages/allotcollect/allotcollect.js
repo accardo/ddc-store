@@ -36,8 +36,8 @@ Page({
 			if (res.code == '0') {
 				res.transferVO.transferDetailVOList.forEach((item) => {
 					if (item.shopItemSkuVO !== null) {
-						item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.split(',');
-						item.type = this.data.type
+						item.shopItemSkuVO.attrValues = utils.attrValuesSplit(item.shopItemSkuVO);
+						item.type = this.data.type;
 					}
 				})
 				this.setData({
@@ -64,7 +64,7 @@ Page({
     let collectCacheData = wx.getStorageSync('collectCacheData');
 		collectCacheData = collectCacheData && collectCacheData.filter((item) => {
 			if (item.inNumber != '' && item.inNumber != '0') {
-				item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.toString()
+				item.shopItemSkuVO.attrValues = utils.attrValuesToString(item.shopItemSkuVO);
 				return item;
 			}
 		})

@@ -51,19 +51,49 @@ function limitClass(num) {
 	}
 	return limitClass;
 }
+/**
+ * Description: attrValues 直接转 array 转 string
+ * Author: yanlichen <lichen.yan@daydaycook.com>
+ * Date: 2018/6/8
+ */
+function attrValuesToString(data) {
+	return data.attrValues !== null ? data.attrValues.toString() : null;
+}
 
 /**
- * Description: 订货 提交数据处理
+ * Description: 直接转 string 转 array
  * Author: yanlichen <lichen.yan@daydaycook.com>
- * Date: 2018/5/23
+ * Date: 2018/6/8
  */
-function dataSorting(data) {
-	data.forEach((item) => { // 属性 数组转字符串
-		item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.toString();
+function attrValuesSplit(data) {
+	return data.attrValues != null ? data.attrValues.split(',') : null;
+}
+/**
+ * Description: shopItemSkuVO 数据结构 attrValues string 转 array
+ * Author: yanlichen <lichen.yan@daydaycook.com>
+ * Date: 2018/6/8
+ */
+function attrValuesSkuSplit(data) {
+	data.forEach((item) => {
+		if (item.shopItemSkuVO !== null && item.shopItemSkuVO.attrValues !== null) {
+			item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.split(',');
+		}
 	})
 	return data;
 }
-
+/**
+ * Description: shopItemSkuVO 数据结构 attrValues array 转 string
+ * Author: yanlichen <lichen.yan@daydaycook.com>
+ * Date: 2018/6/8
+ */
+function attrValuesSkuToString(data) {
+	data.forEach((item) => {
+		if (item.shopItemSkuVO !== null && item.shopItemSkuVO.attrValues !== null) {
+			item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.toString();
+		}
+	})
+	return data;
+}
 /**
  * Description: 数组拷贝转换
  * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -127,8 +157,12 @@ module.exports = {
   getType,
 	limitClass,
 	ArrayDeepCopy,
-	dataSorting,
 	showToast,
 	cacheDataDeal,
 	setTotalNumber,
+	attrValuesToString,
+	attrValuesSplit,
+	attrValuesSkuSplit,
+	attrValuesSkuToString,
+
 }

@@ -56,10 +56,10 @@ Page({
   subAllot(){
   	let transferCacheData = wx.getStorageSync('transferCacheData');
   	console.log(transferCacheData, 'transferCacheData')
-	  let isComplete = transferCacheData.filter((item) =>{ // 过滤 没有填写数据
+	  let isComplete = transferCacheData.filter((item) => { // 过滤 没有填写数据
 		  item.goodsId = item.skuId;
 		  item.shopItemSkuVO = {
-			  attrValues: item.attrValues != null ? item.attrValues.toString() : null,
+			  attrValues: utils.attrValuesToString(item), // array 转 string 提交数据
 			  id: item.id,
 			  item: item.item
 		  }

@@ -10,7 +10,7 @@ Page({
    */
   data: {
     focus:true,
-    searchtxt:'',
+    searchtxt:'', // 输入的文本
     searchReset: false,
     showList: false,
     shopType:'',
@@ -20,8 +20,8 @@ Page({
     pageSize:10,
     categoryId: '',
     productlist: [], // 搜索原始数据
-	  navClassIndex: 0,
-	  inputShow: false,
+	  navClassIndex: 0, // 用于判断页面多分类数据 存储二维数组
+	  inputShow: false, // 置换页面中用 是否显示input框
 	  fromInto: '', // form  要转换的商品  info 转换为的商品
   },
 
@@ -59,7 +59,6 @@ Page({
       data: getProse
     }).then((res) => {
       if (res.code == 0) {
-        console.log(res.page.list);
 	      res.page.list.forEach((item) => {
 		      item.attrValues = item.attrValues ? item.attrValues.split(',') : null;
 		      if (pageIndex == 0) { // 订货
@@ -114,7 +113,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log(options, 'search options')
 	  let pageIndex = wx.getStorageSync('pageindex');
     if (options.shopType){
       this.setData({

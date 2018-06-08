@@ -85,6 +85,7 @@ page
   justify-content:flex-end;
   align-items: center;
   position: relative;
+  margin-right: 25rpx;
 }
 .product-count .input-icon{
   width: 50rpx;

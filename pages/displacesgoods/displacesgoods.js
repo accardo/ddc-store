@@ -70,12 +70,12 @@ Page({
 		let converInto = wx.getStorageSync('setConverInto'); // 转化为商品 数据
     let isComplete = converFrom.map((item, index) => { // 提交数据整理
 			item.needShopItemSkuVO = {
-				attrValues: item.attrValues != null ? item.attrValues.toString() : null,
+				attrValues: utils.attrValuesToString(item), // array 转 string 提交数据
 				id: item.id,
 				item: item.item
 			}
 	    item.shopItemSkuVO = {
-		    attrValues: converInto[index].attrValues != null ? converInto[index].attrValues.toString() : null,
+		    attrValues: utils.attrValuesToString(converInto[index]), // array 转 string 提交数据
 		    id: converInto[index].id,
 		    item: converInto[index].item
       }
