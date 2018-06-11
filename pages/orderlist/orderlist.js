@@ -17,8 +17,8 @@ Page({
     pagetListData: [], // 临时拼接数据需要合并到 lisData中
     pageindex: 0, // 缓存数据中取出 判断是哪个类型
     labelList:[], // 报废 退货 信息 前端字典
-    currPage:1,
-    pageSize:10,
+    currPage: 1,
+    pageSize: 10,
   },
 
   /* 商品详情 */
@@ -59,7 +59,7 @@ Page({
 	 * Date: 2018/6/8
 	 */
 	requestReturnInfo (res) {
-		wx.stopPullDownRefresh();
+		 wx.stopPullDownRefresh();
 		if (res.code = '0') {
 			if (res.page.list.length == 0) {
 				wx.hideLoading();
@@ -263,7 +263,7 @@ Page({
 	        this.getOrderGoods();
           break;
         case 1: // 盘点
-          btntext = options.titlename;
+          btntext = options.titlename || '盘点';
 	        this.getInventory();
           break;
         case 2: // 出库操作
@@ -295,14 +295,23 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-
+		console.log(1111)
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+	  // this.setData({
+		 //  listData: [],
+		 //  currPage: 1
+	  // })
+  	// if(this.data.pageindex == 0) {
+		 //  this.getOrderGoods();
+	  // } else if(this.data.pageindex == 1 ) {
+		 //  this.getInventory();
+		 //  console.log(1111111)
+	  // }
   },
 
   /**
@@ -316,7 +325,6 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-  
   },
 
   /**

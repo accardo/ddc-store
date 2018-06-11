@@ -111,7 +111,7 @@ Page({
 			        return
 		        }
 		        if(code == 0){
-			        utils.showToast({title: '调拨成功', page: '2'});
+			        utils.showToast({title: '调拨成功', page: 2, pages: getCurrentPages()});
 		        }else{
 			        wx.showToast({
 				        title: msg,

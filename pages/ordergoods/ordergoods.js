@@ -232,7 +232,7 @@ Page({
         if (res.confirm){
             this.getInventory().then((data) => {
               if (data.code == '0') {
-                utils.showToast({title: '提交盘点成功', page: 1});
+                utils.showToast({title: '提交盘点成功', page: 1, pages: getCurrentPages()});
 	              wx.removeStorageSync('inventoryCacheData'); // 数据提交后 清除缓存
 	              wx.removeStorageSync('searchInventoryCacheData'); // 数据提交后 清除缓存
               } else if (data.code == '401') {

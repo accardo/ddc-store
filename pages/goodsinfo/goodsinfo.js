@@ -205,7 +205,7 @@ Page({
 	      data: promeData
       }).then((res) => {
         if (res.code == 0) {
-	        utils.showToast({title: '更新成功', page: '1'})
+	        utils.showToast({title: '更新成功', page: 1, pages: getCurrentPages()});
         } else if(res.code == 401) {
 	        config.logOutAll();
 	        return
@@ -228,7 +228,7 @@ Page({
 			    return
 		    }
 		    if(code == 0){
-			    utils.showToast({title: '订货成功', page: 3});
+			    utils.showToast({title: '订货成功', page: 2, pages: getCurrentPages()});
 			    this.clearCache();
 		    }else{
 			    wx.showToast({

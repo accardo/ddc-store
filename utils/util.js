@@ -109,6 +109,7 @@ function ArrayDeepCopy(data) {
  * Date: 2018/5/24
  */
 function showToast(data) {
+	let pages = data.pages[data.pages.length - (data.page + 1)]; // 当前页面选中的 this
 	wx.showToast({
 		title: data.title,
 	});
@@ -116,6 +117,15 @@ function showToast(data) {
 		wx.navigateBack({
 			delta: data.page
 		})
+		if (pages == undefined || pages == null) {
+			return
+		}
+		pages.setData({
+			listData: [],
+			pagetListData: [],
+			currPage: 1
+		})
+		pages.onLoad(pages.options)
 	}, 800);
 }
 

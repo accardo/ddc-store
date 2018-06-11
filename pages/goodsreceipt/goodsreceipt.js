@@ -59,8 +59,8 @@ Page({
 		  data: promeData
 	  }).then((res) => {
 		  if (res.code == 0) {
-			  utils.showToast({title: '部分收货成功', page: 1});
-		  } else if (res.code == 401) {
+			  utils.showToast({title: '更新成功', page: 1, pages: getCurrentPages()});
+			  } else if (res.code == 401) {
 			  config.logOutAll();
 			  return
 		  } else {
@@ -101,7 +101,7 @@ Page({
 		          data: promeData
 	          }).then((res) => {
 		          if (res.code == 0) {
-		          	utils.showToast({ title:'收货成功', page: 1 });
+			          utils.showToast({title: '收货成功', page: 1, pages: getCurrentPages()});
 		          } else if (res.code == 401) {
 			          config.logOutAll();
 			          return

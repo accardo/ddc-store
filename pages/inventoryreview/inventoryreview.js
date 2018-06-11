@@ -106,7 +106,7 @@ Page({
 		        data: promeData
 	        }).then((res) => {
 		        if (res.code == 0) {
-			        utils.showToast({title: '盘点成功', page: 1});
+			        utils.showToast({title: '盘点成功', page: 1, pages: getCurrentPages()});
 		        } else if (res.code == 401) {
 			        config.logOutAll();
 			        return
