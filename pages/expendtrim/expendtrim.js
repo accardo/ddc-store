@@ -170,9 +170,9 @@ Page({
 	  let pagetitle = wx.getStorageSync('pagetitle');
   	console.log(options, '课程消耗')
 	  this.setData({
-		  courseBillId: options.orderId, // 课程消耗id
+		  courseBillId: options.orderId || 0, // 课程消耗id
 		  isupdate: options.isupdate,  // 判断是否显示可调整
-		  isExpend: options.isExpend, // 判断是否是直接点击课程消耗按钮
+		  isExpend: options.isExpend || 0, // 判断是否是直接点击课程消耗按钮
 	  })
     this.getExpendtrim();
     wx.setNavigationBarTitle({
