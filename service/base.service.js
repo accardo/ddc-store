@@ -1,6 +1,6 @@
 //请求的总 URL 地址
 const util = require('../utils/util.js');
-const url ="https://wms-d.daydaycook.com.cn/";
+const url ="https://store-wms-t.daydaycook.com.cn/";
 const apiPrefix = url + 'wms/';
 const apiPrefixList = {
   WMS: apiPrefix

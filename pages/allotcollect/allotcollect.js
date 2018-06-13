@@ -14,7 +14,7 @@ Page({
 	  transferId: '', // 调拨单id
 	  outShopId: '', // 调出店铺 id
 	  inShopId: '',  // 调入店铺id
-	  outTransferId: '', // 调拨出库单id
+	  outTransferId: '' // 调拨单id
   },
 	/**
 	 * Description: 获取调拨详情列表 info
@@ -42,6 +42,7 @@ Page({
 				})
 				this.setData({
 					productlist: res.transferVO.transferDetailVOList, // 订货列表数据
+					outTransferId: res.transferVO.outTransferId,
 				})
 				wx.hideLoading();
 			} else if(res.code == '401') {
@@ -82,6 +83,7 @@ Page({
 				outTransferId: this.data.outTransferId, // 调拨出库单id
 				transferDetailVOList: collectCacheData
 			}
+			console.log(promseData, 'collectCacheData');
 			sysService.transfer({
 				url:'update',
 				method:'post',
@@ -112,7 +114,6 @@ Page({
 		  type: options.orderType,  // 调拨点状态
 		  outShopId: options.outShopId, // 调出店铺 id
 		  inShopId: options.inShopId,  // 调入店铺id
-		  outTransferId: options.outTransferId // 调拨出库单id
 	  })
 	  this.gettransferData();
 	  wx.setNavigationBarTitle({

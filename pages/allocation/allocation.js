@@ -57,7 +57,7 @@ Page({
   	let transferCacheData = wx.getStorageSync('transferCacheData');
   	console.log(transferCacheData, 'transferCacheData')
 	  let isComplete = transferCacheData.filter((item) => { // 过滤 没有填写数据
-		  item.goodsId = item.skuId;
+		  item.goodsId = item.id;
 		  item.shopItemSkuVO = {
 			  attrValues: utils.attrValuesToString(item), // array 转 string 提交数据
 			  id: item.id,
@@ -65,6 +65,7 @@ Page({
 		  }
 		  delete item.attrValues;
 		  delete item.copyShopItemSkuId;
+		  delete item.id;
 		  delete item.isExist;
 		  delete item.isSale;
 		  delete item.item;

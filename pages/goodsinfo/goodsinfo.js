@@ -132,8 +132,8 @@ Page({
     if (this.data.update != '1') { // 1 为更新操作 处理原始数据，原始数据和后台传数据结构相差太大，很坑人的。
 	    purchaseDetailVOList = wx.getStorageSync('cacheData');
 	    purchaseDetailVOList = utils.cacheDataDeal(purchaseDetailVOList);
-	    isComplete = purchaseDetailVOList.filter((item) =>{ // 过滤 没有填写数据
-			    item.goodsId = item.skuId;
+	    isComplete = purchaseDetailVOList.filter((item) => { // 过滤 没有填写数据
+			    item.goodsId = item.id;
 			    item.shopItemSkuVO = {
 				    attrValues: utils.attrValuesToString(item), // attrValues array 转 string
 				    id: item.id,
@@ -141,6 +141,7 @@ Page({
 			    }
 			    delete item.attrValues;
 			    delete item.copyShopItemSkuId;
+		      delete item.id;
 			    delete item.isExist;
 			    delete item.isSale;
 			    delete item.item;

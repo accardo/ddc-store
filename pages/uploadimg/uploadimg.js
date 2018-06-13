@@ -20,7 +20,7 @@ Page({
     let outboundCacheData = wx.getStorageSync('outboundCacheData');
 	      outboundCacheData = utils.cacheDataDeal(outboundCacheData);
 	  let isComplete = outboundCacheData.map((item) => { // 提交数据整理
-			  item.goodsId = item.skuId;
+			  item.goodsId = item.id;
 			  item.shopItemSkuVO = {
 				  attrValues: item.attrValues != null ? item.attrValues.toString() : null,
 				  id: item.id,
@@ -28,6 +28,7 @@ Page({
 			  }
 			  delete item.attrValues;
 			  delete item.copyShopItemSkuId;
+			  delete item.id;
 			  delete item.isExist;
 			  delete item.isSale;
 			  delete item.item;

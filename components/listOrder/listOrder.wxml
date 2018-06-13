@@ -134,11 +134,11 @@
     <view class='allot-box'>
       <view class='list-name'>
         <text class='label-txt'>提交人：</text>
-        <text class='label-name'>{{ item.createName }}</text>
+        <text class='label-name'>{{ item.createName || '' }}</text>
       </view>
       <view class='list-name'>
         <text class='label-txt'>收货人：</text>
-        <text class='label-name'>{{ item.updateName }}</text>
+        <text class='label-name'>{{ item.updateName || '' }}</text>
       </view>
     </view>
     <view class='list-time'>

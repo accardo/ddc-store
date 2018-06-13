@@ -13,8 +13,8 @@ Page({
    */
   data: {
     imgUrl: config.pageImgUrl,
-    username:'wms',
-    userpwd:'123456',
+    username:'',
+    userpwd:'',
     toastText:'',
     duration: 1200,
     selectIndex:0,

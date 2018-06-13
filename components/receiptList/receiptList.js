@@ -37,8 +37,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    defImg: 'logo.png',
-    imgUrl: config.pageImgUrl,
+    defImg: config.pageImgUrl+'logo.png',
     pageType:'',
     // titlename:'',
 	  pageindex:0,

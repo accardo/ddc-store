@@ -180,7 +180,7 @@ Page({
 				inventoryDetailVOList = utils.cacheDataDeal(inventoryDetailVOList); // 二维数组结构为一维数组进行 过滤
     let isComplete = inventoryDetailVOList.filter((item) =>{ // 过滤 没有填写数据
       if (item.unitValue !== '' || item.materialUnitValue !== '') { // 提交数据整理
-          item.goodsId = item.skuId;
+          item.goodsId = item.id;
           item.shopItemSkuVO = {
               attrValues: utils.attrValuesToString(item), //  array 转 string 提交数据
               id: item.id,
@@ -188,6 +188,7 @@ Page({
           }
           delete item.attrValues;
           delete item.copyShopItemSkuId;
+          delete item.id;
           delete item.isExist;
           delete item.isSale;
           delete item.item;

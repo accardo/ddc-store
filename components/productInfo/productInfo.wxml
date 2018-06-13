@@ -1,7 +1,7 @@
 <!--components/productInfo/productInfo.wxml-->
 <view class='goods-box'>
       <view class='goods-item'  wx:for="{{productList}}" wx:key="index" >
-        <image class="goods-img {{item.thumb.includes('http') ? '':'active'}}" src="{{item.thumb.includes('http') ? item.thumb : defImg}}"></image>
+        <image class="goods-img {{item.thumb !== null ? '' : 'active'}}" src="{{item.thumb !== null ? item.thumb : defImg}}"></image>
           <!--pageindex = 0 订货 start-->
           <view wx:if="{{pageindex == 0  && productType == 'goods'}}" class='goods-txt-box'>
               <view class='goods-txt'>
@@ -39,7 +39,7 @@
             >
                 <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
             </view>
-            <view class='goods-stock'>
+            <view class='goods-stock' wx:if="{{item.item.deductionType != 1}}">
                 净含量：<text>{{item.item.netWightValue +''+ item.item.materialUnitName}}</text>
              </view>
           <view class='goods-stock stock-num'>
@@ -169,11 +169,11 @@
             >
                 <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
             </view>
-            <view class='goods-stock'>
+            <view class='goods-stock' wx:if="{{item.item.deductionType != 1}}">
                 净含量：<text>{{item.item.netWightValue +''+ item.item.materialUnitName}}</text>
             </view>
           <view class='goods-stock'>
-            盘点数量：
+            当前库存：
               <view class="number-box" wx:if="{{item.item.deductionType == 2}}">
                   {{item.item.unitValue}}{{item.item.unitName}} <!-- 2 拆零扣减整数-->
                   {{item.item.materialUnitValue}}{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
