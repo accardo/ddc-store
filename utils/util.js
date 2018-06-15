@@ -161,6 +161,38 @@ function setTotalNumber(data) {
 		shopPieceN
 	}
 }
+let digitLength = num => {
+	const eSplit = num.toString().split(/[eE]/);
+	const len = (eSplit[0].split('.')[1] || '').length - (+(eSplit[1] || 0));
+	return len > 0 ? len : 0;
+}
+
+//精确加法
+let add = (num1, num2) => {
+	const baseNum = Math.pow(10, Math.max(digitLength(num1), digitLength(num2)));
+	return (sub(num1, baseNum) + sub(num2, baseNum)) / baseNum;
+}
+
+//精确减法
+let reduce = (num1, num2) => {
+	const baseNum = Math.pow(10, Math.max(digitLength(num1), digitLength(num2)));
+	return (sub(num1, baseNum) - sub(num2, baseNum)) / baseNum;
+}
+
+// 精确乘法
+let sub = (num1, num2) => {
+	const num1Changed = Number(num1.toString().replace('.', ''));
+	const num2Changed = Number(num2.toString().replace('.', ''));
+	const baseNum = digitLength(num1) + digitLength(num2);
+	return num1Changed * num2Changed / Math.pow(10, baseNum);
+}
+
+//精确除法
+let divide = (num1, num2) => {
+	const num1Changed = Number(num1.toString().replace('.', ''));
+	const num2Changed = Number(num2.toString().replace('.', ''));
+	return sub((num1Changed / num2Changed), Math.pow(10, digitLength(num2) - digitLength(num1)));
+}
 
 module.exports = {
   formatTime,
@@ -174,5 +206,9 @@ module.exports = {
 	attrValuesSplit,
 	attrValuesSkuSplit,
 	attrValuesSkuToString,
+	add,
+	reduce,
+	sub,
+	divide
 
 }

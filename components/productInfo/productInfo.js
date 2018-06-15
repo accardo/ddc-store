@@ -1,5 +1,6 @@
 // components/productInfo/productInfo.js
 var config = require('../../config/config.js');
+const utils = require('../../utils/util');
 Component({
   /**
    * 组件的属性列表  希望后来人不要骂我 都是让 后端逼的才这么写
@@ -102,6 +103,41 @@ Component({
 				  this.cacheStorageSpaceInfo(e.currentTarget.dataset.navclassindex)
 			  }
 		  }else if(this.data.pageindex == 2) {
+			  if (this.data.productList[e.currentTarget.dataset.index].item.deductionType == 1) {
+			  	// 判断输入商品数量不能大于当前库存，直接扣减
+			  	if (parseInt(e.detail.value) > parseInt(this.data.productList[e.currentTarget.dataset.index].item.unitValue)) {
+					  this.data.productList[e.currentTarget.dataset.index].unitValue = ''
+			  		this.setData({
+						  productList: this.data.productList
+					  })
+					  wx.showToast({
+						  title: '不能大于当前库存',
+						  icon: 'none'
+					  })
+				  }
+			  } else if(this.data.productList[e.currentTarget.dataset.index].item.deductionType == 2) { // 拆零扣减
+			  	// 拆零扣减 计算 当前总量 > 库存总量  清空输入框 提示 不能大于当前库存
+				  // 库存总量 = 拆零扣减整数 * 净含量 + 拆零扣减拆零位
+				  // 当前总量 = 输入拆零扣减整数位 * 净含量 + 输入拆零扣减拆零位
+				  let itemUnitValue = this.data.productList[e.currentTarget.dataset.index].item.unitValue; // 拆零扣减 整数位
+				  let itemMaterialUnitValue = this.data.productList[e.currentTarget.dataset.index].item.materialUnitValue; // 拆零扣减 拆零位
+				  let netWightValue = this.data.productList[e.currentTarget.dataset.index].item.netWightValue; // 净含量
+				  let itemTotal = utils.add(utils.sub(itemUnitValue, netWightValue), itemMaterialUnitValue); // 库存总量
+
+				  let inputUnitValue = this.data.productList[e.currentTarget.dataset.index].unitValue; // 输入拆零扣减 整数位
+				  let inputMaterialUnitValue = this.data.productList[e.currentTarget.dataset.index].materialUnitValue; //输入拆零扣减 拆零位
+				  let total = utils.add(utils.sub(inputUnitValue, netWightValue), inputMaterialUnitValue); // 当前总量
+				  if (total > itemTotal) {
+					  this.data.productList[e.currentTarget.dataset.index].unitValue = '';
+					  this.setData({
+						  productList: this.data.productList
+					  })
+					  wx.showToast({
+						  title: '不能大于当前库存',
+						  icon: 'none'
+					  })
+				  }
+			  }
 		  	if (this.data.shopTypeSearch == 'search') {
 				  wx.setStorageSync('searchOutboundCacheData', this.data.productList); // 查询页面 设置出库缓存
 			  } else {
@@ -123,6 +159,30 @@ Component({
 				  this.cacheStorageSpaceInfo(e.currentTarget.dataset.navclassindex)
 			  }
 		  } else if (this.data.pageindex == 2) {
+
+			    // 拆零扣减
+				  // 拆零扣减 计算 当前总量 > 库存总量  清空输入框 提示 不能大于当前库存
+				  // 库存总量 = 拆零扣减整数 * 净含量 + 拆零扣减拆零位
+				  // 当前总量 = 输入拆零扣减整数位 * 净含量 + 输入拆零扣减拆零位
+				  let itemUnitValue = this.data.productList[e.currentTarget.dataset.index].item.unitValue; // 拆零扣减 整数位
+				  let itemMaterialUnitValue = this.data.productList[e.currentTarget.dataset.index].item.materialUnitValue; // 拆零扣减 拆零位
+				  let netWightValue = this.data.productList[e.currentTarget.dataset.index].item.netWightValue; // 净含量
+				  let itemTotal = utils.add(utils.sub(itemUnitValue, netWightValue), itemMaterialUnitValue); // 库存总量
+
+				  let inputUnitValue = this.data.productList[e.currentTarget.dataset.index].unitValue; // 输入拆零扣减 整数位
+				  let inputMaterialUnitValue = this.data.productList[e.currentTarget.dataset.index].materialUnitValue; //输入拆零扣减 拆零位
+				  let total = utils.add(utils.sub(inputUnitValue, netWightValue), inputMaterialUnitValue); // 当前总量
+				  if (total > itemTotal) {
+					  this.data.productList[e.currentTarget.dataset.index].materialUnitValue = '';
+					  this.setData({
+						  productList: this.data.productList
+					  })
+					  wx.showToast({
+						  title: '不能大于当前库存',
+						  icon: 'none'
+					  })
+				  }
+
 			  if (this.data.shopTypeSearch == 'search') {
 				  wx.setStorageSync('searchOutboundCacheData', this.data.productList); // 查询页面 设置出库缓存
 			  } else {
@@ -167,7 +227,7 @@ Component({
 		  let tempGoodsOrderData = [];
 		  let getDatas = wx.getStorageSync('cacheData');
 		  tempGoodsOrderData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
-			  return item.needNumber != '' || item.needNumber != 0;
+			  return item.needNumber != '' || item.needNumber != '0';
 		  })
 		  if (this.data.productConclusion == 1) { // 当是结果页面 返回 当前分类的数据 放入到对应的数据中
 		  	tempGoodsOrderData = this.data.productList.filter((item) => {
@@ -293,7 +353,17 @@ Component({
 	  transferSetCurrentNum(e,isAddRed) {
 		  let index = e.currentTarget.dataset.index;
 	  	if (isAddRed ) { // 加
-			  ++ this.data.productList[index].outNumber;
+			  if (this.data.productList[index].outNumber >= this.data.productList[index].item.unitValue) {
+				  this.setData({
+					  productList: this.data.productList
+				  })
+				  wx.showToast({
+					  title: '不能大于当前库存',
+					  icon: 'none'
+				  })
+			  } else {
+				  ++ this.data.productList[index].outNumber;
+			  }
 	  		if (this.data.shopTypeSearch == 'search') {
 				  wx.setStorageSync('searchTransferCacheData', this.data.productList);
 			  } else {
@@ -331,6 +401,17 @@ Component({
 	   */
 	  setConverNum(e){
 		  this.data.productList[e.currentTarget.dataset.index].resultNumber = e.detail.value;
+		  // 判断输入商品数量不能大于当前库存，直接扣减
+		  if (parseInt(e.detail.value) > parseInt(this.data.productList[e.currentTarget.dataset.index].item.unitValue)) {
+			  this.data.productList[e.currentTarget.dataset.index].resultNumber = ''
+			  this.setData({
+				  productList: this.data.productList
+			  })
+			  wx.showToast({
+				  title: '不能大于当前库存',
+				  icon: 'none'
+			  })
+		  }
       wx.setStorageSync('setConverFrom', this.data.productList);
     },
 
