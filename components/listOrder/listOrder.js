@@ -1,6 +1,6 @@
 // components/listOrder/listOrder.js
 var config = require('../../config/config.js');
-
+const utils = require('../../utils/util');
 Component({
   /**
    * 组件的属性列表
@@ -11,8 +11,15 @@ Component({
       value:[],
 	    observer: function(newVal, oldVal) {
 		    let pageindex = wx.getStorageSync('pageindex');
+		    if (pageindex == 6) {
+			    newVal.forEach((item) => {
+				     let time = this.strToDate(item.courseStartTime)
+				     item.courseStartTime = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`;
+			    })
+        }
 		    this.setData({
           pageindex,
+          list: newVal
 		    });
         console.log(newVal, 'newVal listOrder')
       }
@@ -34,6 +41,16 @@ Component({
    * 组件的方法列表
    */
   methods: {
+	  /**
+	   * Description: IOS 手机 时间格式转换
+	   * Author: yanlichen <lichen.yan@daydaycook.com>
+	   * Date: 2018/6/15
+	   */
+	  strToDate(dateObj){
+		  dateObj = dateObj.replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '').replace(/(-)/g, '/')
+		  dateObj = dateObj.slice(0, dateObj.indexOf("."))
+		  return new Date(dateObj)
+	  },
     detail(e){
 	    let orderStatus = e.currentTarget.dataset.orderstatus; // orderStatus 订货单状态(1、待收货 2、部分收货 3、已收货 4、待派单)
 	    let orderId = e.currentTarget.dataset.orderid; // orderId 订货单id 和 盘点id 不同列表区分不同的id

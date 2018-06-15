@@ -35,7 +35,6 @@ Page({
         this.setData({
           shopArray:shopList
         })
-        wx.setStorageSync('shopAddress', shopList);
       }else{
         wx.showToast({
           title: res.msg,
@@ -115,7 +114,8 @@ Page({
 			  wx.hideLoading();
 			  let { code, sysUser, msg, token } = res.data;
 			  if(code == '0'){
-				  app.selectIndex = postData.shopId;
+				  app.selectIndex = postData.shopId; // 店铺id
+				  app.companyId = sysUser.shopVO.companyId; // 公司id
 				  wx.setStorageSync('getuserinfo', sysUser);
 				  wx.setStorageSync('getusertoken', token);
 				  wx.redirectTo({

@@ -16,6 +16,8 @@ Page({
 	  receiptList: [], // 初始化数据
 	  pageindex: null, // 判断显示哪一个页面  订单、盘点、出库 等
 	  type: '', // 调拨 状态 1、调拨入库 2、调拨出库
+	  imgBigUrl: '', // 放大的图片
+	  imgIsShow: false,
   },
 	/**
 	 * Description: 统一回调处理 返回信息
@@ -116,6 +118,29 @@ Page({
 			data: promseData
 		}).then((res) => {
 			this.requestReturnInfo(res, res.transferVO.transferDetailVOList);
+		})
+	},
+	/**
+	 * Description: 图片放大
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/15
+	 */
+	zoomImg(e) {
+		let index = e.currentTarget.dataset.index;
+		this.setData({
+			imgBigUrl: this.data.imgList[index],
+			imgIsShow: true
+		})
+		console.log(e, this.data.imgBigUrl);
+	},
+	/**
+	 * Description: 图片关闭
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/15
+	 */
+	imgClose() {
+		this.setData({
+			imgIsShow: false
 		})
 	},
   /**

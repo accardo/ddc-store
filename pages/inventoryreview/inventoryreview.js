@@ -11,13 +11,13 @@ Page({
   data: {
     scrollTop:0,
     ind:'',
-    defImg: 'logo.png',
+    defImg: config.pageImgUrl+'logo.png',
     pagetitle: '',
-    imgUrl: config.pageImgUrl,
     status: 0, // 盘点状态
 	  inventoryId: 0, // 盘点id
 	  receiptList: [], // 初始化数据
 	  iIndex: '', // 判断input框是否开启
+	  configFl: config.dict.shopType,
   },
 	/**
 	 * Description: 获取 待审核数据列表 info

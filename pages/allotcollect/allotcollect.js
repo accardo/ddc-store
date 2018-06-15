@@ -9,7 +9,6 @@ Page({
    */
   data: {
     productlist: [],
-    productType: '调拨收货',
 	  type: '', // 调拨状态 1、调拨入库； 2、调拨出库
 	  transferId: '', // 调拨单id
 	  outShopId: '', // 调出店铺 id

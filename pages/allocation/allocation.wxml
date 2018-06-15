@@ -15,7 +15,7 @@
       <view class="default-img" wx:if="{{imgDefault}}">
           <image src="{{ defaultImg }}"></image>
       </view>
-   <product-info product-list="{{productlist}}"></product-info>
+   <product-info product-list="{{productlist}}" from-into="into"></product-info>
    <view class='add-shaop' bindtap='searchShop'>
         <text>+添加调拨商品</text>
    </view>

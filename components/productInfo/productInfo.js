@@ -150,7 +150,11 @@ Component({
 				  	return item.navClass == navClassIndex;
 				  })
 			  }
-			  this.data.outboundCacheArray[navClassIndex] = tempInfoData;
+			  if (tempInfoData.length == 0) {
+				  this.data.outboundCacheArray.splice(navClassIndex, 1);
+			  } else {
+				  this.data.outboundCacheArray[navClassIndex] = tempInfoData;
+			  }
 			  wx.setStorageSync('outboundCacheData', this.data.outboundCacheArray);
 		  }
 	  },
@@ -161,6 +165,7 @@ Component({
 	   */
 	  cacheStorageSpace(navClassIndex) {
 		  let tempGoodsOrderData = [];
+		  let getDatas = wx.getStorageSync('cacheData');
 		  tempGoodsOrderData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
 			  return item.needNumber != '' || item.needNumber != 0;
 		  })
@@ -170,7 +175,12 @@ Component({
 			  })
 		  }
 		  console.log(this.data.productList, tempGoodsOrderData,  '设置数据 用navclass');
-		  this.data.cacheArray[navClassIndex] = tempGoodsOrderData
+		  if (!getDatas) {
+		  	for (let i=0; i < navClassIndex; i++) {
+				  this.data.cacheArray[i] = [];
+			  }
+		  }
+		  this.data.cacheArray[navClassIndex] = tempGoodsOrderData;
 		  wx.setStorageSync('cacheData', this.data.cacheArray);
 	  },
 	  /**

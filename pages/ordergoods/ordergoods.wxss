@@ -92,7 +92,7 @@ page,.order-goods{
   display: flex;
   /*flex: 1;*/
   /*box-sizing: border-box;*/
-  overflow: hidden;
+  /*overflow: hidden;*/
   padding-bottom: 80rpx;
 }
 .category-product.active{

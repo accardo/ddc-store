@@ -2,6 +2,7 @@
 const config = require('../../config/config.js');
 const sysService = require('../../service/sys.service.js');
 const utils = require('../../utils/util');
+const shopListService = require('../../service/service.service.js');
 const app = getApp();
 Page({
 
@@ -24,13 +25,27 @@ Page({
 	 * Date: 2018/6/5
 	 */
 	shopAddress() {
-		let shopAddress = wx.getStorageSync('shopAddress');
-		    shopAddress = shopAddress.filter((item) => {
-		      return item.id != app.selectIndex
-        })
-    this.setData({
-	    shopArray: shopAddress
-    })
+		shopListService.api({
+			url: "/list",
+			method: "get",
+			data: {
+				companyId: app.companyId
+			}
+		}).then((res) => {
+			if (res.code == 0) {
+			  let shopAddress = res.shopList.filter((item) => {
+			     return item.id != app.selectIndex
+			  })
+				this.setData({
+					shopArray: shopAddress
+				})
+			}else{
+				wx.showToast({
+					title: res.msg,
+					icon:'none'
+				})
+			}
+		})
   },
   /* 选择门店 */
   selectShop(e) {
@@ -112,7 +127,7 @@ Page({
 			        return
 		        }
 		        if(code == 0){
-			        utils.showToast({title: '调拨成功', page: 2, pages: getCurrentPages()});
+			        utils.showToast({title: '调拨成功', page: 1, pages: getCurrentPages()});
 		        }else{
 			        wx.showToast({
 				        title: msg,
@@ -186,6 +201,7 @@ Page({
     let transferCacheData = wx.getStorageSync('transferCacheData'); // 调拨 所有选中 缓存
     let searchTransferCacheData = wx.getStorageSync('searchTransferCacheData'); // 调拨 搜索 缓存
     if (searchTransferCacheData) {
+    	this.data.productlist = []
 	    searchTransferCacheData = searchTransferCacheData.filter((item) => {
 		    return item.outNumber != 0;
 	    })

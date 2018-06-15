@@ -13,7 +13,7 @@
                   <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="ind" class='goods-label-txt'>{{item}}</text>
             </view>
             <view class='goods-num'>订货数量：<text>{{item.needNumber}}</text><text>{{item.shopItemSkuVO.item.unitName}}</text> </view>
-            <view class='goods-num' wx:if="{{ orderStatus == 1}}"><!-- 订货 状态1 为待收货；状态2 为部分收货；状态3 为已收货  -->
+            <view class='goods-num' wx:if="{{ orderStatus == 1 || orderStatus == 2}}"><!-- 订货 状态1 为待收货；状态2 为部分收货；状态3 为已收货  -->
                 实收数量：{{item.finalNumber > '0' ? item.finalNumber + item.shopItemSkuVO.item.unitName : '-' }} <!--实收数量默认为 - 当有收货是显示-->
             </view>
             <view class='goods-num goods-inp'>
@@ -66,10 +66,9 @@
             <view class='goods-label' wx:if="{{item.shopItemSkuVO.attrValues && item.shopItemSkuVO.attrValues.length>0}}">
                 <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="ind" class='goods-label-txt'>{{item}}</text>
             </view>
-            <view class='goods-num'>
-                出库数量：
-                <text>{{ item.shopItemSkuVO.item.unitValue }}{{ item.shopItemSkuVO.item.unitName }}</text>
-                <text wx:if="{{item.shopItemSkuVO.item.deductionType == 2}}">{{ item.shopItemSkuVO.item.materialUnitValue }}{{ item.shopItemSkuVO.item.materialUnitName }}</text>
+            <view class='goods-num'>出库数量:
+                <text wx:if="{{item.shopItemSkuVO.item.deductionType == 1}}">{{ item.number }}{{ item.shopItemSkuVO.item.unitName }}</text>
+                <text wx:if="{{item.shopItemSkuVO.item.deductionType == 2}}">{{ item.unitValue }}{{item.shopItemSkuVO.item.unitName }} {{item.materialUnitValue}}{{ item.shopItemSkuVO.item.materialUnitName }}</text>
             </view>
         </view>
         <!-- 出库 end-->

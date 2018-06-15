@@ -1,7 +1,14 @@
 <!--components/productInfo/productInfo.wxml-->
 <view class='goods-box'>
       <view class='goods-item'  wx:for="{{productList}}" wx:key="index" >
-        <image class="goods-img {{item.thumb !== null ? '' : 'active'}}" src="{{item.thumb !== null ? item.thumb : defImg}}"></image>
+        <image wx:if="{{(pageindex != 4 && productType != 'allotcollect') || fromInto == 'into'}}"
+               class="goods-img {{(item.thumb !== null && item.thumb !== '') ? '' : 'active'}}"
+               src="{{(item.thumb !== null && item.thumb !== '') ? item.thumb : defImg}}"
+        ></image>
+        <image wx:if="{{pageindex == 4 && productType == 'allotcollect'}}"
+               class="goods-img {{(item.shopItemSkuVO.thumb !== null && item.shopItemSkuVO.thumb !== '') ? '' : 'active'}}"
+               src="{{(item.shopItemSkuVO.thumb !== null && item.shopItemSkuVO.thumb !== '') ? item.shopItemSkuVO.thumb : defImg}}"
+        ></image>
           <!--pageindex = 0 订货 start-->
           <view wx:if="{{pageindex == 0  && productType == 'goods'}}" class='goods-txt-box'>
               <view class='goods-txt'>
@@ -97,7 +104,7 @@
             >
                 <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
             </view>
-            <view class='goods-stock' wx:if="{{fromInto == 'into' || (fromInto == 'from' && productType != 'dispDetail')}}">
+            <view class='goods-stock' wx:if="{{(fromInto == 'into' && productType != 'dispDetail') || (fromInto == 'from' && productType != 'dispDetail')}}">
                 当前库存：<text>{{ item.item.unitValue }} {{ item.item.unitName }}</text>
             </view>
             <view class='goods-stock' wx:if="{{productType == 'dispDetail' && fromInto == 'from'}}"><!--详情页面 只读转换数量-->
@@ -119,7 +126,7 @@
                 <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="ind" class='goods-label-txt'>{{item}}</text>
             </view>
             <view class='goods-stock'>
-                订货数量：<text>{{item.outNumber }} {{ item.shopItemSkuVO.item.unitName }}</text>
+                调出数量：<text>{{item.outNumber }} {{ item.shopItemSkuVO.item.unitName }}</text>
             </view>
             <view class='goods-stock'>
                 收货数量：

@@ -162,10 +162,10 @@
     </view>
     <view class='list-name'>
       <text class='label-txt'>最后修改人：</text>
-      <text class='label-name'>{{ item.updateName }}</text>
+      <text class='label-name'>{{ item.updateName || '-' }}</text>
     </view>
     <view class='list-time'>
-      <text class='label-time'>{{ item.createTime }}</text>
+      <text class='label-time'>{{ item.courseStartTime }}</text>
     </view>
   </view>
   <!-- 课程消耗 end -->

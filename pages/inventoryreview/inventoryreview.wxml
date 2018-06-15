@@ -2,7 +2,7 @@
 <scroll-view  scroll-y style="height:100%;" class="scroll-box">
   <view class='goods-box'>
     <view class='goods-item' wx:for="{{receiptList}}" wx:key="index">
-        <image class="goods-img" src='{{imgUrl}}{{ defImg}}'></image> <!-- 正式的时候需要修改 绝对路径-->
+        <image class="goods-img" src='{{ item.shopItemSkuVO.thumb !== null ? item.shopItemSkuVO.thumb : defImg}}'></image> <!-- 正式的时候需要修改 绝对路径-->
         <view  class='goods-txt-box'>
             <view class='goods-txt'>
                 <text class='goods-type' wx:if="{{configFl[item.shopItemSkuVO.item.itemType]}}">{{configFl[item.shopItemSkuVO.item.itemType]}}</text>
@@ -20,8 +20,7 @@
                 <text>{{ item.shopItemSkuVO.item.unitValue }}{{ item.shopItemSkuVO.item.unitName }}</text>
                 <text wx:if="{{item.shopItemSkuVO.item.deductionType == 2}}">{{ item.shopItemSkuVO.item.materialUnitValue }}{{ item.shopItemSkuVO.item.materialUnitName }}</text>
             </view>
-            <view class="goods-stock stock-num {{ iIndex === index ? 'number-box-active' : ''}}">
-                盘点数量:
+            <view class="goods-stock stock-num {{ iIndex === index ? 'number-box-active' : ''}}">盘点数量:
                <view class="number-box" > <!--当 disabled为 false时 增加calss 显示input框 number-box-active-->
                    <input class='mglr10 red' bindblur="editNnit" data-eIndex="{{index}}" disabled="{{ !(iIndex === index)}}" type="number" value="{{ item.unitValue }}"/>
                    <text>{{ item.shopItemSkuVO.item.unitName }}</text>

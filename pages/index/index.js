@@ -76,6 +76,7 @@ Page({
       shopAds: shopArray[_index].shopName
     })
     app.selectIndex = selectIndex;
+	  app.companyId = shopArray[_index].companyId;
   },
 
   /**

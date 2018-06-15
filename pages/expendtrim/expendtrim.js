@@ -1,5 +1,4 @@
 const sysService = require('../../service/sys.service.js');
-const utils = require('../../utils/util');
 const app = getApp();
 // pages/expendtrim/expendtrim.js
 Page({
@@ -34,12 +33,14 @@ Page({
 			getParm = {
 				currPage: this.data.currPage,
 				pageSize: this.data.pageSize,
+				shopId: app.selectIndex,
 			}
 		} else {
 			getParm = {
 				currPage: this.data.currPage,
 				pageSize: this.data.pageSize,
-				courseBillId: this.data.courseBillId
+				courseBillId: this.data.courseBillId,
+				shopId: app.selectIndex
 			}
 		}
 
@@ -109,7 +110,6 @@ Page({
 	   isShow: true
     })
   },
-
 	/**
 	 * Description: 更新调整数据
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -122,14 +122,15 @@ Page({
 		      title: '请输入数量',
 		      icon:'none'
 		    })
-		    return
+		   return false
 	  }
-	  if (course.useCount < course.number) {
+		console.log(course.useCount, course.number, '数值计算')
+	  if (parseInt(course.useCount) < parseInt(course.number)) {
         wx.showToast({
           title: '正常消耗，不能小于实际上课人数',
           icon: 'none'
         })
-        return
+        return false
 	  }
 	  let postParm = {
 	  	id: this.data.courseList[this.data.nIndex].id,

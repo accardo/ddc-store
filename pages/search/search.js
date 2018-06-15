@@ -129,10 +129,11 @@ Page({
     }
     if (pageIndex == 4) {
     	this.setData({
-		    shopTypeSearch: options.shopTypeSearch
+		    shopTypeSearch: options.shopTypeSearch,
+	      fromInto: 'into',
 	    })
     }
-    wx: wx.setNavigationBarTitle({
+    wx.setNavigationBarTitle({
       title: '搜索'
     })
   },

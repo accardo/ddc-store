@@ -29,7 +29,7 @@
   <view wx:if="{{isShow == true}}"  class='show-bg'></view>
   <view wx:if="{{isShow == true}}"  class='show-box'>
     <view class='show-content'>
-    <input type='number' focus="{{isShow}}"  bindblur='setValue' placeholder='请输入调整数量' confirm-type="确定" bindconfirm="confimNum" />
+    <input type='number' focus="{{isShow}}"  bindinput='setValue' placeholder='请输入调整数量' confirm-type="确定" />
     </view>
     <view class='btn-box'>
       <button bindtap='confimNum' class='nobordr btn-def' size="mini" >提交</button>
