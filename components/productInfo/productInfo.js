@@ -229,12 +229,16 @@ Component({
 		  tempGoodsOrderData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
 			  return item.needNumber != '' || item.needNumber != '0';
 		  })
+		  console.log(this.data.productConclusion, this.data.productList, tempGoodsOrderData,  '设置数据 用navclass');
+
 		  if (this.data.productConclusion == 1) { // 当是结果页面 返回 当前分类的数据 放入到对应的数据中
-		  	tempGoodsOrderData = this.data.productList.filter((item) => {
+			  this.setData({
+			   productList: tempGoodsOrderData
+			  })
+		  	tempGoodsOrderData = tempGoodsOrderData.filter((item) => {
 				  return item.navClass == navClassIndex;
 			  })
 		  }
-		  console.log(this.data.productList, tempGoodsOrderData,  '设置数据 用navclass');
 		  if (!getDatas) {
 		  	for (let i=0; i < navClassIndex; i++) {
 				  this.data.cacheArray[i] = [];
