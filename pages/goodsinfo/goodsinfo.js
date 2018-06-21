@@ -258,6 +258,7 @@ Page({
 	  let outboundCacheArray = outboundCacheData.filter((item) => {
 		      return item.unitValue != '' || item.materialUnitValue != '';
 	      })
+	  if (outboundCacheData.length > 0) {
 		  if (outboundCacheData.length == outboundCacheArray.length) {
 			  wx.navigateTo({
 				  url: `../../pages/uploadimg/uploadimg?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
@@ -268,6 +269,12 @@ Page({
 				  icon: 'none'
 			  })
 		  }
+	  } else {
+		  wx.showToast({
+			  title: '请添加商品',
+			  icon: 'none'
+		  })
+	  }
   },
 
 	/**

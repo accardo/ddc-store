@@ -8,7 +8,7 @@
   >
      <view class="select-ads">
       <text class='ads-name'>调入门店：{{ shopName }}</text>
-      <button class='select-btn' type="default" size="mini">切换门店</button>
+      <button class='select-btn' type="default" size="mini">选择门店</button>
     </view>
   </picker>
   <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">

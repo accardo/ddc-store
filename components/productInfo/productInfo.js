@@ -16,6 +16,28 @@ Component({
           pageindex,
           productList: newVal
         })
+		    /**
+		     * Description: 缓存数据 如果存在 需要记录之前的数据重新把之前的赋值
+		     * Author: yanlichen <lichen.yan@daydaycook.com>
+		     * Date: 2018/6/4
+		     */
+		    let cacheData = wx.getStorageSync('cacheData');
+		    let inventoryCacheData = wx.getStorageSync('inventoryCacheData');
+		    let outboundCacheData = wx.getStorageSync('outboundCacheData');
+		    let transferCacheData = wx.getStorageSync('transferCacheData');
+
+		    if (cacheData.length > 0) { // 订货
+			    this.data.cacheArray = wx.getStorageSync('cacheData');
+		    }
+		    if (inventoryCacheData.length > 0) { // 盘点
+			    this.data.inventoryCacheArray = wx.getStorageSync('inventoryCacheData');
+		    }
+		    if (outboundCacheData.length > 0) { // 出库
+			    this.data.outboundCacheArray = wx.getStorageSync('outboundCacheData');
+		    }
+		    if (transferCacheData.length >0) { // 调拨
+			    this.data.transferCacheArray = wx.getStorageSync('transferCacheData');
+		    }
       }
     },
     productType:{ // 类型 判断是否订货，盘点，调拨 ....
@@ -61,28 +83,6 @@ Component({
   },
 
   ready() {
-	  /**
-	   * Description: 缓存数据 如果存在 需要记录之前的数据重新把之前的赋值
-	   * Author: yanlichen <lichen.yan@daydaycook.com>
-	   * Date: 2018/6/4
-	   */
-	  let cacheData = wx.getStorageSync('cacheData');
-	  let inventoryCacheData = wx.getStorageSync('inventoryCacheData');
-	  let outboundCacheData = wx.getStorageSync('outboundCacheData');
-	  let transferCacheData = wx.getStorageSync('transferCacheData');
-
-	  if (cacheData.length > 0) { // 订货
-	  	this.data.cacheArray = wx.getStorageSync('cacheData');
-	  }
-	  if (inventoryCacheData.length > 0) { // 盘点
-		  this.data.inventoryCacheArray = wx.getStorageSync('inventoryCacheData');
-	  }
-	  if (outboundCacheData.length > 0) { // 出库
-		  this.data.outboundCacheArray = wx.getStorageSync('outboundCacheData');
-	  }
-	  if (transferCacheData.length >0) { // 调拨
-	  	this.data.transferCacheArray = wx.getStorageSync('transferCacheData');
-	  }
   },
   /**
    * 组件的方法列表
@@ -198,23 +198,30 @@ Component({
 	   */
 	  cacheStorageSpaceInfo(navClassIndex) {
 		  let tempInfoData = [];
+		  let getDatas = wx.getStorageSync('outboundCacheData');
 		  tempInfoData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
 			  return item.unitValue != '' || item.materialUnitValue != '';
 		  })
+		  console.log(tempInfoData, this.data.outboundCacheArray, '寻找问题')
 		  if (this.data.pageindex == 1) {
 			  this.data.inventoryCacheArray[navClassIndex] = tempInfoData;
 			  wx.setStorageSync('inventoryCacheData', this.data.inventoryCacheArray);
 		  } else if(this.data.pageindex == 2) {
 			  if (this.data.productConclusion == 1) {
-				  tempInfoData = this.data.productList.filter((item) =>{
+				  this.setData({
+					  productList: tempInfoData
+				  })
+				  tempInfoData = tempInfoData.filter((item) => {
 				  	return item.navClass == navClassIndex;
 				  })
 			  }
-			  if (tempInfoData.length == 0) {
-				  this.data.outboundCacheArray.splice(navClassIndex, 1);
-			  } else {
-				  this.data.outboundCacheArray[navClassIndex] = tempInfoData;
+
+			  if (!getDatas) {
+				  for (let i=0; i < navClassIndex; i++) {
+					  this.data.outboundCacheArray[i] = [];
+				  }
 			  }
+			  this.data.outboundCacheArray[navClassIndex] = tempInfoData;
 			  wx.setStorageSync('outboundCacheData', this.data.outboundCacheArray);
 		  }
 	  },

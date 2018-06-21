@@ -76,52 +76,46 @@ Page({
   completeReceipt(){
 	  let	ArrayDeepCopyData = utils.ArrayDeepCopy(this.data.tempReceiptList);  // 深层拷贝防止子组件数据联动
 	  let purchaseDetailVOList = utils.attrValuesSkuToString(ArrayDeepCopyData); // 属性 数组转字符串
-/*	  let isComplete = ArrayDeepCopyData.filter((item) => { // 过滤是否有 - 的商品，有如果判断收货数量是否填写，返回为[]责为全部收货
+
+	  let isComplete = ArrayDeepCopyData.filter((item) => { // 过滤是否有 - 的商品，有如果判断收货数量是否填写，返回为[]责为全部收货
 		  if (item.finalNumber == 0) {
 			  if (item.deliveryCount == '' || item.deliveryCount == null ) {
 				  return item;
 			  }
 		  }
-	  })*/
-	  let isValidation = ArrayDeepCopyData.filter((item) => {
+	  })
+	 // console.log(purchaseDetailVOList, isComplete)
+	  /*let isValidation = ArrayDeepCopyData.filter((item) => {
 		  if (item.deliveryCount !== null && item.deliveryCount !== '') {
 			  return item;
 		  };
-	  })
+	  })*/
 	  let promeData = {
 		  id: this.data.purchaseId || null, // 订单id
 		  shopId: app.selectIndex, // 店铺ID
 		  status: 3, // 状态 (1、待收货 2、部分收货 3、已收货 4、待派单)
 		  purchaseDetailVOList
 	  }
-    if (isValidation.length == ArrayDeepCopyData.length) {
-      wx.showModal({
-        content: '是否确认收货完毕？',
-        confirmColor: config.showModal.confirmColor,
-        success: function (res) {
-          if (res.confirm){
-	          sysService.purchase({
-		          url: 'update',
-		          method: "post",
-		          data: promeData
-	          }).then((res) => {
-		          if (res.code == 0) {
-			          utils.showToast({title: '收货成功', page: 1, pages: getCurrentPages()});
-		          } else if (res.code == 401) {
-			          config.logOutAll();
-			          return
-		          }
-	          })
-          }
-        }
-      });
-    }else{
-      wx.showToast({
-        title: '收货数量不能为空',
-        icon:'none'
-      },1500)
-    }
-    
+	  wx.showModal({
+		  content: isComplete.length > 0 ? '部分商品无实收数量，是否确认收货完毕' : '是否确认收货完毕，提交的数据不可修改!',
+		  confirmColor: config.showModal.confirmColor,
+		  success: function (res) {
+			  if (res.confirm){
+				  sysService.purchase({
+					  url: 'update',
+					  method: "post",
+					  data: promeData
+				  }).then((res) => {
+					  if (res.code == 0) {
+						  utils.showToast({title: '收货成功', page: 1, pages: getCurrentPages()});
+					  } else if (res.code == 401) {
+						  config.logOutAll();
+						  return
+					  }
+				  })
+			  }
+		  }
+	  });
   },
 	/**
 	 * Description: 待收货页面数据

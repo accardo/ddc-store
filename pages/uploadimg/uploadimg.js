@@ -58,6 +58,8 @@ Page({
 	  }).then((res) => {
 		  if (res.code =='0') {
 			  utils.showToast({title: '更新成功', page: 3, pages: getCurrentPages()});
+        wx.removeStorageSync('outboundCacheData');
+        wx.removeStorageSync('searchOutboundCacheData');
 		  } else if(res.code == '401') {
 			  config.logOutAll();
 			  return

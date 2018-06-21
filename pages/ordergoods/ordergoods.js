@@ -30,7 +30,8 @@ Page({
   selectNav(e){
     this.setData({
       _index: e.currentTarget.dataset.index,
-      scrollTop:0
+      scrollTop:0,
+	    productlist: []
     })
 	  this.data.categoryId = e.currentTarget.dataset.categoryid
 	  this.data.currPage = 1;
@@ -171,12 +172,20 @@ Page({
   /* 前往商品信息页面 */
   goNext() {
   	if (this.data.pageindex == 0) {
-		  if (this.data.shopTotalN <=0){
+		  if (this.data.shopTotalN <= 0) {
 			  wx.showToast({
 				  title: '请选择商品',
 				  icon:'none'
 			  })
 			  return
+		  }
+	  } else if (this.data.pageindex == 2) {
+		  if (this.conclusion().length <= 0) {
+			  wx.showToast({
+				  title: '请选择商品',
+				  icon:'none'
+			  })
+		  	return
 		  }
 	  }
 	  wx.setStorageSync('optionStorage', 1) // 用于判断进入不同页面 在返回获取数据 1是进入订单总结页面，2是进入搜索查询页面
@@ -184,6 +193,19 @@ Page({
 		  url: `../../pages/goodsinfo/goodsinfo?conclusion=1&productType=goods&orderStatus=4&reason=${this.data.reason}&outboundType=${this.data.outboundType}`
 	  })
   },
+	/**
+	 * Description: 过滤商品不为空的时候才可以提交
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/20
+	 */
+	conclusion() {
+  	let outboundCacheData = wx.getStorageSync('outboundCacheData') || []; // 出库过滤
+		let tempCacheData = utils.cacheDataDeal(outboundCacheData);
+		tempCacheData.filter((item) => {
+			return item.materialUnitValue !== '' && item.unitValue !== '';
+		})
+		return tempCacheData;
+	},
 	/**
 	 * Description: 保存盘点 接口
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -474,6 +496,10 @@ Page({
 			    wx.setStorageSync('outboundCacheData', outboundCacheData);
 		    }
 	    } else if(optionStorage == 1) {
+		    this.data.productlist.forEach((item) => {
+			    item.unitValue = '';
+			    item.materialUnitValue = '';
+		    })
 		    tempArray = this.forDataContrast(this.data.productlist, outboundCacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 	    }
     }

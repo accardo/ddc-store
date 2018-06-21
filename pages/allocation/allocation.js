@@ -128,6 +128,8 @@ Page({
 		        }
 		        if(code == 0){
 			        utils.showToast({title: '调拨成功', page: 1, pages: getCurrentPages()});
+			        wx.removeStorageSync('transferCacheData');
+			        wx.removeStorageSync('searchTransferCacheData');
 		        }else{
 			        wx.showToast({
 				        title: msg,
