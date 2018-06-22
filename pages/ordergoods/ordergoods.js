@@ -248,17 +248,42 @@ Page({
 			shopId: app.selectIndex, // 店铺ID
 			inventoryDetailVOList: isComplete,
 		}
+		if (inventoryDetailVOList.length == 0 ) {
+			wx.showToast({
+				title: '盘点数据不能为空',
+				icon: 'none'
+			})
+			return
+		}
 		console.log(promdData, 'promdData')
 	  //处理数据结构 end
-       return new Promise((resolve) => {
-         sysService.inventory({
-           url:'save',
-           method:'post',
-           data:promdData
-         }).then((res) => {
-           resolve(res);
-         })
-       })
+		wx.showModal({
+			content: '是否确认提交盘点？',
+			confirmColor: config.showModal.confirmColor,
+			success: (res) => {
+				if (res.confirm) {
+					sysService.inventory({
+						url:'save',
+						method:'post',
+						data:promdData
+					}).then((data) => {
+							if (data.code == '0') {
+								utils.showToast({title: '提交盘点成功', page: 1, pages: getCurrentPages()});
+								wx.removeStorageSync('inventoryCacheData'); // 数据提交后 清除缓存
+								wx.removeStorageSync('searchInventoryCacheData'); // 数据提交后 清除缓存
+							} else if (data.code == '401') {
+								config.logOutAll();
+								return
+							} else {
+								wx.showToast({
+									title: data.msg,
+									icon:'none'
+								})
+							}
+					})
+				}
+			}
+		});
   },
 	/**
 	 * Description: 提交保存 盘点操作
@@ -266,29 +291,7 @@ Page({
 	 * Date: 2018/5/25
 	 */
   subInventory(){
-    wx.showModal({
-      content: '是否确认提交盘点？',
-      confirmColor: config.showModal.confirmColor,
-      success: (res) => {
-        if (res.confirm){
-            this.getInventory().then((data) => {
-              if (data.code == '0') {
-                utils.showToast({title: '提交盘点成功', page: 1, pages: getCurrentPages()});
-	              wx.removeStorageSync('inventoryCacheData'); // 数据提交后 清除缓存
-	              wx.removeStorageSync('searchInventoryCacheData'); // 数据提交后 清除缓存
-              } else if (data.code == '401') {
-                config.logOutAll();
-                return
-              } else {
-                wx.showToast({
-                  title: data.msg,
-                  icon:'none'
-                })
-              }
-            })
-        }
-      }
-    });
+		this.getInventory();
   },
   /**
    * Description: 清除缓存
@@ -297,7 +300,13 @@ Page({
    */
   clearCache() {
     wx.removeStorageSync('inventoryCacheData');
-    this.getMenuList();
+    this.setData({
+	    productlist: []
+    })
+	  this.data.currPage = 1;
+	  this.data.productlist = [];
+	  this.data.pagetListData = [];
+	  this.getProductByNav()
   },
 	/**
 	 * Description: 过滤数据
