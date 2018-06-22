@@ -35,6 +35,8 @@ Page({
         url: '../../pages/displacesgoods/displacesgoods'
       })
     } else if (pageindex == 4) { // 调拨
+    	wx.removeStorageSync('transferCacheData');
+    	wx.removeStorageSync('searchTransferCacheData');
       wx.navigateTo({
         url: '../../pages/allocation/allocation'
       })

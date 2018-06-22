@@ -49,8 +49,8 @@
               <text wx:if="{{item.shopItemSkuVO.item.deductionType == 2}}">{{ item.shopItemSkuVO.item.materialUnitValue }}{{ item.shopItemSkuVO.item.materialUnitName }}</text>
           </view>
           <view class='goods-num'>盘点数量：
-              <text>{{ item.unitValue }}{{ item.shopItemSkuVO.item.unitName }}</text>
-              <text wx:if="{{item.shopItemSkuVO.item.deductionType == 2}}">{{ item.materialUnitValue }}{{ item.shopItemSkuVO.item.materialUnitName }}</text>
+              <text>{{ item.unitValue == null ? 0 : item.unitValue }}{{ item.shopItemSkuVO.item.unitName }}</text>
+              <text wx:if="{{item.shopItemSkuVO.item.deductionType == 2}}">{{ item.materialUnitValue == null ? 0 : item.materialUnitValue }}{{ item.shopItemSkuVO.item.materialUnitName }}</text>
           </view>
           <!--<view class='goods-num goods-inp' wx:if="{{pageType !='orderfrom'}}">收货数量：
             <input data-index="index" bindinput="setNumber" type='number' confirm-type="done" value="{{item.current}}" placeholder="数量"></input>
