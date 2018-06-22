@@ -71,7 +71,18 @@ Page({
 		  }
 	  })
   },
-
+	/**
+	 * Description: 删除图片
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/22
+	 */
+	closeImg(e) {
+		let index = e.currentTarget.dataset.index;
+		this.data.imgList.splice(index, 1);
+		this.setData({
+			imgList: this.data.imgList
+		})
+	},
   /* 图片上传 */
   openMedia() {
 	  wx.chooseImage({
@@ -102,7 +113,15 @@ Page({
         success: (res) => {
           let resData = JSON.parse(res.data);
           if (resData.code == 0) {
-	          this.data.imgList.push(resData.url[0]);
+	          if (this.data.imgList.length >= 5 ) {
+		          wx.showToast({
+			          title: '最多上传5张照片',
+			          icon: 'none'
+		          })
+		          return
+	          } else {
+		          this.data.imgList.push(resData.url[0]);
+	          }
 	          this.setData({
 		          imgList: this.data.imgList
             })

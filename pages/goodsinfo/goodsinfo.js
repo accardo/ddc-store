@@ -259,16 +259,33 @@ Page({
 		      return item.unitValue != '' || item.materialUnitValue != '';
 	      })
 	  if (outboundCacheData.length > 0) {
-		  if (outboundCacheData.length == outboundCacheArray.length) {
-			  wx.navigateTo({
-				  url: `../../pages/uploadimg/uploadimg?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
-			  })
-		  } else {
-			  wx.showToast({
-				  title: '原料商品，必填一项',
-				  icon: 'none'
-			  })
-		  }
+			if (this.data.productlist.length == outboundCacheArray.length) {
+				wx.navigateTo({
+					url: `../../pages/uploadimg/uploadimg?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
+				})
+			} else {
+				wx.showModal({
+					content: '出库数量有未填，未填将不记录入库',
+					confirmColor: config.showModal.confirmColor,
+					success:(res) => {
+						if(res.confirm){
+							wx.navigateTo({
+								url: `../../pages/uploadimg/uploadimg?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
+							})
+						}
+					}
+				})
+			}
+		  // if (outboundCacheData.length == outboundCacheArray.length) {
+			 //  wx.navigateTo({
+				//   url: `../../pages/uploadimg/uploadimg?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
+			 //  })
+		  // } else {
+			 //  wx.showToast({
+				//   title: '原料商品，必填一项',
+				//   icon: 'none'
+			 //  })
+		  // }
 	  } else {
 		  wx.showToast({
 			  title: '请添加商品',

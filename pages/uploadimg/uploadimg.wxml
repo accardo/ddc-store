@@ -5,8 +5,11 @@
       <image  src='../../icons/camera1.png'></image>
       <text>上传图片</text>
   </view>
-  <view class='img-list' >
-    <image src="{{item}}" wx:for="{{imgList}}" wx:key="index"></image>
+  <view class='img-list'>
+      <view class="img-sk" wx:for="{{imgList}}" wx:key="index">
+        <view class="img-close" data-index="{{ index }}" bindtap="closeImg">X</view>
+        <image src="{{item}}"></image>
+      </view>
   </view>
   <view bindtap='subInfo' class='btn-review'>完成</view>
 </view>

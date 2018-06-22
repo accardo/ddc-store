@@ -208,9 +208,9 @@ Component({
 			  wx.setStorageSync('inventoryCacheData', this.data.inventoryCacheArray);
 		  } else if(this.data.pageindex == 2) {
 			  if (this.data.productConclusion == 1) {
-				  this.setData({
-					  productList: tempInfoData
-				  })
+				  // this.setData({
+					 //  productList: tempInfoData
+				  // })
 				  tempInfoData = tempInfoData.filter((item) => {
 				  	return item.navClass == navClassIndex;
 				  })
