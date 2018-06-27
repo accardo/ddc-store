@@ -63,6 +63,8 @@ Page({
       this.setData({
         stockIcon
       })
+    } else {
+	    config.logOutAll();
     }
   },
 
@@ -76,6 +78,7 @@ Page({
       shopAds: shopArray[_index].shopName
     })
     app.selectIndex = selectIndex;
+	  wx.setStorageSync('shopId', selectIndex);
 	  app.companyId = shopArray[_index].companyId;
   },
 
@@ -85,6 +88,10 @@ Page({
   onLoad: function (options) {
     this.getShoplist();
     this.setUserMenu();
+	  let shopId = wx.getStorageSync('shopId');
+	  if (shopId) {
+		  app.selectIndex = shopId;
+	  }
   },
 
   /**

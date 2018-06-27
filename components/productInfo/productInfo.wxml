@@ -2,12 +2,12 @@
 <view class='goods-box'>
       <view class='goods-item'  wx:for="{{productList}}" wx:key="index" >
         <image wx:if="{{(pageindex != 4 && productType != 'allotcollect') || fromInto == 'into'}}"
-               class="goods-img {{(item.thumb !== null && item.thumb !== '') ? '' : 'active'}}"
-               src="{{(item.thumb !== null && item.thumb !== '') ? item.thumb : defImg}}"
+               class="goods-img {{(item.thumb !== null && item.thumb !=='') ? '' : ((item.item.thumb !== null && item.item.thumb !== '') ? '' : 'active')}}"
+               src="{{(item.thumb !== null && item.thumb !== '') ? item.thumb : (item.item.thumb !== null && item.item.thumb !== '') ? item.item.thumb : defImg}}"
         ></image>
         <image wx:if="{{pageindex == 4 && productType == 'allotcollect'}}"
-               class="goods-img {{(item.shopItemSkuVO.thumb !== null && item.shopItemSkuVO.thumb !== '') ? '' : 'active'}}"
-               src="{{(item.shopItemSkuVO.thumb !== null && item.shopItemSkuVO.thumb !== '') ? item.shopItemSkuVO.thumb : defImg}}"
+               class="goods-img {{(item.shopItemSkuVO.thumb !== null && item.shopItemSkuVO.thumb !=='') ? '' : (item.shopItemSkuVO.item.thumb !== null && item.shopItemSkuVO.item.thumb !== '') ? '' : 'active'}}"
+               src="{{(item.shopItemSkuVO.thumb !== null && item.shopItemSkuVO.thumb !== '') ? item.shopItemSkuVO.thumb : (item.shopItemSkuVO.item.thumb !== null && item.shopItemSkuVO.item.thumb !== '') ? item.shopItemSkuVO.item.thumb : defImg}}"
         ></image>
           <!--pageindex = 0 订货 start-->
           <view wx:if="{{pageindex == 0  && productType == 'goods'}}" class='goods-txt-box'>

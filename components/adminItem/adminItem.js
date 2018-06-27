@@ -54,9 +54,16 @@ Component({
           content: '确定要退出吗？',
           confirmColor: config.showModal.confirmColor,
           success: function (res) {
-            res.confirm && wx.reLaunch({
-              url: config.getPageUrl(true, 'login')
-            })
+            if (res.confirm) {
+	            wx.removeStorageSync('getuserinfo');
+	            wx.removeStorageSync('getusertoken');
+	            wx.removeStorageSync('logs');
+	            wx.removeStorageSync('pagetitle');
+	            wx.removeStorageSync('shopId');
+	            wx.reLaunch({
+		            url: config.getPageUrl(true, 'login')
+	            })
+            }
           }
         });
       } else if (txt == '库存查询'){

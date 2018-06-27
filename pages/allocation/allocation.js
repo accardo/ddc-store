@@ -58,6 +58,7 @@ Page({
 
   /* 添加调拨 商品 */
   searchShop(){
+  	wx.removeStorageSync('searchTransferCacheData');
     wx.navigateTo({
       url:'../../pages/search/search?shopTypeSearch=search'
     })
@@ -147,88 +148,88 @@ Page({
 	 * Date: 2018/6/5
 	 */
 	forDataContrastSearch(data1, data2) {
-		let data3 = [];
-		if (data1.length > data2.length) {
-			for (let i=0; i < data1.length; i++) {
-				for (let j=0; j < data2.length; j++) {
-					if (data1[i].skuId == data2[j].skuId) {
-						data3[i] = data1[i];
-						continue;
-					} else {
-						data3.push(data1[i])
-						break;
-					}
-				}
-				// if (data2[i] == undefined) {
-				// 	continue;
-				// }
-				// console.log(data1[i], data2[i])
-				// if (data1[i].skuId == data2[i].skuId && data2[i].skuId) {
-				// 	data3[i] = data1[i];
-				// 	continue;
-				// } else {
-				// 	data3.push(data1[i])
-				// 	continue;
-				// }
-			}
-			// data1.forEach((item, index) => {
-			// 	data2.forEach((itemA) =>{
-			// 		data3.push(item);
-			// 		if (item.skuId == itemA.skuId) {
-			// 			data3[index] = item
-			// 		}
-			// 	})
-			// })
-			console.log(data3, 'data1 大')
-		} else {
-			data3 = data2;
-			for (let i=0; i < data2.length; i++) {
-				for (let j=0; j <data1.length; j ++) {
-					data3[i] = data1[i];
-					console.log(data2[i], data1[j])
-					if(data2[i].skuId == data1[j].skuId) {
-						data3[i] = data1[j];
-					}
-				}
-				// data3.push(data2[i]);
-				// console.log(data2[i], data1[i])
-				// if (data1[i] == undefined) {
-				// 	break;
-				// }
-				// if (data2[i].skuId == data1[i].skuId) {
-				// 	data3[i] = data1[i];
-				// 	continue;
-				// } else {
-				// 	data3.push(data1[i]);
-				// 	break;
-				// }
-			}
-			// data1.forEach((item) => {
-			// 	data2.forEach((itemA, indexA) =>{
-			// 		data3.push(itemA);
-			// 		if (itemA.skuId == item.skuId) {
-			// 			data3[indexA] = item
-			// 		}
-			// 	})
-			// })
-			console.log(data3, 'data2 大')
-		}
-		return data3;
+		data2.push(...data1);
+		// if (data1.length > data2.length) {
+		// 	for (let i=0; i < data1.length; i++) {
+		// 		for (let j=0; j < data2.length; j++) {
+		// 			if (data1[i].skuId == data2[j].skuId) {
+		// 				data3[i] = data1[i];
+		// 				continue;
+		// 			} else {
+		// 				data3.push(data1[i])
+		// 				break;
+		// 			}
+		// 		}
+		// 		// if (data2[i] == undefined) {
+		// 		// 	continue;
+		// 		// }
+		// 		// console.log(data1[i], data2[i])
+		// 		// if (data1[i].skuId == data2[i].skuId && data2[i].skuId) {
+		// 		// 	data3[i] = data1[i];
+		// 		// 	continue;
+		// 		// } else {
+		// 		// 	data3.push(data1[i])
+		// 		// 	continue;
+		// 		// }
+		// 	}
+		// 	// data1.forEach((item, index) => {
+		// 	// 	data2.forEach((itemA) =>{
+		// 	// 		data3.push(item);
+		// 	// 		if (item.skuId == itemA.skuId) {
+		// 	// 			data3[index] = item
+		// 	// 		}
+		// 	// 	})
+		// 	// })
+		// 	console.log(data3, 'data1 大')
+		// } else {
+		// 	data3 = data2;
+		// 	for (let i=0; i < data2.length; i++) {
+		// 		for (let j=0; j <data1.length; j ++) {
+		// 			data3[i] = data1[i];
+		// 			console.log(data2[i], data1[j])
+		// 			if(data2[i].skuId == data1[j].skuId) {
+		// 				data3[i] = data1[j];
+		// 			}
+		// 		}
+		// 		// data3.push(data2[i]);
+		// 		// console.log(data2[i], data1[i])
+		// 		// if (data1[i] == undefined) {
+		// 		// 	break;
+		// 		// }
+		// 		// if (data2[i].skuId == data1[i].skuId) {
+		// 		// 	data3[i] = data1[i];
+		// 		// 	continue;
+		// 		// } else {
+		// 		// 	data3.push(data1[i]);
+		// 		// 	break;
+		// 		// }
+		// 	}
+		// 	// data1.forEach((item) => {
+		// 	// 	data2.forEach((itemA, indexA) =>{
+		// 	// 		data3.push(itemA);
+		// 	// 		if (itemA.skuId == item.skuId) {
+		// 	// 			data3[indexA] = item
+		// 	// 		}
+		// 	// 	})
+		// 	// })
+		// 	console.log(data3, 'data2 大')
+		// }
+	//	return data3;
 //		去除重复skuId
-// 		Array.prototype.distinct = function(){
-// 			var arr = this, result = [], i, j, len = arr.length;
-// 			for(i = 0; i < len; i++){
-// 				for(j = i + 1; j < len; j++){
-// 					if(arr[i].skuId === arr[j].skuId){
-// 						j = ++i;
-// 					}
-// 				}
-// 				result.push(arr[i]);
-// 			}
-// 			return result;
-// 		}
-// 		console.log(data3, data3.distinct(), '返回 过滤后数据 需要 给 结果页面')
-// 		return data3.distinct();
+		Array.prototype.distinct = function(){
+			var arr = this, result = [], i, j, len = arr.length;
+			for(i = 0; i < len; i++){
+				for(j = i + 1; j < len; j++){
+					if(arr[i].skuId === arr[j].skuId){
+						j = ++i;
+					}
+				}
+				result.push(arr[i]);
+			}
+			return result;
+		}
+		console.log(data2, data2.distinct(), '返回 过滤后数据 需要 给 结果页面')
+		return data2.distinct();
 	},
 	/**
 	 * Description: 过滤 选中数据
@@ -283,30 +284,6 @@ Page({
 			  wx.setStorageSync('transferCacheData', transferCacheData); // 搜索结束后 需要把搜索结果放入到总的结果缓存中
 		  }
 	  }
-
-
-   // if (transferCacheData) {
-    	// this.data.productlist = []
-     /* if (this.data.productlist.length == 0) {
-	      searchTransferCacheData = searchTransferCacheData.filter((item) => {
-		      return item.outNumber != 0;
-	      })
-	      this.setData({
-		      imgDefault: false,
-		      productlist: searchTransferCacheData
-	      })
-	      wx.setStorageSync('transferCacheData', searchTransferCacheData);
-      } else {
-	      let tempArray1 = this.filterData(searchTransferCacheData); // 搜索数据获取数据输入不为0的数据
-	          transferCacheData = this.forDataContrastSearch(tempArray1, transferCacheData); // 搜索结果和总数据对比，如果有skuId相同责替换
-	      console.log(tempArray1, transferCacheData, '进入');
-	      this.setData({
-		      imgDefault: false,
-		      productlist: transferCacheData,
-	      })
-	      wx.setStorageSync('transferCacheData', transferCacheData); // 搜索结束后 需要把搜索结果放入到总的结果缓存中
-      }*/
-  //  }
   },
 
   /**

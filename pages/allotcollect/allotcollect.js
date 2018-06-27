@@ -2,6 +2,7 @@
 const app = getApp();
 const sysService = require('../../service/sys.service.js');
 const utils = require('../../utils/util');
+const config = require('../../config/config.js');
 Page({
 
   /**
@@ -63,14 +64,14 @@ Page({
   subAllot(){
     let collectCacheData = wx.getStorageSync('collectCacheData');
 		collectCacheData = collectCacheData && collectCacheData.filter((item) => {
-			if (item.inNumber != '' && item.inNumber != '0') {
+			if (item.inNumber != '') {
 				item.shopItemSkuVO.attrValues = utils.attrValuesToString(item.shopItemSkuVO);
 				return item;
 			}
 		})
 		if (collectCacheData.length != this.data.productlist.length ) {
 		    wx.showToast({
-		      title: '部分商品未完成收货',
+		      title: '部分商品未填写数量',
 		      icon: "none"
 		    })
 		    return ;
@@ -82,24 +83,31 @@ Page({
 				outTransferId: this.data.outTransferId, // 调拨出库单id
 				transferDetailVOList: collectCacheData
 			}
-			console.log(promseData, 'collectCacheData');
-			sysService.transfer({
-				url:'update',
-				method:'post',
-				data: promseData
-			}).then((res) => {
-				if (res.code == '0') {
-					utils.showToast({title: '调拨更新成功', page: 1, pages: getCurrentPages()});
-				} else if(res.code == '401') {
-					config.logOutAll();
-					return
-				} else {
-					wx.showToast({
-						title: res.msg,
-						icon: 'none'
-					})
+			wx.showModal({
+				content: '是否确认收货完成？',
+				confirmColor: config.showModal.confirmColor,
+				success: (res) => {
+					if (res.confirm) {
+						sysService.transfer({
+							url:'update',
+							method:'post',
+							data: promseData
+						}).then((res) => {
+							if (res.code == '0') {
+								utils.showToast({title: '调拨更新成功', page: 1, pages: getCurrentPages()});
+							} else if(res.code == '401') {
+								config.logOutAll();
+								return
+							} else {
+								wx.showToast({
+									title: res.msg,
+									icon: 'none'
+								})
+							}
+						})
+					}
 				}
-			})
+			});
 		}
   },
   /**

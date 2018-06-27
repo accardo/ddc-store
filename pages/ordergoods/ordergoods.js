@@ -105,21 +105,22 @@ Page({
           item.navClass = this.data._index;
           return item;
         })
+	      this.data.pagetListData = this.data.pagetListData.concat(productlist); // 数组合并
 	      if (pageIndex == 0) {
 		      if (cacheData[this.data._index]) { // 订货
-			      productlist = this.forDataContrast(productlist, cacheData[this.data._index]);
+			      console.log(productlist, '查问题');
+			      productlist = this.forDataContrast(this.data.pagetListData, cacheData[this.data._index]);
+
 		      }
 	      } else if (pageIndex == 1) {
 		      if (inventoryCacheData[this.data._index]) { // 盘点
-			      productlist = this.forDataContrast(productlist, inventoryCacheData[this.data._index]);
+			      productlist = this.forDataContrast(this.data.pagetListData, inventoryCacheData[this.data._index]);
 		      }
 	      } else if (pageIndex == 2) {
 		      if (outboundCacheData[this.data._index]) { //出库
-			      productlist = this.forDataContrast(productlist, outboundCacheData[this.data._index]);
+			      productlist = this.forDataContrast(this.data.pagetListData, outboundCacheData[this.data._index]);
 		      }
 	      }
-	      this.data.pagetListData = this.data.pagetListData.concat(productlist); // 数组合并
-
 	      this.setData({
           productlist: this.data.pagetListData,
 		      currPage: this.data.currPage + 1
@@ -339,8 +340,8 @@ Page({
 	 */
 	forDataContrast(data1, data2) {
 		data1 && data1.forEach((item, index) => {
+			data1[index].needNumber = 0
 			data2 && data2.forEach((itemA) =>{
-				item.needNumber = 0
 				if (item.skuId == itemA.skuId) {
 					data1[index] = itemA;
 				}
@@ -470,7 +471,8 @@ Page({
 			    wx.setStorageSync('cacheData', cacheData); // 搜索结束后 需要把搜索结果放入到总的结果缓存中
 		    }
 	    } else if (optionStorage == 1) { // 多分类综合页面
-    		  tempArray = this.forDataContrast(this.data.productlist, cacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
+			    tempArray = this.forDataContrast(this.data.productlist, cacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
+			    console.log(this.data.productlist, cacheData[this.data._index], tempArray, '多分类综合')
 	    }
 	    this._watchChange();
     }

@@ -1,7 +1,7 @@
 <!--pages/goodsinfo/goodsinfo.wxml-->
 <view class='detail'>
   <tip-info reason="{{reason}}"></tip-info>
-  <view class="scroll-box {{pagetitle =='出库'? 'active' : ''}}">
+  <view class="scroll-box {{pageindex == 2 ? 'active' : ''}}">
   <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
       <!--wx:if="{{conclusion}}"-->
     <product-info

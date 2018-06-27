@@ -17,8 +17,8 @@
             class='category-nav-item active_{{_index==index}}'
       >{{item.name}}</view>
     </view>
-     <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height: 100%;" bindscrolltolower="lower" class="products">
-        <product-info
+     <scroll-view scroll-top="{{scrollTop}}" scroll-y  style="height: 100%; " bindscrolltolower="lower" class="products">
+         <product-info
                 product-list="{{productlist}}"
                 product-type="{{productType}}"
                 bind:watchChange="_watchChange"
