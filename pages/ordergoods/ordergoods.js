@@ -106,19 +106,21 @@ Page({
           return item;
         })
 	      this.data.pagetListData = this.data.pagetListData.concat(productlist); // 数组合并
+	      console.log(this.data.pagetListData, '执行了么')
 	      if (pageIndex == 0) {
 		      if (cacheData[this.data._index]) { // 订货
 			      console.log(productlist, '查问题');
-			      productlist = this.forDataContrast(this.data.pagetListData, cacheData[this.data._index]);
+			      this.data.pagetListData = this.forDataContrast(this.data.pagetListData, cacheData[this.data._index]);
 
 		      }
 	      } else if (pageIndex == 1) {
 		      if (inventoryCacheData[this.data._index]) { // 盘点
-			      productlist = this.forDataContrast(this.data.pagetListData, inventoryCacheData[this.data._index]);
+			      this.data.productlist = this.forDataContrastSearch(this.data.pagetListData, inventoryCacheData[this.data._index])
+			    //  this.data.pagetListData = this.forDataContrast(this.data.pagetListData, inventoryCacheData[this.data._index]);
 		      }
 	      } else if (pageIndex == 2) {
 		      if (outboundCacheData[this.data._index]) { //出库
-			      productlist = this.forDataContrast(this.data.pagetListData, outboundCacheData[this.data._index]);
+			      this.data.pagetListData = this.forDataContrast(this.data.pagetListData, outboundCacheData[this.data._index]);
 		      }
 	      }
 	      this.setData({
@@ -355,15 +357,16 @@ Page({
 	 * Date: 2018/6/4
 	 */
 	forDataContrastSearch(data1, data2) {
-		data1.forEach((item) => {
-			data2.forEach((itemA, index) =>{
-				if (itemA.skuId == item.skuId) {
-					data2[index] = item
-				} else {
-					data2.push(item);
-				}
-			})
-		})
+		// data1.forEach((item) => {
+		// 	data2.forEach((itemA, index) =>{
+		// 		if (itemA.skuId == item.skuId) {
+		// 			data2[index] = item
+		// 		} else {
+		// 			data2.push(item);
+		// 		}
+		// 	})
+		// })
+		data2.push(...data1);
 		// 去除重复skuId
 		Array.prototype.distinct = function(){
 			var arr = this, result = [], i, j, len = arr.length;
@@ -386,6 +389,7 @@ Page({
 	 * Date: 2018/6/15
 	 */
 	lower() {
+		console.log(11111)
 		this.getProductByNav();
 	},
   /**

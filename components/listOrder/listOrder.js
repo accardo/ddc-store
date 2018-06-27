@@ -59,7 +59,9 @@ Component({
       let outShopId = e.currentTarget.dataset.outshopid;
       let inShopId = e.currentTarget.dataset.inshopid;
       let orderType = e.currentTarget.dataset.ordertype;
-      let outTransferId = e.currentTarget.dataset.outtransferid
+      let outTransferId = e.currentTarget.dataset.outtransferid;
+      let getuserinfo = wx.getStorageSync('getuserinfo');
+
       // 0 订货 - goodsreceipt - 待收货、部分收获路径名， orderfrom - 已收货路径名， goodsinfo - 待派单路径名
       switch (this.data.pageindex){
         case 0: // 出库
@@ -67,8 +69,18 @@ Component({
           pageName = orderStatus ==1 || orderStatus == 2 ? 'goodsreceipt' : ( orderStatus == 3 ? 'orderfrom':'goodsinfo' )
           break;
         case 1: // 盘点
-          path = `?orderId=${orderId}&orderStatus=${orderStatus}`; // orderStatus 盘点状态 1 已完成 2待审核 orderId 盘点id
-          pageName = orderStatus == 1 ? 'orderfrom' : 'inventoryreview';
+	        path = `?orderId=${orderId}&orderStatus=${orderStatus}`; // orderStatus 盘点状态 1 已完成 2待审核 orderId 盘点id
+	        pageName = orderStatus == 1 ? 'orderfrom' : 'inventoryreview';
+	        if (getuserinfo.roleName == '店长') {
+		        path = `?orderId=${orderId}&orderStatus=${orderStatus}`; // orderStatus 盘点状态 1 已完成 2待审核 orderId 盘点id
+		        pageName = orderStatus == 1 ? 'orderfrom' : 'inventoryreview';
+	        } else if(orderStatus == 2){
+		        wx.showToast({
+			        title: '没有权限审核',
+			        icon: 'none'
+		        })
+		        return false;
+	        }
           break;
         case 2: // 出库
           path = `?orderId=${orderId}`; // 出库单 id
