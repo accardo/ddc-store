@@ -1,16 +1,24 @@
 <!--pages/goodsinfo/goodsinfo.wxml-->
 <view class='detail'>
-  <tip-info outage="{{outage}}" label-name="出库原因"></tip-info>
-  <view class="scroll-box {{pagetitle =='出库'? 'active' : ''}}">
+  <tip-info reason="{{reason}}"></tip-info>
+  <view class="scroll-box {{pageindex == 2 ? 'active' : ''}}">
   <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
-    <product-info product-list="{{productlist}}" bind:countAdd="modifyNum" product-type="{{listtype}}"></product-info>
+      <!--wx:if="{{conclusion}}"-->
+    <product-info
+            product-list="{{productlist}}"
+            product-type="{{productType}}"
+            product-conclusion="{{conclusion}}"
+            product-status = "{{productStatus}}"
+            bind:watchChange="_watchChange"
+            bind:watchChangeDetial="_watchChangeDetial"
+    ></product-info>
   </scroll-view>
   </view>
-  <view class='bottom-box' wx:if="{{pagetitle == '订货' }}">
+  <view class='bottom-box' wx:if="{{pageindex == 0 }}">
       <view class='bottom-price'>
         共<text>{{shopTotalN}}</text>个商品，<text>{{shopPieceN}}</text>件
       </view>
       <button class='bottom-btn' bindtap='goNext' size="mini">下一步</button>
   </view>
-  <view bindtap='nextGo' wx:if="{{pagetitle == '出库'}}" class='btn-review'>下一步</view>
+  <view bindtap='nextGo' wx:if="{{pageindex == 2}}" class='btn-review'>下一步</view>
 </view>

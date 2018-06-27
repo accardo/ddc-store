@@ -46,3 +46,13 @@ page{
 .btn-review >button[disabled]{
   color: #666;
 }
+.default-img {
+  margin: 80rpx auto 0;
+  width: 163rpx;
+  height: 176rpx;
+}
+.default-img image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

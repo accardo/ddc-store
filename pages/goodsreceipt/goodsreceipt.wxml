@@ -2,7 +2,12 @@
 <view class='goods-receipt'>
 <view class='scroll-box'>
   <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
-    <receipt-list receipt-arr="{{receiptList}}" title-name="{{txtName}}" page-type="{{pagetype}}"></receipt-list>
+    <receipt-list receipt-arr="{{receiptList}}"
+                  title-name="{{txtName}}"
+                  page-type="{{pagetype}}"
+                  order-status="{{ status }}"
+                  bind:bindReceiptData="_bindReceiptData"
+    ></receipt-list>
   </scroll-view>
 </view>
   <view class='btn-box'>

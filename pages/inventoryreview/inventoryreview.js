@@ -1,91 +1,122 @@
 // pages/inventoryreview/inventoryreview.js
 const config = require('../../config/config.js');
+const sysService = require('../../service/sys.service.js');
+const utils = require('../../utils/util');
+const app = getApp();
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    countNum:1,
     scrollTop:0,
-    isShow:false,
-    val:'',
     ind:'',
-    stoknum:0,
-    defImg: 'logo.png', 
+    defImg: config.pageImgUrl+'logo.png',
     pagetitle: '',
-    imgUrl: config.pageImgUrl,
-    inventoryList: [
-      { img: "pro-img3.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 120, netcontent: 100, typelist: ["大杯", "黑色"], company: "g",stockthory:100 },
-      { img: "pro-img2.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 130, netcontent: 100, company: "g", stockthory: 10},
-      { img: "pro-img6.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 20, netcontent: 100, typelist: ["大杯", "黑色"], company: "g",stockthory: 10 },
-      { name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", current: 190, netcontent: 100, company: "g", stockthory: 20 },
-      { img: "pro-img3.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: 10, netcontent: 100, company: "个", stockthory: 30 }
-    ]
+    status: 0, // 盘点状态
+	  inventoryId: 0, // 盘点id
+	  receiptList: [], // 初始化数据
+	  iIndex: '', // 判断input框是否开启
+	  configFl: config.dict.shopType,
   },
-
-
-  //设置Input 框 的值
-  setValue(e) {
-    let val = e.detail.value;
-    this.setData({
-      val
-    })
+	/**
+	 * Description: 获取 待审核数据列表 info
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/30
+	 */
+  getInentoryreviewData() {
+		wx.showLoading({ title: '加载中' });
+		let promseData = {
+			inventoryId: this.data.inventoryId,
+			shopId: app.selectIndex,
+			status: this.data.status
+		}
+		sysService.inventorydetail({
+			url:'info',
+			method:'get',
+			data: promseData
+		}).then((res) => {
+			if (res.code == '0') {
+				let receiptList = utils.attrValuesSkuSplit(res.inventoryDetailVOList); // attrValues  string 转 array 页面铺数据
+				this.setData({
+					receiptList // 订货列表数据
+				})
+				wx.hideLoading();
+			} else if(res.code == '401') {
+				config.logOutAll();
+				return
+			} else {
+				wx.showToast({
+					title: res.msg,
+					icon: 'none'
+				})
+			}
+		})
   },
-
-  //修改 数值
+	/**
+	 * Description: 修改 按钮 触发显示input
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/31
+	 */
   editNum(e) {
-    let _this = this;
-    let { ind, stoknum } = e.target.dataset;
-    _this.setData({
-      isShow: true,
-      stoknum,
-      ind
+    this.setData({
+	    iIndex: e.currentTarget.dataset.inputindex
     })
   },
-
-  /* 确定调整 */
-  confimNum(e) {
-    let _this = this;
-    let { val, ind,inventoryList } = _this.data;
-    if (!val){
-      wx.showToast({
-        title: '请输入盘点数量',
-        icon:'none'
-      })
-      return 
-    }
-    let stoknum = parseInt(inventoryList[ind].stoknum);
-    inventoryList[ind].stoknum = val;
-    _this.setListData(inventoryList);
-  },
-
-  //设置 修改后的列表
-  setListData(inventoryList) {
-    let _this = this;
-    _this.setData({
-      inventoryList,
-      isShow: false,
-      val:''
-    })
-  },
-
+	/**
+	 * Description: 直接扣减
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/31
+	 */
+	editNnit(e) {
+		this.data.receiptList.forEach((item, index) =>{
+			 if(e.currentTarget.dataset.eindex == index) {
+				 item.unitValue = e.detail.value
+			 }
+		})
+	},
+	/**
+	 * Description: 拆零扣减
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/31
+	 */
+	editMaterialUnit(e) {
+		this.data.receiptList.forEach((item, index) =>{
+			if(e.currentTarget.dataset.eindex == index) {
+				item.materialUnitValue = e.detail.value
+			}
+		})
+	},
   /* 提交审核 */
   subReview(){
+	  let inventoryDetailVOList = utils.attrValuesSkuToString(this.data.receiptList); // attrValues array 转 string 提交数据
+	  let promeData = {
+		  id: this.data.inventoryId || null, // 盘点id
+		  shopId: app.selectIndex, // 店铺ID
+		  inventoryDetailVOList,
+	  }
     wx.showModal({
       content: '确认提交审核？',
       confirmColor: config.showModal.confirmColor,
       success: function (res) {
         if (res.confirm){
-          wx.showToast({
-            title: '提交审核成功'
-          })
-          /* 成功后返回上一页面 */
-          setTimeout(()=>{
-            wx.navigateBack({
-              delta: 1
-            })
-          },1200);
+	        sysService.inventory({
+		        url: 'update',
+		        method: "post",
+		        data: promeData
+	        }).then((res) => {
+		        if (res.code == 0) {
+			        utils.showToast({title: '盘点成功', page: 1, pages: getCurrentPages()});
+		        } else if (res.code == 401) {
+			        config.logOutAll();
+			        return
+		        } else {
+			        wx.showToast({
+				        title: res.msg,
+				        icon:'none'
+			        })
+		        }
+	        })
         }
       }
     });
@@ -96,18 +127,14 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let inventoryList = [];
-    let _this = this;
-    _this.data.inventoryList.map(item => {
-      let stoknum = config.transCompany(item.stock, item.netcontent, item.company);
-      item['stoknum'] = stoknum.split(' ')[0];
-      item['unitinfo'] = stoknum.split(' ')[1]
-      inventoryList.push(item);
+    let pageindex = wx.getStorageSync('pageindex');
+    this.setData({
+	    inventoryId : options.orderId,
+      status: options.orderStatus
     })
-    _this.setData({
-      inventoryList
-    })
-    console.log(inventoryList);
+	  if (pageindex == 1) {
+		  this.getInentoryreviewData();
+	  }
     wx.setNavigationBarTitle({
       title: '盘点审核'
     })

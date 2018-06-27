@@ -15,7 +15,6 @@ Component({
    * 组件的初始数据
    */
   data: {
-    stockData:[],
     imgUrl: config.pageImgUrl
   },
 
@@ -37,20 +36,17 @@ Component({
         case '出库操作':
           wx.setStorageSync('pageindex', 2);
           break;
-        case '入库操作':
+        case '置换':
           wx.setStorageSync('pageindex', 3);
           break;
-        case '置换':
+        case '调拨':
           wx.setStorageSync('pageindex', 4);
           break;
-        case '调拨':
+        case '库存查询':
           wx.setStorageSync('pageindex', 5);
           break;
-        case '库存查询':
-          wx.setStorageSync('pageindex', 6);
-          break;
         case '课程消耗':
-          wx.setStorageSync('pageindex', 7);
+          wx.setStorageSync('pageindex', 6);
           break;
       }
       if (txt == '退出'){
@@ -58,9 +54,16 @@ Component({
           content: '确定要退出吗？',
           confirmColor: config.showModal.confirmColor,
           success: function (res) {
-            res.confirm && wx.reLaunch({
-              url: config.getPageUrl(true, 'login')
-            })
+            if (res.confirm) {
+	            wx.removeStorageSync('getuserinfo');
+	            wx.removeStorageSync('getusertoken');
+	            wx.removeStorageSync('logs');
+	            wx.removeStorageSync('pagetitle');
+	            wx.removeStorageSync('shopId');
+	            wx.reLaunch({
+		            url: config.getPageUrl(true, 'login')
+	            })
+            }
           }
         });
       } else if (txt == '库存查询'){

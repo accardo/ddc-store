@@ -8,187 +8,248 @@ Page({
    * 页面的初始数据
    */
   data: {
-    titlename:'',
-    btntext:'',
-    isShow:false,
-    selectRadio:'',
-    pagetListData:[],
-    radioList: [
-      [
-        { 'name': '商品破损', value: '1', checked:false},
-        { 'name': '商品过期', value: '2', checked: false },
-        { 'name': '商品变质', value: '3', checked: false }
-      ],
-      [
-        { 'name': '临期', value: '1', checked: false },
-        { 'name': '过期', value: '2', checked: false },
-        { 'name': '在库退货', value: '3', checked: false },
-        { 'name': '质量问题', value: '4', checked: false }
-      ]
-    ],
-    labelList:[],
-    listData:[],
-    orderGoodsList:[
-      {'order':'OOED243245678','uname':'赵三','time':'2018-04-17 18:19:20',type:1},
-      { 'order': 'OOED5234267', 'uname': '李四', 'time': '2018-04-17 18:19:20', type: 0 },
-      { 'order': 'OOED4123423111', 'uname': '王五', 'time': '2018-03-17 18:19:20', type: 2 },
-      { 'order': 'OOED452423422342', 'uname': '冯琪', 'time': '2018-04-19 18:19:20', type: 3 },
-    ],
-    inventoryList:[
-      { 'order': 'OOED452423422342', 'uname': '冯琪', examine:'小吴','time': '2018-04-19 18:19:20', type: 1 },
-      { 'order': 'OOED452423422342', 'uname': '冯琪', 'time': '2018-04-19 18:19:20', type: 0 },
-      { 'order': 'OOED452423422342', 'uname': '冯琪', examine: '小吴', 'time': '2018-04-19 18:19:20', type: 1 },
-      { 'order': 'OOED452423422342', 'uname': '冯琪', examine: '小吴', 'time': '2018-04-19 18:19:20', type: 1 },
-      { 'order': 'OOED452423422342', 'uname': '冯琪', 'time': '2018-04-19 18:19:20', type: 0 }
-    ],
-    consumeList:[
-      { 'order': 'OOED452423422342', 'uname': '冯琪', 'time': '2018-04-19 18:19:20'},
-      { 'order': 'OOED45242777772', 'uname': '娃哈哈', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'OOED45242555552', 'uname': '冯琪', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'OOED4524433443', 'uname': '王老吉', 'time': '2018-04-19 18:19:20' }
-    ],
-    outGoList:[
-      { 'order': 'OOED4524433443', outType: 0, outreason: 1, 'examine': '王老吉', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'OOED4524433443', outType: 0, outreason: 1, 'examine': '成龙', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'OOED412111443', outType: 1, outreason: 1, 'examine': '冯德瑞', 'time': '2018-03-19 18:19:20' },
-      { 'order': 'OOED4524433443', outType: 0, outreason: 2, 'examine': '冯德瑞', 'time': '2018-04-29 18:19:20' },
-    ],
-    displacesList:[
-      { 'order': 'DOC23456', type: 0, 'uname': '娃哈哈', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'DOC267896', type: 0, 'uname': '王老吉', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'DOC26756', type: 0, 'uname': '雪碧', 'time': '2018-04-19 18:19:20' }
-    ],
-    allotList:[
-      { 'order': 'DOC245676756', type: 0, ordertype: 1, allotOut: '上海K11烘焙课', allotEnter: '武汉K11烘焙课', 'subname': '雪碧', collect:'小吴', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'DOC245676756', type: 1, ordertype: 1, allotOut: '上海K11烘焙课', allotEnter: '武汉K11烘焙课', 'subname': '雪碧', collect: '小吴', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'DOC245676756', type: 1, ordertype: 0, allotOut: '上海K11烘焙课', allotEnter: '武汉K11烘焙课', 'subname': '雪碧', collect: '小吴', 'time': '2018-04-19 18:19:20' },
-      { 'order': 'DOC245676756', type: 0, ordertype: 0, allotOut: '上海K11烘焙课', allotEnter: '武汉K11烘焙课', 'subname': '雪碧', collect: '小吴', 'time': '2018-04-19 18:19:20' }
-    ],
-    currPage:1,
-    pageSize:10,
-    shopId:0
+    titlename: '', // 按钮名称
+    btntext:'', // 类型名，如订货，盘点，出库操作，置换，调拨，库存查询，课程消耗
+    isShow: false, // 报废 退货 遮罩层 显隐
+	  outboundType: 0, // 1 -> 报废； 2 ->退货
+    selectRadio: '',
+	  listData: [], // 总数据
+    pagetListData: [], // 临时拼接数据需要合并到 lisData中
+    pageindex: 0, // 缓存数据中取出 判断是哪个类型
+    labelList:[], // 报废 退货 信息 前端字典
+    currPage: 1,
+    pageSize: 10,
   },
 
   /* 商品详情 */
   ordergoods(){
-    let _this = this;
-    let { titlename } = _this.data;
-    if (titlename.includes('课程消耗调整')){
+    let pageindex = wx.getStorageSync('pageindex');
+    if (pageindex == 6) { // 课程消耗
       wx.navigateTo({
-        url: '../../pages/expendtrim/expendtrim'
+        url: '../../pages/expendtrim/expendtrim?&isupdate=true&isExpend=1'
       })
-    } else if (titlename.includes('置换')){
+    } else if (pageindex == 3){ // 置换
+	    wx.removeStorageSync('setConverFrom');
+	    wx.removeStorageSync('setConverInto');
       wx.navigateTo({
         url: '../../pages/displacesgoods/displacesgoods'
       })
-    } else if (titlename.includes('调拨')) {
+    } else if (pageindex == 4) { // 调拨
+    	wx.removeStorageSync('transferCacheData');
+    	wx.removeStorageSync('searchTransferCacheData');
       wx.navigateTo({
         url: '../../pages/allocation/allocation'
       })
     }else{
-      wx.navigateTo({
-        url: '../../pages/ordergoods/ordergoods'
-      })
+      if (pageindex == 0) {
+        wx.navigateTo({ // 订货
+          url: '../../pages/ordergoods/ordergoods?productType=goods'
+        })
+        // wx.removeStorageSync('goodsOrderCacheData');
+         wx.removeStorageSync('searchGoodsOrderCacheData');
+         wx.removeStorageSync('resultsGoodsOrderCacheData');
+      } else if (pageindex == 1) {
+	      wx.navigateTo({ // 盘点 出库操作 入库操作 库存查询
+		      url: '../../pages/ordergoods/ordergoods'
+	      })
+      }
     }
   },
-
-  /* 报废 */
-  scrapSelect(e){
-    let _this = this;
-    _this.setData({
-      isShow:true,
-      labelList: _this.data.radioList[0]
-    })
-  },
-
-  /* 获取订货信息 */
-  getOrderGoods(){
+	/**
+	 * Description: 统一处理 返回信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/8
+	 */
+	requestReturnInfo (res) {
+		 wx.stopPullDownRefresh();
+		if (res.code = '0') {
+			if (res.page.list.length == 0) {
+				wx.hideLoading();
+				wx.showToast({
+					title: '没有更多数据',
+					icon:'none'
+				});
+				wx.stopPullDownRefresh();
+				return
+			}
+			this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
+			this.setData({
+				listData: this.data.pagetListData,
+				currPage: this.data.currPage + 1
+			})
+		} else if (res.code == '401') {
+			config.logOutAll();
+			return
+		} else {
+			wx.showToast({
+				title: res.msg,
+				icon: 'none'
+			})
+		}
+		wx.hideLoading();
+	},
+	/**
+	 * Description: 请求数据 整合
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/8
+	 */
+	getData() {
+		let getParm = {
+			currPage: this.data.currPage,
+			pageSize: this.data.pageSize,
+			shopId: app.selectIndex,
+		}
+		return getParm
+	},
+	/**
+	 * Description: 获取订货信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/31
+	 */
+  getOrderGoods() {
     wx.showLoading({ title: '加载中' });
-    let _this = this;
-    let token = wx.getStorageSync('getusertoken');
-    let shopId = app.selectIndex;
-    let { currPage, pageSize, pagetListData } = _this.data;
-    let getParm = {
-      currPage,
-      pageSize,
-      shopId,
-      token
-    }
     sysService.purchase({
       url: 'list',
       method: 'get',
-      data: getParm
-    }).then(res => {
-      wx.stopPullDownRefresh();
-      let { code, page, msg } = res;
-      if (code == 401) {
-        config.logOutAll();
-        return
-      }
-      if (code == 0 && page && page.list) {
-        if (page.list.length == 0){
-          wx.hideLoading();
-          wx.showToast({
-            title: '没有更多数据',
-            icon:'none'
-          });
-          wx.stopPullDownRefresh();
-          return 
-        }
-        pagetListData = pagetListData.concat(page.list);
-        console.log(pagetListData);
-        _this.setData({
-          pagetListData,
-          currPage: currPage + 1,
-          listData: pagetListData
-        })
-      } else {
-        wx.showToast({
-          title: msg,
-          icon: 'none'
-        })
-      }
-      wx.hideLoading();
-      }).catch(error=>{
-        wx.hideLoading();
-      })
-  },
-
-  /* 退货 */
-  returnGoods(e){
-    let _this = this;
-    _this.setData({
-      isShow: true,
-      labelList: _this.data.radioList[1]
+      data: this.getData()
+    }).then((res) => {
+    	this.requestReturnInfo(res);
+    }).catch(() => {
+    	wx.hideLoading();
     })
   },
-
-  /* 确定 */
+	/**
+	 * Description: 获取盘点信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/25
+	 */
+  getInventory() {
+		wx.showLoading({ title: '加载中' });
+		sysService.inventory({
+			url: 'list',
+			method: 'get',
+			data: this.getData()
+		}).then((res) => {
+			this.requestReturnInfo(res);
+		}).catch(() => {
+			wx.hideLoading();
+		})
+  },
+	/**
+	 * Description: 获取出库信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/31
+	 */
+	getOutbound() {
+		wx.showLoading({ title: '加载中' });
+		sysService.delivery({
+			url: 'list',
+			method: 'get',
+			data: this.getData()
+		}).then((res) => {
+			this.requestReturnInfo(res);
+		}).catch(() => {
+			wx.hideLoading();
+		})
+	},
+	/**
+	 * Description: 获取置换信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/4
+	 */
+	getSubstitution() {
+		wx.showLoading({ title: '加载中' });
+		sysService.displace({
+			url: 'list',
+			method: 'get',
+			data: this.getData()
+		}).then((res) => {
+			this.requestReturnInfo(res);
+		}).catch(() => {
+			wx.hideLoading();
+		})
+	},
+	/**
+	 * Description: 获取调拨信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/5
+	 */
+	getTransfers() {
+		wx.showLoading({ title: '加载中' });
+		sysService.transfer({
+			url: 'list',
+			method: 'get',
+			data: this.getData()
+		}).then((res) => {
+			this.requestReturnInfo(res);
+		}).catch(() => {
+			wx.hideLoading();
+		})
+	},
+	/**
+	 * Description: 获取课程消耗信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/6
+	 */
+	getConsumption() {
+		wx.showLoading({ title: '加载中' });
+		sysService.coursebill({
+			url: 'list',
+			method: 'get',
+			data: this.getData()
+		}).then((res) => {
+			this.requestReturnInfo(res);
+		}).catch(() => {
+			wx.hideLoading();
+		})
+	},
+	/* 报废 按钮 */
+	scrapSelect(){
+		this.setData({
+			isShow: true,
+			outboundType: 1,
+			labelList: config.dict.outGoType[0]
+		})
+	},
+	/* 退货 按钮*/
+	returnGoods(){
+		this.setData({
+			isShow: true,
+			outboundType: 2,
+			labelList: config.dict.outGoType[1]
+		})
+	},
+	/* 报废 或 退货  选中的值 radio */
+	radioChange(e){
+		this.setData({
+			selectRadio: e.detail.value
+		})
+	},
+  /* 确定 跳转到相对应的页面*/
   confirmFun(){
-    let _this = this;
-    _this.dialogClose();
-    let { selectRadio } = _this.data;
-    wx.navigateTo({
-      url: '../../pages/ordergoods/ordergoods?radiotxt=' + selectRadio
-    })
+    if (this.data.selectRadio !== '') {
+	    this.dialogClose();
+	    let reasonRadio = wx.getStorageSync('reasonRadio'); // 判断页面进入的是哪个类别
+	    if (reasonRadio != this.data.selectRadio) {
+		    wx.removeStorageSync('outboundCacheData');
+		    wx.removeStorageSync('searchOutboundCacheData');
+	    }
+	    wx.removeStorageSync('optionStorage');
+	    wx.removeStorageSync('searchOutboundCacheData');
+	    wx.navigateTo({
+		    url: `../../pages/ordergoods/ordergoods?reason=${this.data.selectRadio}&outboundType=${this.data.outboundType}`
+	    })
+    } else {
+	    wx.showToast({
+		    title: '请选择类型',
+		    icon: 'none'
+	    })
+    }
   },
-
+	/* 关闭 遮罩层 取消*/
   dialogClose(){
     this.setData({
       isShow: false
-    })
-  },
-
-  dialogShow(){
-    this.setData({
-      isShow: true
-    })
-  },
-
-  /* radio 选中的 */
-  radioChange(e){
-    this.setData({
-      selectRadio: e.detail.value
     })
   },
 
@@ -196,68 +257,63 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let _this = this;
-    let { titlename } = options;
-    let typeName = '', btntext='';
-    let { listData } = _this.data; 
-    switch(titlename){
-      case '订货':
-        btntext = titlename;
-        typeName = 'orderGoodsStatus';
-        listData = listData ? listData : this.data.orderGoodsList;
-        break;
-      case '盘点':
-        btntext = '开始' + titlename;
-        typeName = 'inventoryStatus';
-        listData = this.data.inventoryList;
-        break;
-      case '出库操作':
-        typeName = 'outGoType';
-        listData = this.data.outGoList;
-        break;
-      case '置换':
-        btntext = '发起置换';
-        typeName = 'displaces';
-        listData = this.data.displacesList;
-        break;
-      case '调拨':
-        btntext = '调拨出库';
-        typeName = 'allotStatus';
-        listData = this.data.allotList;
-        break;
-      case '课程消耗':
-        btntext = '消耗调整';
-        titlename = '课程消耗调整';
-        listData = this.data.consumeList;
-        break;
-    }
-    this.setData({
-      titlename,
-      btntext,
-      listData,
-      typeName
-    })
-    wx.setNavigationBarTitle({
-      title: titlename
-    })
+	   let btntext = ''; // 拼接按钮提示
+	   let pageindex = wx.getStorageSync('pageindex');
+	   switch(pageindex){
+        case 0: // 订货
+          btntext = options.titlename;
+	        this.getOrderGoods();
+          break;
+        case 1: // 盘点
+          btntext = options.titlename || '盘点';
+	        this.getInventory();
+          break;
+        case 2: // 出库操作
+	        this.getOutbound();
+          break;
+        case 3: // 置换
+          btntext = options.titlename;
+	        this.getSubstitution();
+          break;
+        case 4: // 调拨
+          btntext = '调拨出库';
+          this.getTransfers();
+          break;
+        case 6: // 课程消耗
+          btntext = options.titlename;
+          this.getConsumption();
+          break;
+	   }
+	   this.setData({
+        btntext,
+        pageindex,
+     })
+      wx.setNavigationBarTitle({
+        title: options.titlename
+      })
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-   
+		console.log(1111)
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    this.setData({
-      currPage:1,
-      pagetListData:[]
-    })
-    this.getOrderGoods();
+	  // this.setData({
+		 //  listData: [],
+		 //  currPage: 1
+	  // })
+  	// if(this.data.pageindex == 0) {
+		 //  this.getOrderGoods();
+	  // } else if(this.data.pageindex == 1 ) {
+		 //  this.getInventory();
+		 //  console.log(1111111)
+	  // }
   },
 
   /**
@@ -271,7 +327,6 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-  
   },
 
   /**
@@ -285,7 +340,19 @@ Page({
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function () {
-    this.getOrderGoods();
+    if (this.data.pageindex == 0) {
+	    this.getOrderGoods();
+    } else if(this.data.pageindex == 1) {
+      this.getInventory();
+    } else if (this.data.pageindex == 2) {
+	    this.getOutbound();
+    } else if (this.data.pageindex == 3 ) {
+    	this.getSubstitution();
+    } else if (this.data.pageindex == 4) {
+    	this.getTransfers();
+    } else if (this.data.pageindex == 6) {
+    	this.getConsumption();
+    }
   },
 
   /**

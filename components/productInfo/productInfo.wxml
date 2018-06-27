@@ -1,197 +1,195 @@
 <!--components/productInfo/productInfo.wxml-->
 <view class='goods-box'>
       <view class='goods-item'  wx:for="{{productList}}" wx:key="index" >
-        <image class="goods-img {{item.thumb.includes('http') ? '':'active'}}" src="{{item.thumb.includes('http') ? item.thumb : defImg}}"></image>
-        <view wx:if="{{pagetitle =='订货' && productType == 'goods'}}" class='goods-txt-box'>
-          <view class='goods-txt'>
-            <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
-            <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
-            <text>{{item.item.deductionType ==2 ? ( item.item.netWightValue +''+ item.item.materialUnitName):''}}</text>
-          </view>
-          <view class='goods-stock'>
-            当前库存：<text>{{item.item.deductionType ==1 ? (item.item.unitValue+''+ item.item.unitName): (item.item.unitValue+''+ item.item.unitName +' '+item.item.materialUnitValue+''+ item.item.materialUnitName)}}</text>
-          </view>
-          <view class='goods-label' 
-            wx:if="{{item.attrValues && item.attrValues.length>0}}">
-            <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
-          </view>
-          <view class='product-count' >
-            <image class='input-icon' data-index="{{index}}" catchtap='countReduce' src='../../icons/jian.png'></image>
-            <view class='input-number'>
-              <text class='input-num red'>{{item.item.unitValue }}</text>
-              <text class='input-type'>{{item.item.unitName}}</text>
-            </view>
-            <image class='input-icon' data-index="{{index}}" catchtap='countAdd' src='../../icons/jia.png'></image>
-          </view>
-        </view>
-        <view wx:if="{{pagetitle =='订货' && productType == 'listdetail'}}" class='goods-txt-box'>
-          <view class='goods-txt'>
-            <text class='goods-type' wx:if="{{item.shopItemSkuVO.item.itemType}}" >{{shopType[item.shopItemSkuVO.item.itemType]}}</text>
-            <text class='goods-name'>{{item.shopItemSkuVO.item.itemName  }}</text>
-            <text>{{item.shopItemSkuVO.item.deductionType ==2 ? ( item.shopItemSkuVO.item.netWightValue +''+ item.shopItemSkuVO.item.materialUnitName):''}}</text>
-          </view>
-          <view class='goods-stock'>
-            当前库存：<text>{{item.shopItemSkuVO.item.deductionType ==1 ? (item.shopItemSkuVO.item.unitValue+''+ item.shopItemSkuVO.item.unitName): (item.shopItemSkuVO.item.unitValue+''+ item.shopItemSkuVO.item.unitName +' '+item.shopItemSkuVO.item.materialUnitValue+''+ item.shopItemSkuVO.item.materialUnitName)}}</text>
-          </view>
-          <view class='goods-label' 
-            wx:if="{{item.shopItemSkuVO.attrValues && item.shopItemSkuVO.attrValues.length>0}}">
-            <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
-          </view>
-          <view class='product-count' >
-            <image class='input-icon' data-index="{{index}}" catchtap='countReduce' src='../../icons/jian.png'></image>
-            <view class='input-number'>
-              <text class='input-num red'>{{item.needNumber }}</text>
-              <text class='input-type'>{{item.shopItemSkuVO.item.unitName}}</text>
-            </view>
-            <image class='input-icon' data-index="{{index}}" catchtap='countAdd' src='../../icons/jia.png'></image>
-          </view>
-        </view>
-        <view wx:if="{{pagetitle =='盘点'}}" class='goods-txt-box'>
-          <view class='goods-txt'>
-            <text class='goods-type'>{{item.typename}}</text>
-            <text class='goods-name'>{{item.name}}</text>
-            <text>{{item.unit}}</text>
-          </view>
-          <view class='goods-label' 
-            wx:if="{{item.typelist && item.typelist.length>0}}">
-            <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
-          </view>
-          <view class='goods-stock' wx:if="{{item.company !='个'}}">
-            净含量：<text>{{item.netcontent}}{{item.company}}</text>
-          </view>
-          <view class='goods-stock stock-num'>
-            盘点数量:<view class="number-box" wx:if="{{item.company !='个'}}">
-              <input type='number'></input>袋
-              <input type='number'></input>{{item.company}}
-            </view>
-           <view class="number-box"  wx:if="{{item.company =='个'}}">
-             <input type='number'></input>个
-           </view>
-          </view>
-        </view>
-        <view wx:if="{{pagetitle =='出库操作'}}" class='goods-txt-box'>
-            <view class='goods-txt'>
-              <text class='goods-type'>{{item.typename}}</text>
-              <text class='goods-name'>{{item.name}}</text>
-              <text>{{item.unit}}</text>
-            </view>
-            <view class='goods-label' 
-              wx:if="{{item.typelist && item.typelist.length>0}}">
-              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
-            </view>
-            <view class='goods-stock' wx:if="{{item.company !='个'}}">
-              净含量：<text>{{item.netcontent}}{{item.company}}</text>
-            </view>
-            <view class='goods-stock stock-num'>
-                库存数量:<view class="number-box" wx:if="{{item.company !='个'}}">
-                 <text>{{item.stoknum}}</text>
-                </view>
-               <view class="number-box"  wx:if="{{item.company =='个'}}">
-                 <text>{{item.stoknum}}</text>
-               </view>
-              </view>
-            <view class='goods-stock stock-num'>
-              出库数量:<view class="number-box" wx:if="{{item.company !='个'}}">
-                <input type='number'></input>袋
-                <input type='number'></input>{{item.company}}
-              </view>
-             <view class="number-box"  wx:if="{{item.company =='个'}}">
-               <input type='number'></input>个
-             </view>
-            </view>
-        </view>
-        <view wx:if="{{productType =='want' || productType == 'cover' }}" data-ind="{{index}}" catchtap='clickShop' class='goods-txt-box'>
-            <view class='goods-txt'>
-              <text class='goods-type'>{{item.typename}}</text>
-              <text class='goods-name'>{{item.name}}</text>
-              <text>{{item.unit}}</text>
-            </view>
-            <view class='goods-label' 
-              wx:if="{{item.typelist && item.typelist.length>0}}">
-              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
-            </view>
-            <view class='goods-stock' wx:if="{{productStatus != 'over'}}">
-              当前库存：<text>{{item.current}}{{item.company}}</text>
-            </view>
-            <view class='goods-stock' wx:if="{{productStatus == 'over'}}">
-                转换数量：<text>{{item.wannum}}{{item.company}}</text>
-            </view>  
-          </view>
-          <view wx:if="{{productType =='displace' }}" class='goods-txt-box'>
+        <image wx:if="{{(pageindex != 4 && productType != 'allotcollect') || fromInto == 'into'}}"
+               class="goods-img {{(item.thumb !== null && item.thumb !=='') ? '' : ((item.item.thumb !== null && item.item.thumb !== '') ? '' : 'active')}}"
+               src="{{(item.thumb !== null && item.thumb !== '') ? item.thumb : (item.item.thumb !== null && item.item.thumb !== '') ? item.item.thumb : defImg}}"
+        ></image>
+        <image wx:if="{{pageindex == 4 && productType == 'allotcollect'}}"
+               class="goods-img {{(item.shopItemSkuVO.thumb !== null && item.shopItemSkuVO.thumb !=='') ? '' : (item.shopItemSkuVO.item.thumb !== null && item.shopItemSkuVO.item.thumb !== '') ? '' : 'active'}}"
+               src="{{(item.shopItemSkuVO.thumb !== null && item.shopItemSkuVO.thumb !== '') ? item.shopItemSkuVO.thumb : (item.shopItemSkuVO.item.thumb !== null && item.shopItemSkuVO.item.thumb !== '') ? item.shopItemSkuVO.item.thumb : defImg}}"
+        ></image>
+          <!--pageindex = 0 订货 start-->
+          <view wx:if="{{pageindex == 0  && productType == 'goods'}}" class='goods-txt-box'>
               <view class='goods-txt'>
-                <text class='goods-type'>{{item.typename}}</text>
-                <text class='goods-name'>{{item.name}}</text>
-                <text>{{item.unit}}</text>
-              </view>
-              <view class='goods-label' 
-                wx:if="{{item.typelist && item.typelist.length>0}}">
-                <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+                <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
+                <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
+                <text>{{item.item.deductionType ==2 ? ( item.item.netWightValue +''+ item.item.materialUnitName):''}}</text>
               </view>
               <view class='goods-stock'>
-                当前库存：<text>{{item.current}}{{item.company}}</text>
+                当前库存：<text>{{item.item.deductionType ==1 ? (item.item.unitValue+''+ item.item.unitName): (item.item.unitValue+''+ item.item.unitName +' '+item.item.materialUnitValue+''+ item.item.materialUnitName)}}</text>
               </view>
-              <view class='goods-stock want-box'>
-                  转化数量：<input type='number' data-name='wantNum' data-ind="{{index}}" bindinput='setWantNum'></input>{{item.company}}
+              <view class='goods-label'
+                wx:if="{{item.attrValues && item.attrValues.length>0}}"
+              >
+                <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+              </view>
+              <view class='product-count' >
+                <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" catchtap='countReduce' src='../../icons/jian.png'></image>
+                <view class='input-number'>
+                  <text class='input-num red'>{{item.needNumber }}</text>
+                  <text class='input-type'>{{item.item.unitName}}</text>
                 </view>
-            </view>
-        <view wx:if="{{pagetitle=='调拨' && productType==''}}" class='goods-txt-box'>
-            <view class='goods-txt'>
-              <text class='goods-type'>{{item.typename}}</text>
-              <text class='goods-name'>{{item.name}}</text>
-              <text>{{item.unit}}</text>
-            </view>
-            <view class='goods-label' 
-              wx:if="{{item.typelist && item.typelist.length>0}}">
-              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
-            </view>
-            <view class='goods-stock'>
-              当前库存：<text>{{item.stock}}{{item.company}}</text>
-            </view>
-            <view class='product-count allot' >
-              <text>调出数量:</text>
-              <image class='input-icon' data-index="{{index}}" catchtap='countReduce' src='../../icons/jian.png'></image>
-              <view class='input-number'>
-                <text class='input-num red'>{{item.current}}</text>
-                <text class='input-type'>{{item.company}}</text>
+                <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" catchtap='countAdd' src='../../icons/jia.png'></image>
               </view>
-              <image class='input-icon' data-index="{{index}}" catchtap='countAdd' src='../../icons/jia.png'></image>
-            </view>
-        </view>
-        <view wx:if="{{ productType=='调拨收货' }}" class='goods-txt-box'>
+          </view>
+          <!--订货 end-->
+          <!-- 盘点 start-->
+        <view wx:if="{{pageindex == 1}}" class='goods-txt-box'>
             <view class='goods-txt'>
-              <text class='goods-type'>{{item.typename}}</text>
-              <text class='goods-name'>{{item.name}}</text>
-              <text>{{item.unit}}</text>
+              <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
+              <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
+              <text>{{item.item.deductionType ==2 ? ( item.item.netWightValue +''+ item.item.materialUnitName):''}}</text>
             </view>
-            <view class='goods-label' 
-              wx:if="{{item.typelist && item.typelist.length>0}}">
-              <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+            <view class='goods-label'
+                  wx:if="{{item.attrValues && item.attrValues.length>0}}"
+            >
+                <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
             </view>
-            <view class='goods-stock'>
-              订货数量：<text>{{item.order}}{{item.company}}</text>
+            <view class='goods-stock' wx:if="{{item.item.deductionType != 1}}">
+                净含量：<text>{{item.item.netWightValue +''+ item.item.materialUnitName}}</text>
+             </view>
+          <view class='goods-stock stock-num'>
+            盘点数量:
+              <view class="number-box" wx:if="{{item.item.deductionType == 2}}">
+                  <input type="number" bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
+                  <input type='number' bindinput="setScattered2" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
+              </view>
+              <view class="number-box" wx:if="{{item.item.deductionType == 1}}">
+                 <input type='number' bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
+              </view>
+          </view>
+        </view>
+          <!-- 盘点 end-->
+          <!-- 出库操作 start-->
+        <view wx:if="{{pageindex == 2}}" class='goods-txt-box'>
+            <view class='goods-txt'>
+                <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
+                <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
+                <text>{{item.item.deductionType ==2 ? ( item.item.netWightValue +''+ item.item.materialUnitName):''}}</text>
+            </view>
+            <view class='goods-label'
+                  wx:if="{{item.attrValues && item.attrValues.length>0}}"
+            >
+                <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
             </view>
             <view class='goods-stock stock-num'>
-                收货数量：<view class="number-box">
-                  <input type='number' data-name='collect' data-ind="{{index}}" bindinput='setCollect'></input>{{item.company}}
+                库存数量:
+                <view class="number-box" >
+                    <text>{{ item.item.unitValue }} {{ item.item.unitName }}</text>
+                    <text wx:if="{{item.item.deductionType == 2}}">{{ item.item.materialUnitValue }} {{item.item.materialUnitName}}</text>
                 </view>
               </view>
+            <view class='goods-stock stock-num'>
+              出库数量:
+                <view class="number-box" wx:if="{{item.item.deductionType == 1}}">
+                    <input type='number' bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
+                </view>
+                <view class="number-box" wx:if="{{item.item.deductionType == 2}}">
+                    <input type="number" bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
+                    <input type='number' bindinput="setScattered2" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
+                </view>
+            </view>
         </view>
-        <view wx:if="{{pagetitle =='库存查询'}}" class='goods-txt-box'>
-          <view class='goods-txt'>
-            <text class='goods-type'>{{item.typename}}</text>
-            <text class='goods-name'>{{item.name}}</text>
-            <text>{{item.unit}}</text>
+          <!-- 出库操作 end-->
+          <!-- 置换 start-->
+        <view wx:if="{{pageindex == 3}}" catchtap='clickShop' data-index="{{index}}" class='goods-txt-box'>
+            <view class='goods-txt'>
+                <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
+                <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
+                <text>{{item.item.deductionType ==2 ? ( item.item.netWightValue +''+ item.item.materialUnitName):''}}</text>
+            </view>
+            <view class='goods-label'
+                  wx:if="{{item.attrValues && item.attrValues.length>0}}"
+            >
+                <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+            </view>
+            <view class='goods-stock' wx:if="{{(fromInto == 'into' && productType != 'dispDetail') || (fromInto == 'from' && productType != 'dispDetail')}}">
+                当前库存：<text>{{ item.item.unitValue }} {{ item.item.unitName }}</text>
+            </view>
+            <view class='goods-stock' wx:if="{{productType == 'dispDetail' && fromInto == 'from'}}"><!--详情页面 只读转换数量-->
+                转换数量：<text>{{ item.resultNumber }} {{ item.item.unitName }}</text>
+            </view>
+            <view class='goods-stock' wx:if="{{ inputShow }}">
+                转换数量：<input class="cover-input" type='number' data-index="{{index}}" value="{{item.resultNumber}}" bindinput='setConverNum'/>{{ item.item.unitName }}
+            </view>  
           </view>
-          <view class='goods-label' 
-            wx:if="{{item.typelist && item.typelist.length>0}}">
-            <text wx:for="{{item.typelist}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
-          </view>
-          <view class='goods-stock' wx:if="{{item.company !='个'}}">
-            净含量：<text>{{item.netcontent}}{{item.company}}</text>
-          </view>
+          <!-- 置换 end-->
+          <!-- 调拨 start-->
+        <view wx:if="{{pageindex == 4 && item.shopItemSkuVO}}" class='goods-txt-box'>
+            <view class='goods-txt'>
+                <text class='goods-type' wx:if="{{shopType[item.shopItemSkuVO.item.itemType]}}">{{shopType[item.shopItemSkuVO.item.itemType]}}</text>
+                <text class='goods-name'>{{item.shopItemSkuVO.item.itemName}}</text>
+                <text>{{item.shopItemSkuVO.item.deductionType == 2 ? item.shopItemSkuVO.item.netWightValue + item.shopItemSkuVO.item.materialUnitName : '' }}</text>
+            </view>
+            <view class='goods-label' wx:if="{{item.shopItemSkuVO.attrValues && item.shopItemSkuVO.attrValues.length>0}}">
+                <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="ind" class='goods-label-txt'>{{item}}</text>
+            </view>
+            <view class='goods-stock'>
+                调出数量：<text>{{item.outNumber }} {{ item.shopItemSkuVO.item.unitName }}</text>
+            </view>
+            <view class='goods-stock'>
+                收货数量：
+                <view class="number-box number-box-acc" wx:if="{{item.type != 2}}">
+                    <input type='number' data-name='collect' data-index="{{index}}" bindinput='setCollect' />{{ item.shopItemSkuVO.item.unitName }}
+                </view>
+                <block wx:else>
+                    -
+                </block>
+            </view>
+        </view>
+          <!-- 调拨详情 部分数据结构不统一 处理-->
+        <view wx:if="{{pageindex == 4 && !item.shopItemSkuVO}}" class='goods-txt-box'>
+            <view class='goods-txt'>
+                <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
+                <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
+                <text>{{item.item.deductionType ==2 ? ( item.item.netWightValue +''+ item.item.materialUnitName):''}}</text>
+            </view>
+            <view class='goods-label'
+                    wx:if="{{item.attrValues && item.attrValues.length>0}}"
+              >
+                <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+            </view>
+            <view class='goods-stock' wx:if="{{fromInto == 'into' || (fromInto == 'from' && productType != 'dispDetail')}}">
+                当前库存：<text>{{ item.item.unitValue }} {{ item.item.unitName }}</text>
+            </view>
+            <view class='product-count allot'>
+                <text>调出数量:</text>
+                <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" catchtap='transferReduce' src='../../icons/jian.png'></image>
+                <view class='input-number'>
+                      <text class='input-num red'>{{item.outNumber }}</text>
+                      <text class='input-type'>{{item.item.unitName}}</text>
+                 </view>
+                <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" catchtap='transferAdd' src='../../icons/jia.png'></image>
+            </view>
+        </view>
+          <!-- 调拨 end-->
+          <!-- 出库查询 start-->
+        <view wx:if="{{pageindex == 5}}" class='goods-txt-box'>
+            <view class='goods-txt'>
+                <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
+                <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
+                <text>{{item.item.deductionType ==2 ? ( item.item.netWightValue +''+ item.item.materialUnitName):''}}</text>
+            </view>
+            <view class='goods-label'
+                  wx:if="{{item.attrValues && item.attrValues.length>0}}"
+            >
+                <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+            </view>
+            <view class='goods-stock' wx:if="{{item.item.deductionType != 1}}">
+                净含量：<text>{{item.item.netWightValue +''+ item.item.materialUnitName}}</text>
+            </view>
           <view class='goods-stock'>
-            盘点数量：<text>{{item.stoknum}}</text>
+            当前库存：
+              <view class="number-box" wx:if="{{item.item.deductionType == 2}}">
+                  {{item.item.unitValue}}{{item.item.unitName}} <!-- 2 拆零扣减整数-->
+                  {{item.item.materialUnitValue}}{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
+              </view>
+              <view class="number-box" wx:if="{{item.item.deductionType == 1}}">
+                  {{item.item.unitValue}}{{item.item.unitName}} <!-- 1 直接扣减 -->
+              </view>
           </view>
         </view>
+          <!-- 出库查询 end-->
       </view>
     </view>

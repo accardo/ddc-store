@@ -70,6 +70,7 @@
   justify-content:flex-end;
   align-items: center;
   position: relative;
+  margin-right: 25rpx;
 }
 .allot{
   justify-content:flex-start;
@@ -113,7 +114,7 @@
   border:1px solid #ccc;
   margin:0 5rpx;
   text-align: center;
-  width: 60rpx;
+  width: 58rpx;
 }
 .want-box{
   display: flex;
@@ -123,6 +124,18 @@
   width: 180rpx;
   border:1px solid #ccc;
   border-radius: 8rpx;
-  padding-left:10rpx; 
+  padding-left:10rpx;
   margin-right: 10rpx;
+}
+.cover-input {
+  width:80rpx;
+  border:#ccc solid 1px;
+  height:40rpx;
+  min-height:40rpx;
+  margin-right:10rpx;
+}
+
+.number-box-acc input {
+  height: 40rpx;
+  min-height: 40rpx;
 }

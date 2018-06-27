@@ -1,6 +1,7 @@
 // pages/search/search.js
 const config = require('../../config/config.js');
 const sysService = require('../../service/sys.service.js');
+const utils = require('../../utils/util');
 const app = getApp();
 Page({
 
@@ -9,88 +10,102 @@ Page({
    */
   data: {
     focus:true,
-    searchtxt:'',
-    searchReset:null,
+    searchtxt:'', // 输入的文本
+    searchReset: false,
     showList: false,
-    shoptype:'',
+    shopType:'',
+	  shopTypeSearch: '', // 当一个类型中既有搜索又有下单时候判断搜索类型缓存
     scrollTop: 0,
     currPage:1,
     pageSize:10,
-    shopId:0,
-    categoryId:0,
-    goodsName:'',
-    productlist: [
-      { img: "pro-img1.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "55", company: "kg" },
-      { img: "pro-img2.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "23", company: "kg" },
-      { name: "皇家奶茶杯盖", typename: "零售品", unit: "10g", stock: "48", current: "99", company: "kg" },
-      {name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "54", company: "kg" },
-      { img: "pro-img5.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", typelist: ["大杯", "黑色"], current: "65", company: "kg" },
-      { name: "皇家奶茶杯盖", typename: "原料", unit: "10g", stock: "48", current: "76", company: "kg" }
-    ],
-    displaceList:[
-      { name: "皇家奶茶杯盖", typename: "原料", unit: "10g", current: "76", company: "kg" },
-      { img: "pro-img5.png",name: "皇家奶茶杯盖", typename: "原料", typelist: ["大杯", "黑色"], unit: "10g", current: "76", company: "kg" },
-      { img: "pro-img5.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", current: "76", company: "kg" }
-    ]
+    categoryId: '',
+    productlist: [], // 搜索原始数据
+	  navClassIndex: 0, // 用于判断页面多分类数据 存储二维数组
+	  inputShow: false, // 置换页面中用 是否显示input框
+	  fromInto: '', // form  要转换的商品  info 转换为的商品
   },
 
-  /* 清除 搜索文本框 */
-  clearText(){
-    let _this = this;
-    _this.setData({
-      searchtxt:''
+  /**
+   * Description: 清除搜索文本框
+   * Author: yanlichen <lichen.yan@daydaycook.com>
+   * Date: 2018/5/26
+   */
+  clearText() {
+    this.setData({
+      searchtxt: ''
     })
   },
 
-  /* 获取搜索的数据列表 */
-  getSearchList(goodsName){
-    let _this = this;
+  /**
+   * Description: 获取搜索的数据列表 首先读取缓存数据
+   * Author: yanlichen <lichen.yan@daydaycook.com>
+   * Date: 2018/5/26
+   */
+  getSearchList() {
     let shopid = app.selectIndex;
-    let token = wx.getStorageSync('getusertoken');
+	  let pageIndex = wx.getStorageSync('pageindex');
+	  let itemTypes = utils.limitClass(pageIndex);
     let getProse = {
-      currPage: _this.data.currPage,
-      pageSize: _this.data.pageSize,
-      categoryId: _this.data.categoryId,
+      currPage: this.data.currPage,
+      pageSize: this.data.pageSize,
+      categoryId: this.data.categoryId,
       shopId: shopid,
-      goodsName,
-      token
+	    goodsName: this.data.searchtxt,
+	    itemTypes
     }
     sysService.category({
-      url:'listProduct',
-      method:'get',
+      url: 'listProduct',
+      method: 'get',
       data: getProse
-    }).then(res=>{
-      console.log(res);
+    }).then((res) => {
+      if (res.code == 0) {
+	      res.page.list.forEach((item) => {
+		      item.attrValues = item.attrValues ? item.attrValues.split(',') : null;
+		      if (pageIndex == 0) { // 订货
+			      item.needNumber = 0;
+		      } else if(pageIndex == 1 || pageIndex == 2) { // 盘点
+			      item.unitValue = '';
+			      item.materialUnitValue = '';
+		      } else if (pageIndex == 3) { // 出库
+			      item.resultNumber = '';
+          } else if (pageIndex == 4) { // 调拨
+			      item.outNumber = 0;
+		      }
+		      item.navClass = this.data.navClassIndex;
+	      })
+	      this.setData({
+		      showList: true,
+          searchReset: res.page.list.length == 0 ? true : false,
+		      productlist: res.page.list,
+          inputShow: false, // 置换页面中用 是否显示input框
+        })
+      }
     })
   },
 
-  /* 搜索方法 */
-  searchFun(){
-    let _this = this;
-    let { searchtxt } = _this.data;
-    if (!searchtxt){
+  /**
+   * Description: 点击查询
+   * Author: yanlichen <lichen.yan@daydaycook.com>
+   * Date: 2018/5/26
+   */
+  searchFun() {
+    if (!this.data.searchtxt){
       wx.showToast({
         title: '请输入搜索内容',
         icon:"none"
       })
-      _this.isShowNull(null);
-    }else{
-      _this.getSearchList(searchtxt);
+    } else {
+      this.getSearchList();
     }
   },
-
-  isShowNull(state){
+  /**
+   * Description: 设置文本内容
+   * Author: yanlichen <lichen.yan@daydaycook.com>
+   * Date: 2018/5/26
+   */
+  setSearchtxt(e) {
     this.setData({
-      searchReset: state
-    })
-  },
-
-  //设置文本内容
-  setSearchtxt(e){
-    let searchtxt = e.detail.value;
-    let _this = this;
-    _this.setData({
-      searchtxt
+      searchtxt: e.detail.value
     })
   },
 
@@ -98,15 +113,27 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let { source, shoptype, categoryId } = options;
-    if (shoptype){
+	  let pageIndex = wx.getStorageSync('pageindex');
+    if (options.shopType){
       this.setData({
-        shoptype: shoptype ? shoptype : '',
-        productlist: this.data.displaceList,
-        categoryId        
+        shoptype: options.shopType ? options.shopType : '',
+        categoryId: options.categoryId,
+	      shopTypeSearch: options.shopTypeSearch,
+	      navClassIndex: options.navClass,
       });
     }
-    wx: wx.setNavigationBarTitle({
+	  if(pageIndex == 3) {
+      this.setData({
+	      fromInto: options.convert,
+      })
+    }
+    if (pageIndex == 4) {
+    	this.setData({
+		    shopTypeSearch: options.shopTypeSearch,
+	      fromInto: 'into',
+	    })
+    }
+    wx.setNavigationBarTitle({
       title: '搜索'
     })
   },

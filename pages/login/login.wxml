@@ -12,10 +12,11 @@
     <image wx:if="{{userpwd}}" data-utype="userpwd" bindtap='clearInput' class='icon-close' src='{{imgUrl}}close.png'></image>
   </view>
   <picker class='login-item' 
-  bindchange="selectShop" 
-  value="{{selectIndex}}"
-  range="{{shopArray}}"
-  range-key="{{'shopName'}}">
+          bindchange="selectShop"
+          value="{{selectIndex}}"
+          range="{{shopArray}}"
+          range-key="{{'shopName'}}"
+  >
     <view class="picker">
       <text class='picker-txt'>所在店铺：</text> 
       <text class='picker-sel'>{{shopName}}</text>

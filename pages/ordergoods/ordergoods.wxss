@@ -1,6 +1,9 @@
 /* pages/ordergoods/ordergoods.wxss */
 @import '../../common/common';
-page,.order-goods{
+page {
+  height: 100%;
+}
+.order-goods{
   height: 100%;
   overflow: hidden;
 }
@@ -9,12 +12,16 @@ page,.order-goods{
   flex-flow: column;
 }
 .search-box{
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 90rpx;
   box-sizing: border-box;
   padding: 15rpx 30rpx;
-  overflow: hidden;
+  /*overflow: hidden;*/
   background-color: rgb(240,240,240);
+  z-index: 2;
 }
 .search{
   display: flex;
@@ -34,21 +41,20 @@ page,.order-goods{
   color: #666;
 }
 
-.bottom-box{
-  width: 100%;
-  position: fixed;
-  box-sizing: border-box;
-  height: 80rpx;
-  padding: 10rpx 30rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  bottom: 0;
-  left: 0;
-  box-shadow: 1px -1px 5px rgba(240,240,240,.6);
-  background-color: #fff;
-  z-index: 100;
-}
+/*.bottom-box{*/
+  /*width: 100%;*/
+  /*position: fixed;*/
+  /*box-sizing: border-box;*/
+  /*height: 80rpx;*/
+  /*padding: 10rpx 30rpx;*/
+  /*justify-content: space-between;*/
+  /*align-items: center;*/
+  /*bottom: 0;*/
+  /*left: 0;*/
+  /*box-shadow: 1px -1px 5px rgba(240,240,240,.6);*/
+  /*background-color: #fff;*/
+  /*z-index: 100;*/
+/*}*/
 .bottom-price{
   font-size: 32rpx;
   color: #666;
@@ -87,13 +93,23 @@ page,.order-goods{
 }
 .category-product{
   width: 100%;
-  height: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   flex: 1;
-  box-sizing: border-box;
-  overflow: hidden;
-  padding-bottom: 80rpx;
+  /*box-sizing: border-box;*/
+  /*overflow: hidden;*/
+  -webkit-overflow-scrolling : touch;
+  overflow-scrolling : touch;
+  position:absolute;
+  margin-top: 90rpx;
+  margin-bottom: 80rpx;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
 }
+
 .category-product.active{
   padding-bottom: 0;
 }

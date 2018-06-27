@@ -1,6 +1,8 @@
 const config = require('../../config/config.js');
 const loginService = require('../../service/login.service.js');
 const shopListService = require('../../service/service.service.js');
+const baseService = require('../../service/base.service.js');
+
 const app = getApp();
 
 // pages/login/login.js
@@ -11,8 +13,8 @@ Page({
    */
   data: {
     imgUrl: config.pageImgUrl,
-    username:'wms',
-    userpwd:'123456',
+    username:'',
+    userpwd:'',
     toastText:'',
     duration: 1200,
     selectIndex:0,
@@ -23,7 +25,6 @@ Page({
 
   /* 获取店铺列表 */
   getShoplist(){
-    let _this = this;
     shopListService.api({
       url: "/list",
       method: "get",
@@ -31,7 +32,7 @@ Page({
     }).then(res => {
       let { code, shopList=[] } = res;
       if (code == 0 && shopList.length >0){
-        _this.setData({
+        this.setData({
           shopArray:shopList
         })
       }else{
@@ -52,11 +53,10 @@ Page({
   
   /* 选择店铺 */
   selectShop(e){
-    let _this = this;
     let _index = parseInt(e.detail.value);
-    let selectIndex = _this.data.shopArray[_index].id;
-    let shopName = _this.data.shopArray[_index].shopName;
-    _this.setData({
+    let selectIndex = this.data.shopArray[_index].id;
+    let shopName = this.data.shopArray[_index].shopName;
+	  this.setData({
       shopName,
       selectIndex,
       isSelectShop:true
@@ -72,15 +72,13 @@ Page({
   /* 清除 输入内容 */
   clearInput(e){
     let { utype } = e.target.dataset;
-    let _this = this;
-    _this.setData({
+    this.setData({
       [utype]: ''
     })
   },
 
   /* 登录 方法 */
   loginFun(){
-    let _this = this;
     let userinfo = {
       username: this.data.username,
       userpwd: this.data.userpwd,
@@ -94,7 +92,7 @@ Page({
       this.setToast('请输入密码');
       return;
     }
-    if (!_this.data.isSelectShop){
+    if (!this.data.isSelectShop){
       this.setToast('请选择店铺地址');
       return;
     }
@@ -107,28 +105,32 @@ Page({
     wx.showLoading({
       title: '数据加载中',
     });
-    loginService.api({
-      url: "/login",
-      method:"post",
-      data: postData
-    }).then(res =>{
-      wx.hideLoading();
-      let { code, sysUser, msg,token } = res;
-      if(code ==0){
-        app.selectIndex = postData.shopId;
-        wx.setStorageSync('getuserinfo', sysUser);
-        wx.setStorageSync('getusertoken', token);
-        wx.redirectTo({
-          url: '/pages/index/index',
-        })
-      }else{
-        wx.hideLoading();
-        wx.showToast({
-          title: msg,
-          icon: 'none'
-        })
-      }
-    })
+
+	  wx.request({
+		  url: `${baseService.apiPrefix}login`,
+		  method: "post",
+		  data: postData,
+		  success: (res) => {
+			  wx.hideLoading();
+			  let { code, sysUser, msg, token } = res.data;
+			  if(code == '0'){
+				  app.selectIndex = postData.shopId; // 店铺id
+          wx.setStorageSync('shopId', postData.shopId)
+				  app.companyId = sysUser.shopVO.companyId; // 公司id
+				  wx.setStorageSync('getuserinfo', sysUser);
+				  wx.setStorageSync('getusertoken', token);
+				  wx.redirectTo({
+					  url: '/pages/index/index',
+				  })
+			  }else{
+				  wx.hideLoading();
+				  wx.showToast({
+					  title: msg,
+					  icon: 'none'
+				  })
+			  }
+		  }
+	  })
   },
 
   /* 提示信息 */
@@ -144,8 +146,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let _this = this;
-    _this.getShoplist();
+    this.getShoplist();
     wx.setNavigationBarTitle({
       title: '登录'
     })

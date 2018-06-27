@@ -1,4 +1,8 @@
 // pages/displaceslist/displaceslist.js
+const app = getApp();
+const config = require('../../config/config.js');
+const sysService = require('../../service/sys.service.js');
+const utils = require('../../utils/util');
 Page({
 
   /**
@@ -6,18 +10,58 @@ Page({
    */
   data: {
     btnDisabled: true,
-    wantShop: [{ name: "皇家奶茶杯盖", typename: "原料", unit: "10g", current: "76", company: "个", wannum:20, typelist: ["大杯", "黑色"]}],
-    coverShop: [
-      { img: "pro-img5.png", name: "皇家奶茶杯盖", typename: "原料", unit: "10g", current: "76", typelist: ["大杯", "黑色"], company: "个" }
-    ],
-    isSelect: 1
+	  converFromShop: [], // 要转换商品
+	  converIntoShop: [], // 转化为商品
+	  isSelect: 1, // 判断是否可以点击 1 为不可点击
+	  displaceId: 0, // 置换单id
   },
+	/**
+	 * Description: 获取置换详情列表
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/5
+	 */
+	getdisplacedetailinfo() {
+		let promdData = {
+		  shopId: app.selectIndex,
+			displaceId: this.data.displaceId, // 置换单id
+    }
+		sysService.displacedetail({
+			url:'info',
+			method:'get',
+      data: promdData
+		}).then((res) => {
+		  console.log(res, '置换单数据');
+			if (res.code == '0') {
+			  let needAttrValues = res.displaceDetailVOList[0].needShopItemSkuVO; // 要转换商品
+			  let shopAttrValues = res.displaceDetailVOList[0].shopItemSkuVO; // 转化为商品
+			  needAttrValues.attrValues = utils.attrValuesSplit(needAttrValues); // string 转 array 铺页面数据
+			  shopAttrValues.attrValues = utils.attrValuesSplit(shopAttrValues);  // string 转 array 铺页面数据
+				res.displaceDetailVOList[0].needShopItemSkuVO.resultNumber = res.displaceDetailVOList[0].resultNumber;
+				this.setData({
+					converFromShop: [res.displaceDetailVOList[0].needShopItemSkuVO],
+					converIntoShop: [res.displaceDetailVOList[0].shopItemSkuVO]
+				})
+			} else if (res.code == '401') {
+				config.logOutAll();
+				return
+			} else {
+				wx.showToast({
+					title: res.msg,
+					icon:'none'
+				})
+			}
+		})
 
+  },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  
+    console.log(options, '置换单')
+    this.setData({
+	    displaceId: options.orderId
+    })
+	  this.getdisplacedetailinfo();
   },
 
   /**

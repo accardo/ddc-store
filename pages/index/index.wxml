@@ -8,7 +8,7 @@
   >
      <view class="select-ads">
       <text class='ads-name'>当前店铺：{{shopAds}}</text>
-      <button class='select-btn' type="primary" size="mini">切换门店</button>
+      <button class='select-btn' type="primary" size="mini">切换店铺</button>
     </view>
   </picker>
   <view class='page-tit'>库存管理</view>

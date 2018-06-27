@@ -24,9 +24,8 @@ Page({
 
   /* 获取用户基础信息 */
   getUserBaseInfo(){
-    let _this = this;
     let { username = '', roleName = '', mobile = '' } = wx.getStorageSync('getuserinfo');
-    _this.setData({
+    this.setData({
       username,
       roleName,
       mobile
@@ -35,10 +34,9 @@ Page({
 
   /* 获取店铺列表 */
   getShoplist() {
-    let _this = this;
-    let { shopVOList,shopVO } = wx.getStorageSync('getuserinfo');
-    if (shopVOList && shopVOList.length >0){
-      _this.setData({
+    let { shopVOList, shopVO } = wx.getStorageSync('getuserinfo');
+    if (shopVOList && shopVOList.length > 0){
+      this.setData({
         selectIndex: shopVO.id,
         shopArray: shopVOList,
         shopAds: shopVO.shopName
@@ -48,47 +46,52 @@ Page({
 
   /* 设置用户权限 */
   setUserMenu(){
-    let _this = this;
     let { menuVOList } = wx.getStorageSync('getuserinfo');
     let stockIcon = [];
     if (menuVOList && menuVOList.length > 0) {
-      menuVOList.map(item =>{
+      menuVOList.map(item => {
         let text = item.menuName;
         let stockItem = {
           status:true,
           'path': item.path,
           'menuId': item.menuId,
-          'icon': _this.data.menuIcon[text] ? _this.data.menuIcon[text] : 'order-goods.png',
+          'icon': this.data.menuIcon[text] ? this.data.menuIcon[text] : 'order-goods.png',
           text
         }
         stockIcon.push(stockItem);
       })
-      _this.setData({
+      this.setData({
         stockIcon
       })
+    } else {
+	    config.logOutAll();
     }
   },
 
   /* 选择店铺  */
   selectShop(e){
-    let _this = this;
     let _index = parseInt(e.detail.value);
-    let { shopArray } = _this.data;
+    let { shopArray } = this.data;
     let selectIndex = shopArray[_index].id;
-    _this.setData({
+    this.setData({
       selectIndex,
       shopAds: shopArray[_index].shopName
     })
     app.selectIndex = selectIndex;
+	  wx.setStorageSync('shopId', selectIndex);
+	  app.companyId = shopArray[_index].companyId;
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let _this = this;
-    _this.getShoplist();
-    _this.setUserMenu();
+    this.getShoplist();
+    this.setUserMenu();
+	  let shopId = wx.getStorageSync('shopId');
+	  if (shopId) {
+		  app.selectIndex = shopId;
+	  }
   },
 
   /**
