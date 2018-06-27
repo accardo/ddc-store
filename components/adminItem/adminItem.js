@@ -1,6 +1,9 @@
 // components/adminItem/adminItem.js
 var config = require('../../config/config.js');
 Component({
+	options: {
+		multipleSlots: true // 在组件定义时的选项中启用多slot支持
+	},
   /**
    * 组件的属性列表
    */
@@ -48,6 +51,9 @@ Component({
         case '课程消耗':
           wx.setStorageSync('pageindex', 6);
           break;
+        case '退货':
+          wx.setStorageSync('pageindex', 7);
+          break;
       }
       if (txt == '退出'){
         wx.showModal({
@@ -55,14 +61,7 @@ Component({
           confirmColor: config.showModal.confirmColor,
           success: function (res) {
             if (res.confirm) {
-	            wx.removeStorageSync('getuserinfo');
-	            wx.removeStorageSync('getusertoken');
-	            wx.removeStorageSync('logs');
-	            wx.removeStorageSync('pagetitle');
-	            wx.removeStorageSync('shopId');
-	            wx.reLaunch({
-		            url: config.getPageUrl(true, 'login')
-	            })
+	            config.logOutAll();
             }
           }
         });
@@ -71,7 +70,7 @@ Component({
           url: config.getPageUrl(true, 'ordergoods')
         });
       }else{
-        let parth = '?titlename='+txt+'&titleind='+ind;
+        let parth = `?titlename=${txt}&titleind=${ind}`;
         wx.navigateTo({
           url: config.getPageUrl(true, 'orderlist', parth)
         });

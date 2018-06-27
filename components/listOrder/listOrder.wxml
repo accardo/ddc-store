@@ -1,6 +1,7 @@
 <!--components/listOrder/listOrder.wxml-->
 <view class='list-box'>
-<!-- 订货 start -->
+  <!-- 订货 收货 start -->
+  <!-- 订货 s-->
   <view class='list-item'
         wx:if="{{ pageindex == 0 }}"
         wx:key="index"
@@ -22,7 +23,44 @@
       <text class='label-time'>{{item.createTime}}</text>
     </view>
   </view>
-  <!--订货 end -->
+  <!-- 订货 e-->
+  <!-- 收货 s-->
+  <view class='list-item'
+        wx:if="{{ pageindex == 0 && false}}"
+        wx:key="index"
+        wx:for="{{list}}"
+        data-orderstatus="{{item.status}}"
+        data-orderid="{{item.id}}"
+        bindtap='detail'
+  >
+    <view class='list-title'>
+      <text class='label-txt'>送货单：</text>
+      <text class='label-order'>xxxxxx</text>
+      <text class='list-type'>{{item.statusStr}}</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>收货单：</text>
+      <text class='label-name'>xxxxxx</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>送货时间：</text>
+      <text class='label-name'>2018-09-09</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>配送方式：</text>
+      <text class='label-name'>供应商配送</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>联系人：</text>
+      <text class='label-name'>张三</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>联系方式：</text>
+      <text class='label-name'>12699999999</text>
+    </view>
+  </view>
+  <!-- 收货 e-->
+  <!--订货 收货 end -->
   <!--盘点 start-->
   <view class='list-item'
         wx:if="{{ pageindex == 1 }}"
@@ -61,6 +99,7 @@
     <view class='list-title'>
       <text class='label-txt'>出库单：</text>
       <text class='label-order'>{{ item.deliverySn }}</text>
+      <text class='list-type'>未提交</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>出库类型：</text>

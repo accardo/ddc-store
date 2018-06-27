@@ -48,6 +48,9 @@ function limitClass(num) {
 		case 6:  // 6 课程消耗
 			limitClass = null;
 			break;
+		case 7: // 7 退货
+			limitClass = null;
+			break;
 	}
 	return limitClass;
 }

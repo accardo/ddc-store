@@ -1,17 +1,11 @@
-
-var config = {
+let config = {
   pageImgUrl:'../../icons/',
   showModal:{
     confirmColor: '#ff4c4c'
   },
   getPageUrl(iscomponent, pageName = 'login', parth=''){
-    return iscomponent == true ? 
-    `../../pages/${pageName}/${pageName}${parth}` : 
-    `pages/${pageName}/${pageName}${parth}`;
+    return iscomponent == true ? `../../pages/${pageName}/${pageName}${parth}` : `pages/${pageName}/${pageName}${parth}`;
   },
-  getDictById(dic,id){
-    return this.dict[dic][parseInt(id)];
-  }
 }
 
 /* 退出登录 */
@@ -22,13 +16,6 @@ config.logOutAll = function(){
   })
 }
 
-config.transCompany = function(total =0, netnum=0, companym = 'g'){
-  if (companym == '个') return `${total} 个`;
-    let bigN = parseInt((parseInt(total) / parseInt(netnum)));
-    let smN = (parseInt(total) % parseInt(netnum));
-    let getStr = bigN > 0 ? `${bigN} 袋${smN}${companym}` : `${total} ${companym}`
-    return getStr;
-}
 config.dict={
   /*页面 title 对应的索引 */
   pageTitle: [

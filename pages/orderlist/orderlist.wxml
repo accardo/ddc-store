@@ -1,11 +1,20 @@
 <!--pages/orderlist/orderlist.wxml-->
-<view class='order-list'>
-  <view class='order-btn-box' wx:if="{{pageindex != 2 }}">
-    <button class='order-btn' bindtap='ordergoods' size="mini">{{btntext}}</button>
+<view class="order-list">
+  <view class="order-btn-box" wx:if="{{ pageindex == 0 }}">
+    <button class="order-btn" bindtap="bindOrderPlace" size="mini">订货</button>
+    <button class="order-btn ml20" bindtap="bindOrdergoods" size="mini">收货</button>
+    <button class="order-add" bindtap="ordergoods"></button>
   </view>
-  <view class='order-btn-box' wx:if="{{pageindex == 2 }}">
-    <button class='order-btn'  bindtap='scrapSelect' size="mini">报废</button>
-    <button class='order-btn ml20' bindtap='returnGoods' size="mini">退货</button>
+  <view class="order-btn-box" wx:if="{{ pageindex != 2 && pageindex != 0 && pageindex != 7 }}">
+    <button class="order-btn" bindtap="ordergoods" size="mini">{{btntext}}</button>
+  </view>
+  <view class="order-btn-box" wx:if="{{ pageindex == 2 }}">
+    <button class="order-btn"  bindtap="scrapSelect" size="mini">报废</button>
+    <button class="order-btn ml20" bindtap="returnGoods" size="mini">退货</button>
+  </view>
+  <view class="order-btn-box" wx:if="{{ pageindex == 7 }}">
+    <button class="order-btn" size="mini">退货申请</button>
+    <button class="order-btn ml20" size="mini">退货</button>
   </view>
   <list-order list="{{listData}}"></list-order>
   <view bindtap="dialogClose" class="show-bg {{isShow ? '' : 'close'}}"></view>
@@ -15,9 +24,9 @@
         <radio value="{{item.name}}" checked="{{item.checked}}"/>{{item.name}}
       </label>
     </radio-group>
-    <view class='btn-box'>
-      <button class='btn-cancel' bindtap="dialogClose" size="mini" >取消</button>
-      <button class='btn-confirm' bindtap='confirmFun' size="mini" >确定</button>
+    <view class="btn-box">
+      <button class="btn-cancel" bindtap="dialogClose" size="mini" >取消</button>
+      <button class="btn-confirm" bindtap="confirmFun" size="mini" >确定</button>
     </view>
   </view>
 </view>

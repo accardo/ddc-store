@@ -56,6 +56,22 @@ Page({
     }
   },
 	/**
+	 * Description: 订货 1.1
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/27
+	 */
+	bindOrderPlace() {
+		this.getOrderGoods();
+	},
+	/**
+	 * Description: 收货 1.1
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/27
+	 */
+	bindOrdergoods() {
+		this.getOrderGoods();
+	},
+	/**
 	 * Description: 统一处理 返回信息
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/6/8
@@ -261,7 +277,6 @@ Page({
 	   let pageindex = wx.getStorageSync('pageindex');
 	   switch(pageindex){
         case 0: // 订货
-          btntext = options.titlename;
 	        this.getOrderGoods();
           break;
         case 1: // 盘点
@@ -283,6 +298,9 @@ Page({
           btntext = options.titlename;
           this.getConsumption();
           break;
+		   case 7: // 退货
+			  // this.returnCargo();
+			   break;
 	   }
 	   this.setData({
         btntext,

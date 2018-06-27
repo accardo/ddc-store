@@ -13,7 +13,7 @@
   </picker>
   <view class='page-tit'>库存管理</view>
   <admin-item select-index="{{selectIndex}}" stock-data="{{stockIcon}}"></admin-item>
-  <view class='page-tit'>个人管理</view>
+    <view class='page-tit'>个人管理</view>
   <!-- <view class="user-info">
     <view class="user-item">用户名称：{{username}}</view>
     <view class="user-item">手机号码：{{mobile}}</view>
