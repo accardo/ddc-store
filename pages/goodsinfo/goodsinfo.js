@@ -137,6 +137,7 @@ Page({
 			    item.shopItemSkuVO = {
 				    attrValues: utils.attrValuesToString(item), // attrValues array 转 string
 				    id: item.id,
+				    skuId: item.skuId,
 				    item: item.item
 			    }
 			    delete item.attrValues;
@@ -165,6 +166,7 @@ Page({
 			    item.shopItemSkuVO = {
 			    	id : item.id,
 			      attrValues: utils.attrValuesToString(item), // attrValues array 转 string ,
+				    skuId: item.skuId,
 			    	item: item.item
 			    }
 			    item.shopItemSkuVO.item.unitValue = tempObj1.tempunitValue;

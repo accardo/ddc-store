@@ -25,11 +25,12 @@ Page({
 	 * Date: 2018/6/5
 	 */
 	shopAddress() {
+		let companyId = wx.getStorageSync('companyId');
 		shopListService.api({
 			url: "/list",
 			method: "get",
 			data: {
-				companyId: app.companyId
+				companyId
 			}
 		}).then((res) => {
 			if (res.code == 0) {
@@ -77,6 +78,7 @@ Page({
 		  item.shopItemSkuVO = {
 			  attrValues: utils.attrValuesToString(item), // array 转 string 提交数据
 			  id: item.id,
+			  skuId: item.skuId,
 			  item: item.item
 		  }
 		  delete item.attrValues;

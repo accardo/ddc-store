@@ -47,7 +47,7 @@ page,.upload{
 .img-sk .img-close {
   position:absolute;
   right:-10rpx;
-  top:18rpx;
+  /*top: 10rpx;*/
   font-size:24rpx;
   background:rgba(0,0,0, 0.8);
   width:35rpx;
