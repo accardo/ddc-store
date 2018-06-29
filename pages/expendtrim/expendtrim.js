@@ -94,7 +94,16 @@ Page({
 	    this.data.courseList[this.data.nIndex].scrapCount = e.detail.value
     }
   },
-
+	/**
+	 * Description: 关闭弹出层
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/29
+	 */
+	closeMask() {
+		this.setData({
+			isShow: false
+		})
+	},
 	/**
 	 * Description: 点击弹出框 修改 数值
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -125,13 +134,16 @@ Page({
 		   return false
 	  }
 		console.log(course.useCount, course.number, '数值计算')
-	  if (parseInt(course.useCount) < parseInt(course.number)) {
-        wx.showToast({
-          title: '正常消耗，不能小于实际上课人数',
-          icon: 'none'
-        })
-        return false
-	  }
+		if (this.data.name == 'useCount') {
+			if (parseInt(course.useCount) < parseInt(course.number)) {
+				wx.showToast({
+					title: '正常消耗，不能小于实际上课人数',
+					icon: 'none'
+				})
+				return false
+			}
+		}
+
 	  let postParm = {
 	  	id: this.data.courseList[this.data.nIndex].id,
 		  courseBillId: this.data.courseList[this.data.nIndex].courseBillId, //  调整单id
