@@ -26,7 +26,7 @@
       </view>
     </view>
   </view>
-  <view wx:if="{{isShow == true}}"  class='show-bg'></view>
+  <view wx:if="{{isShow == true}}"  class='show-bg' bindtap="closeMask"></view>
   <view wx:if="{{isShow == true}}"  class='show-box'>
     <view class='show-content'>
     <input type='number' focus="{{isShow}}"  bindinput='setValue' placeholder='请输入调整数量' confirm-type="确定" />
