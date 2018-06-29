@@ -116,7 +116,7 @@ Page({
 			  if(code == '0'){
 				  app.selectIndex = postData.shopId; // 店铺id
           wx.setStorageSync('shopId', postData.shopId)
-				  app.companyId = sysUser.shopVO.companyId; // 公司id
+          wx.setStorageSync('companyId', sysUser.shopVO.companyId); // 公司id
 				  wx.setStorageSync('getuserinfo', sysUser);
 				  wx.setStorageSync('getusertoken', token);
 				  wx.redirectTo({

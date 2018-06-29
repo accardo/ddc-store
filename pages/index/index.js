@@ -79,7 +79,7 @@ Page({
     })
     app.selectIndex = selectIndex;
 	  wx.setStorageSync('shopId', selectIndex);
-	  app.companyId = shopArray[_index].companyId;
+	  wx.setStorageSync('companyId', shopArray[_index].companyId); // 公司id
   },
 
   /**

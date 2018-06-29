@@ -50,6 +50,7 @@ Page({
           categoryId: res.categoryVOList[0].id,
           navlist: res.categoryVOList
         })
+	      wx.setStorageSync('navlistLength', res.categoryVOList.length); // 分类长度
         this.getProductByNav();
       } else if (res.code == '401') {
         config.logOutAll();
@@ -106,19 +107,20 @@ Page({
           return item;
         })
 	      this.data.pagetListData = this.data.pagetListData.concat(productlist); // 数组合并
+	      console.log(this.data.pagetListData, '执行了么')
+	      console.log(productlist, '查问题');
 	      if (pageIndex == 0) {
 		      if (cacheData[this.data._index]) { // 订货
-			      console.log(productlist, '查问题');
-			      productlist = this.forDataContrast(this.data.pagetListData, cacheData[this.data._index]);
+			      this.data.pagetListData = this.forDataContrastSearch(this.data.pagetListData, cacheData[this.data._index]);
 
 		      }
 	      } else if (pageIndex == 1) {
 		      if (inventoryCacheData[this.data._index]) { // 盘点
-			      productlist = this.forDataContrast(this.data.pagetListData, inventoryCacheData[this.data._index]);
+			      this.data.pagetListData = this.forDataContrastSearch(this.data.pagetListData, inventoryCacheData[this.data._index])
 		      }
 	      } else if (pageIndex == 2) {
 		      if (outboundCacheData[this.data._index]) { //出库
-			      productlist = this.forDataContrast(this.data.pagetListData, outboundCacheData[this.data._index]);
+			      this.data.pagetListData = this.forDataContrastSearch(this.data.pagetListData, outboundCacheData[this.data._index]);
 		      }
 	      }
 	      this.setData({
@@ -225,6 +227,7 @@ Page({
               attrValues: utils.attrValuesToString(item), //  array 转 string 提交数据
               id: item.id,
 	            stock: item.stock,
+	            skuId: item.skuId,
               item: item.item,
           }
           delete item.attrValues;
@@ -355,15 +358,16 @@ Page({
 	 * Date: 2018/6/4
 	 */
 	forDataContrastSearch(data1, data2) {
-		data1.forEach((item) => {
-			data2.forEach((itemA, index) =>{
-				if (itemA.skuId == item.skuId) {
-					data2[index] = item
-				} else {
-					data2.push(item);
-				}
-			})
-		})
+		// data1.forEach((item) => {
+		// 	data2.forEach((itemA, index) =>{
+		// 		if (itemA.skuId == item.skuId) {
+		// 			data2[index] = item
+		// 		} else {
+		// 			data2.push(item);
+		// 		}
+		// 	})
+		// })
+		data1.push(...data2);
 		// 去除重复skuId
 		Array.prototype.distinct = function(){
 			var arr = this, result = [], i, j, len = arr.length;
@@ -377,8 +381,22 @@ Page({
 			}
 			return result;
 		}
-		return data2.distinct();
-		console.log(data2.distinct(), '返回 过滤后数据 需要 给 结果页面')
+		return data1.distinct().reverse();
+		console.log(data1.distinct(), '返回 过滤后数据 需要 给 结果页面')
+	},
+	/**
+	 * Description: 不规则选区 二维数组置空
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/28
+	 */
+	setEmptyArray(arrayData) {
+		let navlistLength = wx.getStorageSync('navlistLength');
+		for (let i=0; i < navlistLength; i++) {
+			arrayData[i] = [];
+		}
+	},
+	setOnShowData(data1, data2) {
+		return this.forDataContrast(this.data.productlist, cacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 	},
 	/**
 	 * Description: scroll view 下拉刷新
@@ -456,17 +474,19 @@ Page({
 	  let searchOutboundCacheData = wx.getStorageSync('searchOutboundCacheData'); // 出库 搜索缓存
 
 	  let tempArray = [];
+	  let tempArray1 = [];
     if (pageindex == 0) {
     	if (optionStorage == 2) { // 进入搜索页面
 		    let tempArray1 = this.filterData(searchGoodsOrderCacheData, 2); // 搜索数据获取数据输入不为0的数据
     		if (cacheData.length > 0) { // 有缓存先读取缓存数据后在和 当前数据对比赋值
-			    cacheData[this.data._index] = this.forDataContrastSearch(tempArray1 || [], cacheData[this.data._index]); // 搜索结果和总数据对比，如果有skuId相同责替换
+			    cacheData[this.data._index] = this.forDataContrastSearch(cacheData[this.data._index], tempArray1); // 搜索结果和总数据对比，如果有skuId相同责替换
 			    tempArray = this.forDataContrast(this.data.productlist, cacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 			    console.log(cacheData, tempArray, '有缓存执行')
 			    wx.setStorageSync('cacheData', cacheData); // 搜索结束后 需要把搜索结果放入到总的结果缓存中
 		    } else { // 当页面没有缓存 直接搜索时候当前数据对比赋值
+			    this.setEmptyArray(cacheData);
 			    cacheData[this.data._index] = tempArray1;
-    			tempArray = this.forDataContrastSearch(tempArray1 || [], this.data.productlist); // 搜索结果和总数据对比，如果有skuId相同责替换
+    			tempArray = this.forDataContrastSearch(this.data.productlist, tempArray1); // 搜索结果和总数据对比，如果有skuId相同责替换
 			    console.log(cacheData, tempArray, ' 没有缓存的时候执行');
 			    wx.setStorageSync('cacheData', cacheData); // 搜索结束后 需要把搜索结果放入到总的结果缓存中
 		    }
@@ -474,6 +494,7 @@ Page({
 			    tempArray = this.forDataContrast(this.data.productlist, cacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 			    console.log(this.data.productlist, cacheData[this.data._index], tempArray, '多分类综合')
 	    }
+	    tempArray1 = this.forDataContrast(this.data.productlist, cacheData[this.data._index]);
 	    this._watchChange();
     }
     // 盘点缓存数据操作
@@ -481,28 +502,32 @@ Page({
     	if (optionStorage == 2) {
 		    let tempArray1 = this.filterData(searchInventoryCacheData, 3); // 搜索数据获取数据输入不为0的数据
 		    if (inventoryCacheData.length > 0) { //有缓存数据 先读取缓存数据 后在和当前数据对比 赋值
-			    inventoryCacheData[this.data._index] = this.forDataContrastSearch(tempArray1 || [], inventoryCacheData[this.data._index]);
+			    inventoryCacheData[this.data._index] = this.forDataContrastSearch(inventoryCacheData[this.data._index], tempArray1);
 			    tempArray = this.forDataContrast(this.data.productlist, inventoryCacheData[this.data._index]);
+			    console.log(inventoryCacheData, tempArray, '有缓存执行');
 			    wx.setStorageSync('inventoryCacheData', inventoryCacheData);
 		    } else { // 当前页面没有缓存数据 直接搜索和当前数据对比赋值
+		    	this.setEmptyArray(inventoryCacheData);
 			    inventoryCacheData[this.data._index] = tempArray1;
-			    tempArray = this.forDataContrastSearch(tempArray1 || [], this.data.productlist);
+			    tempArray = this.forDataContrastSearch(this.data.productlist, tempArray1);
 			    console.log(inventoryCacheData, tempArray, ' 没有缓存的时候执行');
 			    wx.setStorageSync('inventoryCacheData', inventoryCacheData);
 		    }
 	    }
+	    tempArray1 = this.forDataContrast(this.data.productlist, inventoryCacheData[this.data._index]);
     }
     // 出库缓存数据操作
     if (pageindex == 2) {
 	    let tempArray1 = this.filterData(searchOutboundCacheData, 3); // 搜索数据获取数据输入不为0的数据
 	    if (optionStorage == 2) {
-		    if (outboundCacheData.length > 0) { // 有缓存数据 先读取缓存数据
-			    outboundCacheData[this.data._index] = this.forDataContrastSearch(tempArray1 || [], outboundCacheData[this.data._index]);
+		    if (outboundCacheData.length >0) { // 有缓存数据 先读取缓存数据
+			    outboundCacheData[this.data._index] = this.forDataContrastSearch(outboundCacheData[this.data._index], tempArray1);
 			    tempArray = this.forDataContrast(this.data.productlist, outboundCacheData[this.data._index]);
 			    wx.setStorageSync('outboundCacheData', outboundCacheData);
 		    } else { // 当前页面没有缓存数据 直接搜索和当前数据对比赋值
+			    this.setEmptyArray(outboundCacheData);
 			    outboundCacheData[this.data._index] = tempArray1;
-			    tempArray = this.forDataContrastSearch(tempArray1 || [], this.data.productlist);
+			    tempArray = this.forDataContrastSearch(this.data.productlist, tempArray1);
 			    console.log(outboundCacheData, tempArray, ' 没有缓存的时候执行');
 			    wx.setStorageSync('outboundCacheData', outboundCacheData);
 		    }
@@ -513,10 +538,12 @@ Page({
 		    })
 		    tempArray = this.forDataContrast(this.data.productlist, outboundCacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 	    }
+	    tempArray1 = this.forDataContrast(this.data.productlist, outboundCacheData[this.data._index]);
     }
     if (pageindex == 5) {
 	    tempArray = this.data.productlist
     }
+	  tempArray = tempArray.length > 0 ? tempArray : tempArray1;
 	  this.setData({
 		  productlist: tempArray
 	  })
@@ -527,7 +554,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-  
+  	return false
   },
 
   /**

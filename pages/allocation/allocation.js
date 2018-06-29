@@ -25,11 +25,12 @@ Page({
 	 * Date: 2018/6/5
 	 */
 	shopAddress() {
+		let companyId = wx.getStorageSync('companyId');
 		shopListService.api({
 			url: "/list",
 			method: "get",
 			data: {
-				companyId: app.companyId
+				companyId
 			}
 		}).then((res) => {
 			if (res.code == 0) {
@@ -77,6 +78,7 @@ Page({
 		  item.shopItemSkuVO = {
 			  attrValues: utils.attrValuesToString(item), // array 转 string 提交数据
 			  id: item.id,
+			  skuId: item.skuId,
 			  item: item.item
 		  }
 		  delete item.attrValues;
@@ -149,72 +151,6 @@ Page({
 	 */
 	forDataContrastSearch(data1, data2) {
 		data2.push(...data1);
-		// if (data1.length > data2.length) {
-		// 	for (let i=0; i < data1.length; i++) {
-		// 		for (let j=0; j < data2.length; j++) {
-		// 			if (data1[i].skuId == data2[j].skuId) {
-		// 				data3[i] = data1[i];
-		// 				continue;
-		// 			} else {
-		// 				data3.push(data1[i])
-		// 				break;
-		// 			}
-		// 		}
-		// 		// if (data2[i] == undefined) {
-		// 		// 	continue;
-		// 		// }
-		// 		// console.log(data1[i], data2[i])
-		// 		// if (data1[i].skuId == data2[i].skuId && data2[i].skuId) {
-		// 		// 	data3[i] = data1[i];
-		// 		// 	continue;
-		// 		// } else {
-		// 		// 	data3.push(data1[i])
-		// 		// 	continue;
-		// 		// }
-		// 	}
-		// 	// data1.forEach((item, index) => {
-		// 	// 	data2.forEach((itemA) =>{
-		// 	// 		data3.push(item);
-		// 	// 		if (item.skuId == itemA.skuId) {
-		// 	// 			data3[index] = item
-		// 	// 		}
-		// 	// 	})
-		// 	// })
-		// 	console.log(data3, 'data1 大')
-		// } else {
-		// 	data3 = data2;
-		// 	for (let i=0; i < data2.length; i++) {
-		// 		for (let j=0; j <data1.length; j ++) {
-		// 			data3[i] = data1[i];
-		// 			console.log(data2[i], data1[j])
-		// 			if(data2[i].skuId == data1[j].skuId) {
-		// 				data3[i] = data1[j];
-		// 			}
-		// 		}
-		// 		// data3.push(data2[i]);
-		// 		// console.log(data2[i], data1[i])
-		// 		// if (data1[i] == undefined) {
-		// 		// 	break;
-		// 		// }
-		// 		// if (data2[i].skuId == data1[i].skuId) {
-		// 		// 	data3[i] = data1[i];
-		// 		// 	continue;
-		// 		// } else {
-		// 		// 	data3.push(data1[i]);
-		// 		// 	break;
-		// 		// }
-		// 	}
-		// 	// data1.forEach((item) => {
-		// 	// 	data2.forEach((itemA, indexA) =>{
-		// 	// 		data3.push(itemA);
-		// 	// 		if (itemA.skuId == item.skuId) {
-		// 	// 			data3[indexA] = item
-		// 	// 		}
-		// 	// 	})
-		// 	// })
-		// 	console.log(data3, 'data2 大')
-		// }
-	//	return data3;
 //		去除重复skuId
 		Array.prototype.distinct = function(){
 			var arr = this, result = [], i, j, len = arr.length;

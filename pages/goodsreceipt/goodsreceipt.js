@@ -138,8 +138,11 @@ Page({
 				this.setData({
 					receiptList: res.purchaseDetailVOList // 订货列表数据
 				})
-				wx.hideLoading();
+			} else if (res.code == 401) {
+				config.logOutAll();
+				return
 			}
+			wx.hideLoading();
 		})
   },
   /**

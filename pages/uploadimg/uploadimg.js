@@ -24,7 +24,8 @@ Page({
 			  item.shopItemSkuVO = {
 				  attrValues: item.attrValues != null ? item.attrValues.toString() : null,
 				  id: item.id,
-				  item: item.item
+				  item: item.item,
+				  skuId: item.skuId
 			  }
 			  delete item.attrValues;
 			  delete item.copyShopItemSkuId;
