@@ -45,14 +45,14 @@ Page({
       url:'listCategory',
       method:'get',
     }).then((res) => {
-      if (res.code == '0' && res.categoryVOList.length > 0) {
+      if (res.code == 0 && res.categoryVOList.length > 0) {
         this.setData({
           categoryId: res.categoryVOList[0].id,
           navlist: res.categoryVOList
         })
 	      wx.setStorageSync('navlistLength', res.categoryVOList.length); // 分类长度
         this.getProductByNav();
-      } else if (res.code == '401') {
+      } else if (res.code == 401) {
         config.logOutAll();
         return
       } else {
@@ -85,9 +85,9 @@ Page({
       data:promdData
     }).then((res) => {
 	    wx.stopPullDownRefresh();
-      if (res.code == '0' && res.page.list) {
+      if (res.code == 0 && res.page.list) {
+	      wx.hideLoading();
 	      if (res.page.list.length == 0) {
-		      wx.hideLoading();
 		      wx.showToast({
 			      title: '没有更多数据',
 			      icon:'none'
@@ -96,7 +96,7 @@ Page({
 		      return
 	      }
 	      productlist = res.page.list.map((item) => {
-          item.attrValues = item.attrValues != null ? item.attrValues.split(',') : null;
+          item.attrValues = utils.attrValuesSplit(item);
           if (pageIndex == 0) { // 订货
 	          item.needNumber = 0;
           } else if(pageIndex == 1 || pageIndex == 2) { // 盘点 出库
@@ -107,12 +107,9 @@ Page({
           return item;
         })
 	      this.data.pagetListData = this.data.pagetListData.concat(productlist); // 数组合并
-	      console.log(this.data.pagetListData, '执行了么')
-	      console.log(productlist, '查问题');
 	      if (pageIndex == 0) {
 		      if (cacheData[this.data._index]) { // 订货
 			      this.data.pagetListData = this.forDataContrastSearch(this.data.pagetListData, cacheData[this.data._index]);
-
 		      }
 	      } else if (pageIndex == 1) {
 		      if (inventoryCacheData[this.data._index]) { // 盘点
@@ -127,7 +124,7 @@ Page({
           productlist: this.data.pagetListData,
 		      currPage: this.data.currPage + 1
         })
-      } else if (res.code == '401') {
+      } else if (res.code == 401) {
         config.logOutAll();
         return
       } else {
@@ -135,8 +132,8 @@ Page({
           title: res.msg,
           icon: 'none'
         })
+	      wx.hideLoading();
       }
-	    wx.hideLoading();
     })
   },
 
@@ -215,51 +212,15 @@ Page({
 	 * Date: 2018/5/25
 	 */
   getInventory() {
-    //处理数据结构 start
-    let tempInventList = wx.getStorageSync('inventoryCacheData');
-        tempInventList = tempInventList ? tempInventList : this.data.productlist;
-		let inventoryDetailVOList = utils.ArrayDeepCopy(tempInventList);  // 数组深层拷贝
-				inventoryDetailVOList = utils.cacheDataDeal(inventoryDetailVOList); // 二维数组结构为一维数组进行 过滤
-    let isComplete = inventoryDetailVOList.filter((item) =>{ // 过滤 没有填写数据
-      if (item.unitValue !== '' || item.materialUnitValue !== '') { // 提交数据整理
-          item.goodsId = item.id;
-          item.shopItemSkuVO = {
-              attrValues: utils.attrValuesToString(item), //  array 转 string 提交数据
-              id: item.id,
-	            stock: item.stock,
-	            skuId: item.skuId,
-              item: item.item,
-          }
-          delete item.attrValues;
-          delete item.copyShopItemSkuId;
-          delete item.id;
-          delete item.isExist;
-          delete item.isSale;
-          delete item.item;
-          delete item.price;
-          delete item.stock;
-          delete item.shopItemId;
-          delete item.skuId;
-          delete item.skuSn;
-          delete item.thumb;
-          delete item.valueIds;
-          delete item.costPrice;
-          return item;
-      }
-    })
-		let promdData = {
-			id: this.data.itemId || null, // 订单id // 更新必传
-			shopId: app.selectIndex, // 店铺ID
-			inventoryDetailVOList: isComplete,
-		}
-		if (inventoryDetailVOList.length == 0 ) {
+  	let promdData = this.processData();
+		if (promdData.inventoryDetailVOListLenght == 0 ) {
 			wx.showToast({
 				title: '盘点数据不能为空',
 				icon: 'none'
 			})
 			return
 		}
-		console.log(promdData, 'promdData')
+		console.log(promdData.promdData, 'promdData')
 	  //处理数据结构 end
 		wx.showModal({
 			content: '是否确认提交盘点？',
@@ -269,13 +230,13 @@ Page({
 					sysService.inventory({
 						url:'save',
 						method:'post',
-						data:promdData
+						data:promdData.promdData
 					}).then((data) => {
-							if (data.code == '0') {
+							if (data.code == 0) {
 								utils.showToast({title: '提交盘点成功', page: 1, pages: getCurrentPages()});
 								wx.removeStorageSync('inventoryCacheData'); // 数据提交后 清除缓存
 								wx.removeStorageSync('searchInventoryCacheData'); // 数据提交后 清除缓存
-							} else if (data.code == '401') {
+							} else if (data.code == 401) {
 								config.logOutAll();
 								return
 							} else {
@@ -289,6 +250,54 @@ Page({
 			}
 		});
   },
+	/**
+	 * Description: 整理数据逻辑
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/7/2
+	 */
+	processData() {
+		//处理数据结构 start
+		let tempInventList = wx.getStorageSync('inventoryCacheData');
+		tempInventList = tempInventList ? tempInventList : this.data.productlist;
+		let inventoryDetailVOList = utils.ArrayDeepCopy(tempInventList);  // 数组深层拷贝
+		inventoryDetailVOList = utils.cacheDataDeal(inventoryDetailVOList); // 二维数组结构为一维数组进行 过滤
+		let isComplete = inventoryDetailVOList.filter((item) =>{ // 过滤 没有填写数据
+			if (item.unitValue !== '' || item.materialUnitValue !== '') { // 提交数据整理
+				item.goodsId = item.id;
+				item.shopItemSkuVO = {
+					attrValues: utils.attrValuesToString(item), //  array 转 string 提交数据
+					id: item.id,
+					stock: item.stock,
+					skuId: item.skuId,
+					item: item.item,
+				}
+				delete item.attrValues;
+				delete item.copyShopItemSkuId;
+				delete item.id;
+				delete item.isExist;
+				delete item.isSale;
+				delete item.item;
+				delete item.price;
+				delete item.stock;
+				delete item.shopItemId;
+				delete item.skuId;
+				delete item.skuSn;
+				delete item.thumb;
+				delete item.valueIds;
+				delete item.costPrice;
+				return item;
+			}
+		})
+		let promdData = {
+			id: this.data.itemId || null, // 订单id // 更新必传
+			shopId: app.selectIndex, // 店铺ID
+			inventoryDetailVOList: isComplete,
+		}
+		return  {
+			inventoryDetailVOListLenght: inventoryDetailVOList.length,
+			promdData
+		}
+	},
 	/**
 	 * Description: 提交保存 盘点操作
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -319,11 +328,11 @@ Page({
 	 */
   filterData(data, num) {
     if (num == 1) {
-	    return data && data.filter((item) =>{ // 全部数据 返回没有输入值的数据
+	    return data && data.filter((item) => { // 全部数据 返回没有输入值的数据
 		    return item.item.unitValue == 0 || item.item.unitValue == '0' || item.item.unitValue == ''
 	    });
     } else if(num == 2) {
-	    return data && data.filter((item) =>{ // 搜索查询  返回搜索的数据
+	    return data && data.filter((item) => { // 搜索查询  返回搜索的数据
 		    return item.needNum != 0 || item.needNumber != '0' || item.needNumber != '';
 	    });
     } else if(num == 3) {
@@ -358,15 +367,6 @@ Page({
 	 * Date: 2018/6/4
 	 */
 	forDataContrastSearch(data1, data2) {
-		// data1.forEach((item) => {
-		// 	data2.forEach((itemA, index) =>{
-		// 		if (itemA.skuId == item.skuId) {
-		// 			data2[index] = item
-		// 		} else {
-		// 			data2.push(item);
-		// 		}
-		// 	})
-		// })
 		data1.push(...data2);
 		// 去除重复skuId
 		Array.prototype.distinct = function(){
@@ -394,9 +394,6 @@ Page({
 		for (let i=0; i < navlistLength; i++) {
 			arrayData[i] = [];
 		}
-	},
-	setOnShowData(data1, data2) {
-		return this.forDataContrast(this.data.productlist, cacheData[this.data._index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 	},
 	/**
 	 * Description: scroll view 下拉刷新

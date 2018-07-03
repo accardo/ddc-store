@@ -42,17 +42,8 @@ Page({
    * Date: 2018/5/26
    */
   getSearchList() {
-    let shopid = app.selectIndex;
 	  let pageIndex = wx.getStorageSync('pageindex');
-	  let itemTypes = utils.limitClass(pageIndex);
-    let getProse = {
-      currPage: this.data.currPage,
-      pageSize: this.data.pageSize,
-      categoryId: this.data.categoryId,
-      shopId: shopid,
-	    goodsName: this.data.searchtxt,
-	    itemTypes
-    }
+	  let getProse = this.processData();
     sysService.category({
       url: 'listProduct',
       method: 'get',
@@ -60,7 +51,7 @@ Page({
     }).then((res) => {
       if (res.code == 0) {
 	      res.page.list.forEach((item) => {
-		      item.attrValues = item.attrValues ? item.attrValues.split(',') : null;
+		      item.attrValues = utils.attrValuesSplit(item);
 		      if (pageIndex == 0) { // 订货
 			      item.needNumber = 0;
 		      } else if(pageIndex == 1 || pageIndex == 2) { // 盘点
@@ -108,7 +99,24 @@ Page({
       searchtxt: e.detail.value
     })
   },
-
+	/**
+	 * Description: 数据处理
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/7/2
+	 */
+	processData() {
+		let pageIndex = wx.getStorageSync('pageindex');
+		let itemTypes = utils.limitClass(pageIndex);
+		let getProse = {
+			currPage: this.data.currPage,
+			pageSize: this.data.pageSize,
+			categoryId: this.data.categoryId,
+			shopId: app.selectIndex,
+			goodsName: this.data.searchtxt,
+			itemTypes
+		}
+		return getProse
+	},
   /**
    * 生命周期函数--监听页面加载
    */

@@ -34,10 +34,9 @@ Page({
 			data: getParm
 		}).then((res) => {
 			wx.stopPullDownRefresh();
-			if (res.code == '0') {
-				console.log(res, 'getExpenddetail');
+			if (res.code == 0) {
+				wx.hideLoading();
 				if (res.page.list.length == 0) {
-					wx.hideLoading();
 					wx.showToast({
 						title: '没有更多数据',
 						icon:'none'
@@ -50,16 +49,15 @@ Page({
 					courseList: this.data.pagetListData,
 					currPage: this.data.currPage + 1
 				})
-			} else if (res.code == '401') {
+			} else if (res.code == 401) {
 				config.logOutAll();
-				return
 			} else {
 				wx.showToast({
 					title: res.msg,
 					icon: 'none'
 				})
+				wx.hideLoading();
 			}
-			wx.hideLoading();
 		}).catch(() => {
 			wx.hideLoading();
 		})

@@ -1,4 +1,5 @@
 const sysService = require('../../service/sys.service.js');
+const config = require('../../config/config.js');
 const app = getApp();
 // pages/expendtrim/expendtrim.js
 Page({
@@ -50,9 +51,9 @@ Page({
 			data: getParm
 		}).then((res) => {
 			wx.stopPullDownRefresh();
-			if (res.code == '0') {
+			if (res.code == 0) {
+				wx.hideLoading();
 				if (res.page.list.length == 0) {
-					wx.hideLoading();
 					wx.showToast({
 						title: '没有更多数据',
 						icon:'none'
@@ -65,16 +66,15 @@ Page({
 					courseList: this.data.pagetListData,
 					currPage: this.data.currPage + 1
 				})
-			} else if (res.code == '401') {
+			} else if (res.code == 401) {
 				config.logOutAll();
-				return
 			} else {
 				wx.showToast({
 					title: res.msg,
 					icon: 'none'
 				})
+				wx.hideLoading();
 			}
-			wx.hideLoading();
 		}).catch(() => {
 			wx.hideLoading();
 		})
@@ -156,7 +156,7 @@ Page({
 		  method: 'post',
 		  data: postParm
 	  }).then((res) => {
-		  if (res.code == '0') {
+		  if (res.code == 0) {
 			  wx.showToast({
 				  title: '修改成功'
 			  })
@@ -164,7 +164,7 @@ Page({
 				  isShow: false,
 				  courseList: this.data.courseList
 			  })
-		  } else if (res.code == '401') {
+		  } else if (res.code == 401) {
 			  config.logOutAll();
 			  return
 		  } else {

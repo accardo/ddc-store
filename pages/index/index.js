@@ -16,20 +16,6 @@ Page({
     shopAds: '请选择店铺',
     selectIndex: app.selectIndex ? app.selectIndex :'0',
     shopArray: [],
-    address:'',
-    username:'',
-    roleName:'',
-    mobile:'',
-  },
-
-  /* 获取用户基础信息 */
-  getUserBaseInfo(){
-    let { username = '', roleName = '', mobile = '' } = wx.getStorageSync('getuserinfo');
-    this.setData({
-      username,
-      roleName,
-      mobile
-    });
   },
 
   /* 获取店铺列表 */
