@@ -10,10 +10,19 @@ let config = {
 
 /* 退出登录 */
 config.logOutAll = function(){
-  wx.clearStorage();
-  wx.reLaunch({
-    url: config.getPageUrl(true, 'login')
-  })
+	wx.showToast({
+		title: '权限已过期，请重新登录',
+		icon: 'none',
+		duration: 1500,
+		success: () => {
+			setTimeout(() => {
+				wx.clearStorage();
+				wx.reLaunch({
+					url: config.getPageUrl(true, 'login')
+				})
+			}, 2000)
+		}
+	})
 }
 
 config.dict={

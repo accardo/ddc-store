@@ -45,7 +45,6 @@ Page({
         wx.navigateTo({ // 订货
           url: '../../pages/ordergoods/ordergoods?productType=goods'
         })
-        // wx.removeStorageSync('goodsOrderCacheData');
          wx.removeStorageSync('searchGoodsOrderCacheData');
          wx.removeStorageSync('resultsGoodsOrderCacheData');
       } else if (pageindex == 1) {
@@ -77,10 +76,10 @@ Page({
 	 * Date: 2018/6/8
 	 */
 	requestReturnInfo (res) {
-		 wx.stopPullDownRefresh();
-		if (res.code = '0') {
+		wx.stopPullDownRefresh();
+		if (res.code == 0) {
+			wx.hideLoading();
 			if (res.page.list.length == 0) {
-				wx.hideLoading();
 				wx.showToast({
 					title: '没有更多数据',
 					icon:'none'
@@ -93,16 +92,15 @@ Page({
 				listData: this.data.pagetListData,
 				currPage: this.data.currPage + 1
 			})
-		} else if (res.code == '401') {
+		} else if (res.code == 401) {
 			config.logOutAll();
-			return
 		} else {
 			wx.showToast({
 				title: res.msg,
 				icon: 'none'
 			})
+			wx.hideLoading();
 		}
-		wx.hideLoading();
 	},
 	/**
 	 * Description: 请求数据 整合
@@ -123,7 +121,7 @@ Page({
 	 * Date: 2018/5/31
 	 */
   getOrderGoods() {
-    wx.showLoading({ title: '加载中' });
+   // wx.showLoading({ title: '加载中' });
     sysService.purchase({
       url: 'list',
       method: 'get',
@@ -315,23 +313,14 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-		console.log(1111)
+
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-	  // this.setData({
-		 //  listData: [],
-		 //  currPage: 1
-	  // })
-  	// if(this.data.pageindex == 0) {
-		 //  this.getOrderGoods();
-	  // } else if(this.data.pageindex == 1 ) {
-		 //  this.getInventory();
-		 //  console.log(1111111)
-	  // }
+
   },
 
   /**

@@ -84,12 +84,6 @@ Page({
 			  }
 		  }
 	  })
-	 // console.log(purchaseDetailVOList, isComplete)
-	  /*let isValidation = ArrayDeepCopyData.filter((item) => {
-		  if (item.deliveryCount !== null && item.deliveryCount !== '') {
-			  return item;
-		  };
-	  })*/
 	  let promeData = {
 		  id: this.data.purchaseId || null, // 订单id
 		  shopId: app.selectIndex, // 店铺ID
@@ -124,10 +118,9 @@ Page({
 	 */
   getSreceipt() {
 		wx.showLoading({ title: '加载中' });
-		let shopId = app.selectIndex;
 		let promseData = {
 			purchaseId: this.data.purchaseId, // 订货单ID
-			shopId, // 店铺ID
+			shopId: app.selectIndex, // 店铺ID
 		}
 		sysService.purchasedetail({
 			url:'info',
@@ -135,10 +128,13 @@ Page({
 			data: promseData
 		}).then((res) => {
 			if (res.code == '0') {
+				wx.hideLoading();
 				this.setData({
 					receiptList: res.purchaseDetailVOList // 订货列表数据
 				})
-				wx.hideLoading();
+			} else if (res.code == 401) {
+				config.logOutAll();
+				return
 			}
 		})
   },

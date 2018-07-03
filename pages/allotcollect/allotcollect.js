@@ -33,7 +33,7 @@ Page({
 			method:'get',
 			data: promseData
 		}).then((res) => {
-			if (res.code == '0') {
+			if (res.code == 0) {
 				res.transferVO.transferDetailVOList.forEach((item) => {
 					if (item.shopItemSkuVO !== null) {
 						item.shopItemSkuVO.attrValues = utils.attrValuesSplit(item.shopItemSkuVO);
@@ -45,7 +45,7 @@ Page({
 					outTransferId: res.transferVO.outTransferId,
 				})
 				wx.hideLoading();
-			} else if(res.code == '401') {
+			} else if(res.code == 401) {
 				config.logOutAll();
 				return
 			} else {
@@ -53,6 +53,7 @@ Page({
 					title: res.msg,
 					icon: 'none'
 				})
+				wx.hideLoading();
 			}
 		})
 	},
@@ -93,9 +94,9 @@ Page({
 							method:'post',
 							data: promseData
 						}).then((res) => {
-							if (res.code == '0') {
+							if (res.code == 0) {
 								utils.showToast({title: '调拨更新成功', page: 1, pages: getCurrentPages()});
-							} else if(res.code == '401') {
+							} else if(res.code == 401) {
 								config.logOutAll();
 								return
 							} else {

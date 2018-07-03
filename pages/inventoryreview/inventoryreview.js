@@ -36,13 +36,13 @@ Page({
 			method:'get',
 			data: promseData
 		}).then((res) => {
-			if (res.code == '0') {
+			if (res.code == 0) {
 				let receiptList = utils.attrValuesSkuSplit(res.inventoryDetailVOList); // attrValues  string 转 array 页面铺数据
 				this.setData({
 					receiptList // 订货列表数据
 				})
 				wx.hideLoading();
-			} else if(res.code == '401') {
+			} else if(res.code == 401) {
 				config.logOutAll();
 				return
 			} else {
@@ -50,6 +50,7 @@ Page({
 					title: res.msg,
 					icon: 'none'
 				})
+				wx.hideLoading();
 			}
 		})
   },
@@ -69,11 +70,7 @@ Page({
 	 * Date: 2018/5/31
 	 */
 	editNnit(e) {
-		this.data.receiptList.forEach((item, index) =>{
-			 if(e.currentTarget.dataset.eindex == index) {
-				 item.unitValue = e.detail.value
-			 }
-		})
+		this.nitUnit(e, 1)
 	},
 	/**
 	 * Description: 拆零扣减
@@ -81,45 +78,67 @@ Page({
 	 * Date: 2018/5/31
 	 */
 	editMaterialUnit(e) {
+		this.nitUnit(e, 2)
+	},
+	/**
+	 * Description: 直接扣减，拆零扣减 混合
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/7/2
+	 */
+	nitUnit(e, nNum) {
 		this.data.receiptList.forEach((item, index) =>{
 			if(e.currentTarget.dataset.eindex == index) {
-				item.materialUnitValue = e.detail.value
+				if (nNum == 1) {
+					item.unitValue = e.detail.value
+				} else if (nNum == 2) {
+					item.materialUnitValue = e.detail.value
+				}
 			}
 		})
 	},
   /* 提交审核 */
   subReview(){
 	  let inventoryDetailVOList = utils.attrValuesSkuToString(this.data.receiptList); // attrValues array 转 string 提交数据
+	  inventoryDetailVOList = inventoryDetailVOList.filter((item) => {
+		  return (item.unitValue !== null && item.unitValue !== '') || (item.materialUnitValue !== null && item.materialUnitValue !== '')
+	  })
 	  let promeData = {
 		  id: this.data.inventoryId || null, // 盘点id
 		  shopId: app.selectIndex, // 店铺ID
 		  inventoryDetailVOList,
 	  }
-    wx.showModal({
-      content: '确认提交审核？',
-      confirmColor: config.showModal.confirmColor,
-      success: function (res) {
-        if (res.confirm){
-	        sysService.inventory({
-		        url: 'update',
-		        method: "post",
-		        data: promeData
-	        }).then((res) => {
-		        if (res.code == 0) {
-			        utils.showToast({title: '盘点成功', page: 1, pages: getCurrentPages()});
-		        } else if (res.code == 401) {
-			        config.logOutAll();
-			        return
-		        } else {
-			        wx.showToast({
-				        title: res.msg,
-				        icon:'none'
-			        })
-		        }
-	        })
-        }
-      }
-    });
+	  if (inventoryDetailVOList.length == this.data.receiptList.length) {
+		  wx.showModal({
+			  content: '确认提交审核？',
+			  confirmColor: config.showModal.confirmColor,
+			  success: function (res) {
+				  if (res.confirm){
+					  sysService.inventory({
+						  url: 'update',
+						  method: "post",
+						  data: promeData
+					  }).then((res) => {
+						  if (res.code == 0) {
+							  utils.showToast({title: '盘点成功', page: 1, pages: getCurrentPages()});
+						  } else if (res.code == 401) {
+							  config.logOutAll();
+							  return
+						  } else {
+							  wx.showToast({
+								  title: res.msg,
+								  icon:'none'
+							  })
+						  }
+					  })
+				  }
+			  }
+		  });
+	  } else {
+		  wx.showToast({
+			  title: '盘点数量不能为空',
+			  icon:'none'
+		  })
+	  }
     console.log('点击提交审核');
   },
 

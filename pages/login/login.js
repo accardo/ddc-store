@@ -1,5 +1,4 @@
 const config = require('../../config/config.js');
-const loginService = require('../../service/login.service.js');
 const shopListService = require('../../service/service.service.js');
 const baseService = require('../../service/base.service.js');
 
@@ -35,7 +34,7 @@ Page({
         this.setData({
           shopArray:shopList
         })
-      }else{
+      } else {
         wx.showToast({
           title: res.msg,
           icon:'none'
@@ -113,10 +112,10 @@ Page({
 		  success: (res) => {
 			  wx.hideLoading();
 			  let { code, sysUser, msg, token } = res.data;
-			  if(code == '0'){
+			  if(code == 0){
 				  app.selectIndex = postData.shopId; // 店铺id
           wx.setStorageSync('shopId', postData.shopId)
-				  app.companyId = sysUser.shopVO.companyId; // 公司id
+          wx.setStorageSync('companyId', sysUser.shopVO.companyId); // 公司id
 				  wx.setStorageSync('getuserinfo', sysUser);
 				  wx.setStorageSync('getusertoken', token);
 				  wx.redirectTo({

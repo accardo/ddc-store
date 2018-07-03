@@ -1,4 +1,5 @@
 const sysService = require('../../service/sys.service.js');
+const config = require('../../config/config.js');
 const app = getApp();
 // pages/expendtrim/expendtrim.js
 Page({
@@ -50,9 +51,9 @@ Page({
 			data: getParm
 		}).then((res) => {
 			wx.stopPullDownRefresh();
-			if (res.code == '0') {
+			if (res.code == 0) {
+				wx.hideLoading();
 				if (res.page.list.length == 0) {
-					wx.hideLoading();
 					wx.showToast({
 						title: '没有更多数据',
 						icon:'none'
@@ -65,16 +66,15 @@ Page({
 					courseList: this.data.pagetListData,
 					currPage: this.data.currPage + 1
 				})
-			} else if (res.code == '401') {
+			} else if (res.code == 401) {
 				config.logOutAll();
-				return
 			} else {
 				wx.showToast({
 					title: res.msg,
 					icon: 'none'
 				})
+				wx.hideLoading();
 			}
-			wx.hideLoading();
 		}).catch(() => {
 			wx.hideLoading();
 		})
@@ -94,7 +94,16 @@ Page({
 	    this.data.courseList[this.data.nIndex].scrapCount = e.detail.value
     }
   },
-
+	/**
+	 * Description: 关闭弹出层
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/29
+	 */
+	closeMask() {
+		this.setData({
+			isShow: false
+		})
+	},
 	/**
 	 * Description: 点击弹出框 修改 数值
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -125,13 +134,16 @@ Page({
 		   return false
 	  }
 		console.log(course.useCount, course.number, '数值计算')
-	  if (parseInt(course.useCount) < parseInt(course.number)) {
-        wx.showToast({
-          title: '正常消耗，不能小于实际上课人数',
-          icon: 'none'
-        })
-        return false
-	  }
+		if (this.data.name == 'useCount') {
+			if (parseInt(course.useCount) < parseInt(course.number)) {
+				wx.showToast({
+					title: '正常消耗，不能小于实际上课人数',
+					icon: 'none'
+				})
+				return false
+			}
+		}
+
 	  let postParm = {
 	  	id: this.data.courseList[this.data.nIndex].id,
 		  courseBillId: this.data.courseList[this.data.nIndex].courseBillId, //  调整单id
@@ -144,7 +156,7 @@ Page({
 		  method: 'post',
 		  data: postParm
 	  }).then((res) => {
-		  if (res.code == '0') {
+		  if (res.code == 0) {
 			  wx.showToast({
 				  title: '修改成功'
 			  })
@@ -152,7 +164,7 @@ Page({
 				  isShow: false,
 				  courseList: this.data.courseList
 			  })
-		  } else if (res.code == '401') {
+		  } else if (res.code == 401) {
 			  config.logOutAll();
 			  return
 		  } else {

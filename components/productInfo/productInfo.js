@@ -100,7 +100,7 @@ Component({
 		  	if (this.data.shopTypeSearch == 'search') {
 				  wx.setStorageSync('searchInventoryCacheData', this.data.productList); // 查询页面 设置盘点缓存
 			  } else {
-				  this.cacheStorageSpaceInfo(e.currentTarget.dataset.navclassindex)
+				  this.cacheStorageSpaceInfo(e.currentTarget.dataset.navclassindex);
 			  }
 		  }else if(this.data.pageindex == 2) {
 			  if (this.data.productList[e.currentTarget.dataset.index].item.deductionType == 1) {
@@ -199,11 +199,18 @@ Component({
 	  cacheStorageSpaceInfo(navClassIndex) {
 		  let tempInfoData = [];
 		  let getDatas = wx.getStorageSync('outboundCacheData');
+		  let getInventoryCacheData = wx.getStorageSync('inventoryCacheData');
+		  let navlistLength = wx.getStorageSync('navlistLength');
 		  tempInfoData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
 			  return item.unitValue != '' || item.materialUnitValue != '';
 		  })
-		  console.log(tempInfoData, this.data.outboundCacheArray, '寻找问题')
 		  if (this.data.pageindex == 1) {
+		  	console.log(navClassIndex, getInventoryCacheData, !getInventoryCacheData, '看问题')
+			  if (!getInventoryCacheData) {
+				  for (let i=0; i < navlistLength; i++) {
+					  this.data.inventoryCacheArray[i] = [];
+				  }
+			  }
 			  this.data.inventoryCacheArray[navClassIndex] = tempInfoData;
 			  wx.setStorageSync('inventoryCacheData', this.data.inventoryCacheArray);
 		  } else if(this.data.pageindex == 2) {
@@ -217,7 +224,7 @@ Component({
 			  }
 
 			  if (!getDatas) {
-				  for (let i=0; i < navClassIndex; i++) {
+				  for (let i=0; i < navlistLength; i++) {
 					  this.data.outboundCacheArray[i] = [];
 				  }
 			  }
@@ -262,7 +269,7 @@ Component({
 	  cacheStorageSpaceDetial() {
 		  let tempGoodsOrderData = [];
 		  tempGoodsOrderData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
-			  return item.needNumber != '' || item.needNumber != 0;
+			  return item.needNumber != '' || item.needNumber != null;
 		  })
 		  wx.setStorageSync('cacheDataDetial', tempGoodsOrderData);
 	  },

@@ -164,6 +164,7 @@ function setTotalNumber(data) {
 		shopPieceN
 	}
 }
+
 let digitLength = num => {
 	const eSplit = num.toString().split(/[eE]/);
 	const len = (eSplit[0].split('.')[1] || '').length - (+(eSplit[1] || 0));
@@ -213,5 +214,4 @@ module.exports = {
 	reduce,
 	sub,
 	divide
-
 }

@@ -2,5 +2,5 @@
   "usingComponents": {
     "list-order":"../../components/listOrder/listOrder"
   },
-  "enablePullDownRefresh": true
+  "enablePullDownRefresh": false
 }

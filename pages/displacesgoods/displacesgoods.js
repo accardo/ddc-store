@@ -72,11 +72,13 @@ Page({
 			item.needShopItemSkuVO = {
 				attrValues: utils.attrValuesToString(item), // array 转 string 提交数据
 				id: item.id,
+				skuId: item.skuId,
 				item: item.item
 			}
 	    item.shopItemSkuVO = {
 		    attrValues: utils.attrValuesToString(converInto[index]), // array 转 string 提交数据
 		    id: converInto[index].id,
+		    skuId: converInto[index].skuId,
 		    item: converInto[index].item
       }
       item.id = null;
