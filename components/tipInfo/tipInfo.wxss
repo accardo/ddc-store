@@ -7,4 +7,5 @@
   overflow: hidden;
   box-sizing: border-box;
   font-size: 28rpx;
+  margin-top: 90rpx;
 }

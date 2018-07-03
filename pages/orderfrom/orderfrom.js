@@ -1,5 +1,5 @@
 // pages/orderfrom/orderfrom.js
-const config = require('../../service/sys.service.js');
+const config = require('../../config/config.js');
 const sysService = require('../../service/sys.service.js');
 const app = getApp();
 Page({
@@ -25,20 +25,20 @@ Page({
 	 * Date: 2018/6/8
 	 */
 	requestReturnInfo(res, data, img = null) {
-		if (res.code == '0') {
+		if (res.code == 0) {
 			this.setData({
 				receiptList: data, // 订货列表数据
 				imgList: img
 			})
 			wx.hideLoading();
-		} else if(res.code == '401') {
+		} else if(res.code == 401) {
 			config.logOutAll();
-			return
 		} else {
 			wx.showToast({
 				title: res.msg,
 				icon: 'none'
 			})
+			wx.hideLoading()
 		}
 	},
 	/**
@@ -150,34 +150,21 @@ Page({
     console.log(options, 'orderfrom'); // orderId 店铺id ，orderStatus 店铺状态 1、已完成， 2、待审核
     let pageindex = wx.getStorageSync('pageindex');
     let pagetitle = wx.getStorageSync('pagetitle');
+	  this.setData({
+		  purchaseId: options.orderId || '', // 订货id 盘点id 订货id 盘点id 出库id 调拨单id 集于一身
+		  status: options.orderStatus || '', // 订货状态 或 盘点状态
+		  type: options.orderType || '',  // 调拨点状态 订货状态 盘点状态
+		  pageindex,
+	  })
     if (pageindex == 0) {
-	    this.setData({
-		    purchaseId: options.orderId, // 订货id 或 盘点id
-		    status: options.orderStatus, // 订货状态 或 盘点状态
-	    })
 	    this.getPurchaseDetail();
     } else if(pageindex == 1) {
-	    this.setData({
-		    purchaseId: options.orderId, // 订货id 或 盘点id
-		    status: options.orderStatus, // 订货状态 或 盘点状态
-	    })
 	    this.getInventoryData();
     } else if (pageindex == 2) {
-	    this.setData({
-		    purchaseId: options.orderId // 出库 id
-	    })
 	  	this.getoutboundData();
     } else if (pageindex == 4) {
-	    this.setData({
-		    purchaseId: options.orderId, // 调拨单id
-		    type: options.orderType  // 调拨点状态
-	    })
 	    this.gettransferData();
     }
-    this.setData({
-	    pageindex,
-    })
-
     wx.setNavigationBarTitle({
       title: pagetitle+'单'
     })

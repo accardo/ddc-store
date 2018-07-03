@@ -31,7 +31,7 @@ Page({
       data: promdData
 		}).then((res) => {
 		  console.log(res, '置换单数据');
-			if (res.code == '0') {
+			if (res.code == 0) {
 			  let needAttrValues = res.displaceDetailVOList[0].needShopItemSkuVO; // 要转换商品
 			  let shopAttrValues = res.displaceDetailVOList[0].shopItemSkuVO; // 转化为商品
 			  needAttrValues.attrValues = utils.attrValuesSplit(needAttrValues); // string 转 array 铺页面数据
@@ -41,7 +41,7 @@ Page({
 					converFromShop: [res.displaceDetailVOList[0].needShopItemSkuVO],
 					converIntoShop: [res.displaceDetailVOList[0].shopItemSkuVO]
 				})
-			} else if (res.code == '401') {
+			} else if (res.code == 401) {
 				config.logOutAll();
 				return
 			} else {

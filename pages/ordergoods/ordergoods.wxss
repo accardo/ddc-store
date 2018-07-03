@@ -112,6 +112,10 @@ page {
 
 .category-product.active{
   padding-bottom: 0;
+  margin-bottom: 0;
+}
+.category-product.active1{
+  margin-top: 150rpx;
 }
 .category-nav{
   width: 200rpx;

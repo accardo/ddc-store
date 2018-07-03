@@ -36,13 +36,13 @@ Page({
 			method:'get',
 			data: promseData
 		}).then((res) => {
-			if (res.code == '0') {
+			if (res.code == 0) {
 				let receiptList = utils.attrValuesSkuSplit(res.inventoryDetailVOList); // attrValues  string 转 array 页面铺数据
 				this.setData({
 					receiptList // 订货列表数据
 				})
 				wx.hideLoading();
-			} else if(res.code == '401') {
+			} else if(res.code == 401) {
 				config.logOutAll();
 				return
 			} else {
@@ -50,6 +50,7 @@ Page({
 					title: res.msg,
 					icon: 'none'
 				})
+				wx.hideLoading();
 			}
 		})
   },
@@ -69,11 +70,7 @@ Page({
 	 * Date: 2018/5/31
 	 */
 	editNnit(e) {
-		this.data.receiptList.forEach((item, index) =>{
-			 if(e.currentTarget.dataset.eindex == index) {
-				 item.unitValue = e.detail.value
-			 }
-		})
+		this.nitUnit(e, 1)
 	},
 	/**
 	 * Description: 拆零扣减
@@ -81,9 +78,21 @@ Page({
 	 * Date: 2018/5/31
 	 */
 	editMaterialUnit(e) {
+		this.nitUnit(e, 2)
+	},
+	/**
+	 * Description: 直接扣减，拆零扣减 混合
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/7/2
+	 */
+	nitUnit(e, nNum) {
 		this.data.receiptList.forEach((item, index) =>{
 			if(e.currentTarget.dataset.eindex == index) {
-				item.materialUnitValue = e.detail.value
+				if (nNum == 1) {
+					item.unitValue = e.detail.value
+				} else if (nNum == 2) {
+					item.materialUnitValue = e.detail.value
+				}
 			}
 		})
 	},

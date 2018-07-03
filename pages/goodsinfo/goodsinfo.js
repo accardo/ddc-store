@@ -41,6 +41,7 @@ Page({
 			data: getData
 		}).then((res) => {
 			if (res.code == 0) {
+				wx.hideLoading();
 				let shopTempArray = this.shopListDataProcess(res.purchaseDetailVOList);
 				console.log(res.purchaseDetailVOList, shopTempArray, '读取列表');
 				this.setData({
@@ -52,14 +53,13 @@ Page({
 				this._watchChangeDetial(); //详情商品数量
 			} else if (res.code == 401) {
 				config.logOutAll();
-				return
 			} else {
 				wx.showToast({
 					title: res.msg,
 					icon:'none'
 				})
+				wx.hideLoading();
 			}
-			wx.hideLoading();
 		})
 	},
 	/**
@@ -127,79 +127,7 @@ Page({
 	 * Date: 2018/5/29
 	 */
   setPostData(){
-    let purchaseDetailVOList = [];
-    let isComplete = [];
-    if (this.data.update != '1') { // 1 为更新操作 处理原始数据，原始数据和后台传数据结构相差太大，很坑人的。
-	    purchaseDetailVOList = wx.getStorageSync('cacheData');
-	    purchaseDetailVOList = utils.cacheDataDeal(purchaseDetailVOList);
-	    isComplete = purchaseDetailVOList.filter((item) => { // 过滤 没有填写数据
-			    item.goodsId = item.id;
-			    item.shopItemSkuVO = {
-				    attrValues: utils.attrValuesToString(item), // attrValues array 转 string
-				    id: item.id,
-				    skuId: item.skuId,
-				    item: item.item
-			    }
-			    delete item.attrValues;
-			    delete item.copyShopItemSkuId;
-		      delete item.id;
-			    delete item.isExist;
-			    delete item.isSale;
-			    delete item.item;
-			    delete item.price;
-			    delete item.shopItemId;
-			    delete item.skuId;
-			    delete item.skuSn;
-			    delete item.stock;
-			    delete item.thumb;
-			    delete item.valueIds;
-			    delete item.costPrice;
-			    delete item.navClass;
-			    return item;
-	    })
-    } else {
-	    purchaseDetailVOList = wx.getStorageSync('cacheDataDetial');
-    	if (this.data.productStatus == 'goodsdetail') {
-		    purchaseDetailVOList = purchaseDetailVOList ? purchaseDetailVOList : this.data.productlist;
-		    isComplete = purchaseDetailVOList.map((item) => {
-			    let tempObj1 = JSON.parse(JSON.stringify(item.tempObj));
-			    item.shopItemSkuVO = {
-			    	id : item.id,
-			      attrValues: utils.attrValuesToString(item), // attrValues array 转 string ,
-				    skuId: item.skuId,
-			    	item: item.item
-			    }
-			    item.shopItemSkuVO.item.unitValue = tempObj1.tempunitValue;
-			    Object.assign(item, tempObj1);
-			    delete item.attrValues;
-			    delete item.copyShopItemSkuId;
-			    delete item.costPrice;
-			    delete item.isExist;
-			    delete item.isSale;
-			    delete item.item;
-			    delete item.price;
-			    delete item.shopItemId;
-			    delete item.skuId;
-			    delete item.skuSn;
-			    delete item.stock;
-			    delete item.tempunitValue;
-			    delete item.thumb;
-			    delete item.valueIds;
-			    return item
-		    })
-	    } else {
-		    isComplete = purchaseDetailVOList.map((item) => { // 属性 数组转字符串
-		       item.shopItemSkuVO.attrValues = utils.attrValuesToString(item.shopItemSkuVO); // attrValues array 转 string
-		    })
-	    }
-    }
-
-    let promeData = {
-	    id: this.data.purchaseId || null, // 订单id
-      shopId: app.selectIndex, // 店铺ID
-      status: this.data.status || 0, // 状态 (1、待收货 2、部分收货 3、已收货 4、待派单)
-	    purchaseDetailVOList: isComplete
-    }
+    let promeData = this.processData();
 		console.log(promeData, 'promeData222222');
     if (this.data.update == '1') {
       sysService.purchase({
@@ -242,6 +170,88 @@ Page({
 	    })
     }
   },
+
+	/**
+	 * Description: 整理数据逻辑
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/7/2
+	 */
+	processData() {
+		let purchaseDetailVOList = [];
+		let isComplete = [];
+		if (this.data.update != '1') { // 1 为更新操作 处理原始数据，原始数据和后台传数据结构相差太大，很坑人的。
+			purchaseDetailVOList = wx.getStorageSync('cacheData');
+			purchaseDetailVOList = utils.cacheDataDeal(purchaseDetailVOList);
+			isComplete = purchaseDetailVOList.filter((item) => { // 过滤 没有填写数据
+				item.goodsId = item.id;
+				item.shopItemSkuVO = {
+					attrValues: utils.attrValuesToString(item), // attrValues array 转 string
+					id: item.id,
+					skuId: item.skuId,
+					item: item.item
+				}
+				delete item.attrValues;
+				delete item.copyShopItemSkuId;
+				delete item.id;
+				delete item.isExist;
+				delete item.isSale;
+				delete item.item;
+				delete item.price;
+				delete item.shopItemId;
+				delete item.skuId;
+				delete item.skuSn;
+				delete item.stock;
+				delete item.thumb;
+				delete item.valueIds;
+				delete item.costPrice;
+				delete item.navClass;
+				return item;
+			})
+		} else {
+			purchaseDetailVOList = wx.getStorageSync('cacheDataDetial');
+			if (this.data.productStatus == 'goodsdetail') {
+				purchaseDetailVOList = purchaseDetailVOList ? purchaseDetailVOList : this.data.productlist;
+				isComplete = purchaseDetailVOList.map((item) => {
+					let tempObj1 = JSON.parse(JSON.stringify(item.tempObj));
+					item.shopItemSkuVO = {
+						id : item.id,
+						attrValues: utils.attrValuesToString(item), // attrValues array 转 string ,
+						skuId: item.skuId,
+						item: item.item
+					}
+					item.shopItemSkuVO.item.unitValue = tempObj1.tempunitValue;
+					Object.assign(item, tempObj1);
+					delete item.attrValues;
+					delete item.copyShopItemSkuId;
+					delete item.costPrice;
+					delete item.isExist;
+					delete item.isSale;
+					delete item.item;
+					delete item.price;
+					delete item.shopItemId;
+					delete item.skuId;
+					delete item.skuSn;
+					delete item.stock;
+					delete item.tempunitValue;
+					delete item.thumb;
+					delete item.valueIds;
+					return item
+				})
+			} else {
+				isComplete = purchaseDetailVOList.map((item) => { // 属性 数组转字符串
+					item.shopItemSkuVO.attrValues = utils.attrValuesToString(item.shopItemSkuVO); // attrValues array 转 string
+				})
+			}
+		}
+
+		let promeData = {
+			id: this.data.purchaseId || null, // 订单id
+			shopId: app.selectIndex, // 店铺ID
+			status: this.data.status || 0, // 状态 (1、待收货 2、部分收货 3、已收货 4、待派单)
+			purchaseDetailVOList: isComplete
+		}
+		return promeData
+	},
 	/**
 	 * Description: 清空订货缓存
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -278,16 +288,6 @@ Page({
 					}
 				})
 			}
-		  // if (outboundCacheData.length == outboundCacheArray.length) {
-			 //  wx.navigateTo({
-				//   url: `../../pages/uploadimg/uploadimg?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
-			 //  })
-		  // } else {
-			 //  wx.showToast({
-				//   title: '原料商品，必填一项',
-				//   icon: 'none'
-			 //  })
-		  // }
 	  } else {
 		  wx.showToast({
 			  title: '请添加商品',

@@ -17,51 +17,17 @@ Page({
 
   /* 提交信息 */
   subInfo(){
-    let outboundCacheData = wx.getStorageSync('outboundCacheData');
-	      outboundCacheData = utils.cacheDataDeal(outboundCacheData);
-	  let isComplete = outboundCacheData.map((item) => { // 提交数据整理
-			  item.goodsId = item.id;
-			  item.shopItemSkuVO = {
-				  attrValues: item.attrValues != null ? item.attrValues.toString() : null,
-				  id: item.id,
-				  item: item.item,
-				  skuId: item.skuId
-			  }
-			  delete item.attrValues;
-			  delete item.copyShopItemSkuId;
-			  delete item.id;
-			  delete item.isExist;
-			  delete item.isSale;
-			  delete item.item;
-			  delete item.price;
-			  delete item.shopItemId;
-			  delete item.skuId;
-			  delete item.skuSn;
-			  delete item.stock;
-			  delete item.thumb;
-			  delete item.valueIds;
-			  delete item.costPrice;
-			  return item;
-      })
-
-	  let promdData = {
-		  id: null,
-		  shopId: app.selectIndex, // 店铺ID
-      type: this.data.outboundType, // 出库类型
-		  reason: this.data.reason, // 出库原因
-		  imageUrls: this.data.imgList.toString(),
-		  deliveryDetailVOList: isComplete
-	  }
+  	let promdData = this.processData();
 	  sysService.delivery({
 		  url: 'save',
 		  method: "post",
 		  data: promdData
 	  }).then((res) => {
-		  if (res.code =='0') {
+		  if (res.code == 0) {
 			  utils.showToast({title: '更新成功', page: 3, pages: getCurrentPages()});
         wx.removeStorageSync('outboundCacheData');
         wx.removeStorageSync('searchOutboundCacheData');
-		  } else if(res.code == '401') {
+		  } else if(res.code == 401) {
 			  config.logOutAll();
 			  return
 		  } else {
@@ -138,6 +104,48 @@ Page({
          }
 		 })
   },
+	/**
+	 * Description: 整理数据逻辑
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/7/2
+	 */
+	processData() {
+		let outboundCacheData = wx.getStorageSync('outboundCacheData');
+		outboundCacheData = utils.cacheDataDeal(outboundCacheData);
+		let isComplete = outboundCacheData.map((item) => { // 提交数据整理
+			item.goodsId = item.id;
+			item.shopItemSkuVO = {
+				attrValues: utils.attrValuesToString(item),
+				id: item.id,
+				item: item.item,
+				skuId: item.skuId
+			}
+			delete item.attrValues;
+			delete item.copyShopItemSkuId;
+			delete item.id;
+			delete item.isExist;
+			delete item.isSale;
+			delete item.item;
+			delete item.price;
+			delete item.shopItemId;
+			delete item.skuId;
+			delete item.skuSn;
+			delete item.stock;
+			delete item.thumb;
+			delete item.valueIds;
+			delete item.costPrice;
+			return item;
+		})
+		let promdData = {
+			id: null,
+			shopId: app.selectIndex, // 店铺ID
+			type: this.data.outboundType, // 出库类型
+			reason: this.data.reason, // 出库原因
+			imageUrls: this.data.imgList.toString(),
+			deliveryDetailVOList: isComplete
+		}
+		return promdData
+	},
   /**
    * 生命周期函数--监听页面加载
    */
