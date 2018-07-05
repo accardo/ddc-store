@@ -9,3 +9,6 @@
   font-size: 28rpx;
   margin-top: 90rpx;
 }
+.tip-active {
+  margin-top: 0rpx;
+}

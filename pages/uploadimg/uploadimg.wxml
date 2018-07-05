@@ -1,6 +1,8 @@
 <!--pages/uploadimg/uploadimg.wxml-->
 <view class='upload'>
-  <tip-info reason="{{reason}}"></tip-info>
+    <view style="margin-top: -90rpx;">
+      <tip-info reason="{{reason}}"></tip-info>
+    </view>
   <view class='upload-box' bindtap='openMedia'>
       <image  src='../../icons/camera1.png'></image>
       <text>上传图片</text>

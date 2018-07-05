@@ -27,3 +27,6 @@ page{
   font-size: 32rpx;
   color: rgba(255,0,0,1);
 }
+.detail .tip-box {
+  margin-top: 0rpx;
+}

@@ -29,8 +29,8 @@ page,.allot{
   background-color: #fff;
 }
 .btn-review >button{
-  height: 70rpx;
-  line-height: 70rpx;
+  height: 80rpx;
+  line-height: 80rpx;
   font-size: 32rpx;
   border-radius: 0;
   color: #fff;
