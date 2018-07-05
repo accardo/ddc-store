@@ -53,6 +53,7 @@ Page({
 	      })
       }
     }
+	  wx.removeStorageSync('optionStorage');
   },
 	/**
 	 * Description: 统一处理 返回信息

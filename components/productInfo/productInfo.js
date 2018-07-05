@@ -240,6 +240,7 @@ Component({
 	  cacheStorageSpace(navClassIndex) {
 		  let tempGoodsOrderData = [];
 		  let getDatas = wx.getStorageSync('cacheData');
+		  let navlistLength = wx.getStorageSync('navlistLength');
 		  tempGoodsOrderData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
 			  return item.needNumber != '' || item.needNumber != '0';
 		  })
@@ -254,7 +255,7 @@ Component({
 			  })
 		  }
 		  if (!getDatas) {
-		  	for (let i=0; i < navClassIndex; i++) {
+		  	for (let i=0; i < navlistLength; i++) {
 				  this.data.cacheArray[i] = [];
 			  }
 		  }

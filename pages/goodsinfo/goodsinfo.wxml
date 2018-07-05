@@ -1,6 +1,6 @@
 <!--pages/goodsinfo/goodsinfo.wxml-->
 <view class='detail'>
-  <tip-info reason="{{reason}}"></tip-info>
+  <tip-info reason="{{reason}}" conclusion="{{conclusion}}"></tip-info>
   <view class="scroll-box {{pageindex == 2 ? 'active' : ''}}">
   <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
       <!--wx:if="{{conclusion}}"-->
