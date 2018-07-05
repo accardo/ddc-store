@@ -12,9 +12,4 @@
       <image class='admin-img' src='{{imgUrl}}{{item.icon}}'></image>
       <text>{{item.text}}</text>
     </view>
-    <view slot="before" class="admin-item" data-ind="{{ 7 }}" data-txt="退货"
-          bindtap='itemclick'>
-        <image class='admin-img' src='../../icons/library.png'></image>
-        <text>退货</text>
-    </view>
   </view>
