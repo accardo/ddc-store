@@ -8,6 +8,10 @@ Component({
       type:String,
       value:''
     },
+	  conclusion: {
+	    type: Number,
+      value: 0
+    }
   },
 
   /**

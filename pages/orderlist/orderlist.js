@@ -53,6 +53,7 @@ Page({
 	      })
       }
     }
+	  wx.removeStorageSync('optionStorage');
   },
 	/**
 	 * Description: 统一处理 返回信息
@@ -279,7 +280,7 @@ Page({
           break;
         case 6: // 课程消耗
           btntext = options.titlename;
-          this.getConsumption();
+         // this.getConsumption();
           break;
 	   }
 	   this.setData({
@@ -302,7 +303,12 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+  	if (this.data.pageindex == 6) {
+		  this.data.pagetListData = []; // 数组合并
+		  this.data.listData = [];
+		  this.data.currPage = 1;
+		  this.getConsumption();
+	  }
   },
 
   /**
