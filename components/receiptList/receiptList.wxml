@@ -15,19 +15,19 @@
                   <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="ind" class='goods-label-txt'>{{item}}</text>
             </view>
             <view class='goods-num'>订货数量：<text>{{item.needNumber}}</text><text>{{item.shopItemSkuVO.item.unitName}}</text> </view>
-            <view class='goods-num' wx:if="{{ orderStatus == 1 || orderStatus == 2}}"><!-- 订货 状态1 为待收货；状态2 为部分收货；状态3 为已收货  -->
-                实收数量：{{item.finalNumber > '0' ? item.finalNumber + item.shopItemSkuVO.item.unitName : '-' }} <!--实收数量默认为 - 当有收货是显示-->
-            </view>
-            <view class='goods-num goods-inp'>
-                收货数量：<view wx:if="{{ orderStatus == 1 || orderStatus == 2}}" style="display: flex; align-items: center">
+            <!--<view class='goods-num' wx:if="{{ orderStatus == 1 || orderStatus == 2}}">&lt;!&ndash; 订货 状态1 为待收货；状态2 为部分收货；状态3 为已收货  &ndash;&gt;
+                实收数量：{{item.finalNumber > '0' ? item.finalNumber + item.shopItemSkuVO.item.unitName : '-' }} &lt;!&ndash;实收数量默认为 - 当有收货是显示&ndash;&gt;
+            </view>-->
+            <!--<view class='goods-num goods-inp'> &lt;!&ndash; 1.1期： 1已提交 4未提交&ndash;&gt;
+                收货数量：<text wx:if="{{ orderStatus == 1}}">{{item.finalNumber}} {{item.shopItemSkuVO.item.unitName}}</text>
+              <view wx:if="{{ orderStatus == 4}}" style="display: flex; align-items: center">
                 <input data-index="{{index}}"
                        bindinput="setNumber"
                        type='number'
-                       value=""
+                       value="{{item.finalNumber}}"
                        placeholder="数量"
                 />{{item.shopItemSkuVO.item.unitName}}</view>
-            <text wx:if="{{ orderStatus == 3}}">{{item.finalNumber}} {{item.shopItemSkuVO.item.unitName}}</text>
-            </view>
+            </view>-->
         </view>
         <!-- 订货 end-->
         <!--盘点 srtart-->

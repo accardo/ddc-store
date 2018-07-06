@@ -24,6 +24,10 @@ Component({
         console.log(newVal, 'newVal listOrder')
       }
     },
+	  purchasReceipt: { // 订货列表 显示 订货 purchas / 收货 receipt
+    	type: String,
+		  value: '',
+	  }
   },
 
   /**
@@ -64,9 +68,10 @@ Component({
 
       // 0 订货 - goodsreceipt - 待收货、部分收获路径名， orderfrom - 已收货路径名， goodsinfo - 待派单路径名
       switch (this.data.pageindex){
-        case 0: // 出库
-	        path = `?orderId=${orderId}&update=1&orderStatus=${orderStatus}&goods=goodsdetail`; // goods 待派单 和 订货页面缓存区别
-          pageName = orderStatus ==1 || orderStatus == 2 ? 'goodsreceipt' : ( orderStatus == 3 ? 'orderfrom':'goodsinfo' )
+	      case 0: // 订货 / 收货
+	        path = `?orderId=${orderId}&update=1&orderStatus=${orderStatus}&goods=goodsdetail`; // goods 待派单 和 订货页面缓存区分
+          // pageName = orderStatus ==1 || orderStatus == 2 ? 'goodsreceipt' : ( orderStatus == 3 ? 'orderfrom':'goodsinfo' )
+		      pageName = orderStatus == 1 ? 'orderfrom' : 'goodsinfo';
           break;
         case 1: // 盘点
 	        path = `?orderId=${orderId}&orderStatus=${orderStatus}`; // orderStatus 盘点状态 1 已完成 2待审核 orderId 盘点id

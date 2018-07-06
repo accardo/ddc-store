@@ -30,4 +30,13 @@
   right: 0rpx;
   color:#ff5d31;
 }
-
+.list-row {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+.list-row-contact {
+  -webkit-flex: 1;
+  flex: 1;
+}

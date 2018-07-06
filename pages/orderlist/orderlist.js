@@ -17,6 +17,7 @@ Page({
     pagetListData: [], // 临时拼接数据需要合并到 lisData中
     pageindex: 0, // 缓存数据中取出 判断是哪个类型
     labelList:[], // 报废 退货 信息 前端字典
+	  purchasReceipt: 'purchas', // 默认显示订货列表 purchas 显示订货列表 ；receipt 显示收货列表
     currPage: 1,
     pageSize: 10,
   },
@@ -61,6 +62,12 @@ Page({
 	 * Date: 2018/6/27
 	 */
 	bindOrderPlace() {
+		this.setData({
+			purchasReceipt: 'purchas',
+			listData: [],
+			pagetListData: [],
+			currPage: 1,
+		})
 		this.getOrderGoods();
 	},
 	/**
@@ -69,7 +76,13 @@ Page({
 	 * Date: 2018/6/27
 	 */
 	bindOrdergoods() {
-		this.getOrderGoods();
+		this.setData({
+			purchasReceipt: 'receipt',
+			listData: [],
+			pagetListData: [],
+			currPage: 1,
+		})
+		this.getReceipt();
 	},
 	/**
 	 * Description: 统一处理 返回信息
@@ -122,7 +135,7 @@ Page({
 	 * Date: 2018/5/31
 	 */
   getOrderGoods() {
-   // wx.showLoading({ title: '加载中' });
+    wx.showLoading({ title: '加载中' });
     sysService.purchase({
       url: 'list',
       method: 'get',
@@ -133,6 +146,23 @@ Page({
     	wx.hideLoading();
     })
   },
+	/*
+	 * Description: 获取收货信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/5
+	 */
+	getReceipt() {
+		wx.showLoading({ title: '加载中' });
+		sysService.receipt({
+			url: 'list',
+			method: 'get',
+			data: this.getData()
+		}).then((res) => {
+			this.requestReturnInfo(res);
+		}).catch(() => {
+			wx.hideLoading();
+		})
+	},
 	/**
 	 * Description: 获取盘点信息
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -277,6 +307,7 @@ Page({
 	   switch(pageindex){
         case 0: // 订货
 	        this.getOrderGoods();
+	        // this.getReceipt();
           break;
         case 1: // 盘点
           btntext = options.titlename || '盘点';
@@ -354,7 +385,11 @@ Page({
    */
   onReachBottom: function () {
     if (this.data.pageindex == 0) {
-	    this.getOrderGoods();
+    	if (this.data.purchasReceipt == 'purchas') {
+		    this.getOrderGoods();
+	    } else if(this.data.purchasReceipt == 'receipt') {
+		    this.getReceipt();
+	    }
     } else if(this.data.pageindex == 1) {
       this.getInventory();
     } else if (this.data.pageindex == 2) {

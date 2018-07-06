@@ -16,7 +16,7 @@
     <button class="order-btn" size="mini">退货申请</button>
     <button class="order-btn ml20" size="mini">退货</button>
   </view>
-  <list-order list="{{listData}}"></list-order>
+  <list-order list="{{listData}}" purchas-receipt="{{ purchasReceipt }}"></list-order>
   <view bindtap="dialogClose" class="show-bg {{isShow ? '' : 'close'}}"></view>
   <view class="show-box {{isShow ? '' : 'close'}}">
     <radio-group class="radio-group" bindchange="radioChange">

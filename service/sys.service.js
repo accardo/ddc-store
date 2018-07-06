@@ -58,6 +58,11 @@ function coursebill({ url, method, params, data }) {
 function coursebilldetail({ url, method, params, data }) {
 	return baseService.service({ url: "sys/coursebilldetail/" + url, method, params, data })
 }
+// 二期新增
+/* 收货列表接口*/
+function receipt({ url, method, params, data }) {
+	return baseService.service({ url: "sys/receipt/" + url, method, params, data })
+}
 
 module.exports = {
   api,
@@ -75,4 +80,5 @@ module.exports = {
 	transferdetail,
 	coursebill,
 	coursebilldetail,
+	receipt,
 }
