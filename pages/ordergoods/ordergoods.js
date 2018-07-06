@@ -115,7 +115,7 @@ Page({
 		      if (inventoryCacheData[this.data._index]) { // 盘点
 			      this.data.pagetListData = this.forDataContrastSearch(this.data.pagetListData, inventoryCacheData[this.data._index])
 		      }
-	      } else if (pageIndex == 2) {
+	      } else if (pageIndex == 2 || pageIndex == 7) {
 		      if (outboundCacheData[this.data._index]) { //出库
 			      this.data.pagetListData = this.forDataContrastSearch(this.data.pagetListData, outboundCacheData[this.data._index]);
 		      }
@@ -408,6 +408,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+  	console.log(options)
     this.getMenuList();
     let pageindex = wx.getStorageSync('pageindex');
 	  if (pageindex == 0) {
@@ -415,7 +416,7 @@ Page({
 		    productType: options.productType,
       })
     }
-    if (pageindex == 2) {
+    if (pageindex == 2 || pageindex == 7) {
 	    wx.setStorageSync('reasonRadio', options.reason); // 判断页面进入的是哪个类别
 	  	this.setData({
 			  reason: options.reason, // 出库原因  报废：商品破损、商品过期、商品变质； 退货：临期、过期、在库退货、质量问题；
@@ -532,7 +533,7 @@ Page({
 	    }
     }
     // 出库缓存数据操作
-    if (pageindex == 2) {
+    if (pageindex == 2 || pageindex == 7) {
 	       tempArray1 = this.filterData(searchOutboundCacheData, 3); // 搜索数据获取数据输入不为0的数据
 	    if (optionStorage == 2) {
 		    if (outboundCacheData.length >0) { // 有缓存数据 先读取缓存数据

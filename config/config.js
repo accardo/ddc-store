@@ -35,7 +35,8 @@ config.dict={
     '置换',
     '调拨',
     '库存查询',
-    '课程消耗'
+    '课程消耗',
+	  '退货',
   ],
   
   /* 导航 icon */
@@ -46,7 +47,8 @@ config.dict={
     '置换':'substitution.png',
     '调拨':'allocation.png',
     '库存查询':'stock-check.png',
-    '课程消耗':'consume.png'
+    '课程消耗':'consume.png',
+	  '退货':'return.png',
   },
 
   /* 订货订单状态 */

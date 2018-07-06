@@ -24,9 +24,9 @@ Component({
         console.log(newVal, 'newVal listOrder')
       }
     },
-	  purchasReceipt: { // 订货列表 显示 订货 purchas / 收货 receipt
-    	type: String,
-		  value: '',
+	  listType: { // 订货列表 显示 【 1 -> 订货 】、【 2 -> 收货 】、【 3 -> 申请退货 】、【 4 -> 退货 】
+    	type: Number,
+		  value: 0,
 	  }
   },
 

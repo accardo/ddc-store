@@ -9,14 +9,14 @@
     <button class="order-btn" bindtap="ordergoods" size="mini">{{btntext}}</button>
   </view>
   <view class="order-btn-box" wx:if="{{ pageindex == 2 }}">
-    <button class="order-btn"  bindtap="scrapSelect" size="mini">报废</button>
-    <button class="order-btn ml20" bindtap="returnGoods" size="mini">退货</button>
+    <button class="order-btn" bindtap="scrapSelect" size="mini">报废</button>
   </view>
   <view class="order-btn-box" wx:if="{{ pageindex == 7 }}">
     <button class="order-btn" size="mini">退货申请</button>
     <button class="order-btn ml20" size="mini">退货</button>
+    <button class="order-add" bindtap="returnGoods"></button>
   </view>
-  <list-order list="{{listData}}" purchas-receipt="{{ purchasReceipt }}"></list-order>
+  <list-order list="{{listData}}" list-type="{{ listType }}"></list-order>
   <view bindtap="dialogClose" class="show-bg {{isShow ? '' : 'close'}}"></view>
   <view class="show-box {{isShow ? '' : 'close'}}">
     <radio-group class="radio-group" bindchange="radioChange">

@@ -49,7 +49,7 @@ function limitClass(num) {
 			limitClass = null;
 			break;
 		case 7: // 7 退货
-			limitClass = null;
+			limitClass = '2,4,6';
 			break;
 	}
 	return limitClass;

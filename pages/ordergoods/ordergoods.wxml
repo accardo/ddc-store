@@ -7,7 +7,7 @@
       <text>搜索查询</text>
     </view>
   </view>
-  <view class="category-product {{ pageindex == 5 ? 'active' : '' || pageindex == 2 ? 'active1' : ''}}">
+  <view class="category-product {{ pageindex == 5 ? 'active' : '' || (pageindex == 2 || pageindex == 7) ? 'active1' : ''}}">
     <view class='category-nav'>
       <view wx:for="{{navlist}}"
             bindtap='selectNav'
@@ -35,5 +35,5 @@
     <button class='btn-cancel nobordr' bindtap='clearCache' size="mini">清空</button>
     <button bindtap='subInventory' class='btn-sub nobordr'>提交盘点</button>
   </view>
-  <view class='btn-review' bindtap='goNext' wx:if="{{pageindex == 2}}" >下一步</view> <!-- 2 出库 -->
+  <view class='btn-review' bindtap='goNext' wx:if="{{pageindex == 2 || pageindex == 7}}" >下一步</view> <!-- 2 出库 -->
 </view>

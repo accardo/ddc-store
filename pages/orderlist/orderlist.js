@@ -17,7 +17,7 @@ Page({
     pagetListData: [], // 临时拼接数据需要合并到 lisData中
     pageindex: 0, // 缓存数据中取出 判断是哪个类型
     labelList:[], // 报废 退货 信息 前端字典
-	  purchasReceipt: 'purchas', // 默认显示订货列表 purchas 显示订货列表 ；receipt 显示收货列表
+	  listType: 1, // 1 -> 显示订货列表 ；2 -> 显示收货列表;  3 -> 显示申请退货列表 ； 4 -> 显示退货列表
     currPage: 1,
     pageSize: 10,
   },
@@ -25,34 +25,32 @@ Page({
   /* 商品详情 */
   ordergoods(){
     let pageindex = wx.getStorageSync('pageindex');
-    if (pageindex == 6) { // 课程消耗
-      wx.navigateTo({
-        url: '../../pages/expendtrim/expendtrim?&isupdate=true&isExpend=1'
-      })
-    } else if (pageindex == 3){ // 置换
+    if (pageindex == 0) {
+	    wx.navigateTo({ // 订货
+		    url: '../../pages/ordergoods/ordergoods?productType=goods'
+	    })
+	    wx.removeStorageSync('searchGoodsOrderCacheData');
+	    wx.removeStorageSync('resultsGoodsOrderCacheData');
+    } else if (pageindex == 1) {
+	    wx.navigateTo({ // 盘点
+		    url: '../../pages/ordergoods/ordergoods'
+	    })
+    } else if (pageindex == 3) {// 置换
 	    wx.removeStorageSync('setConverFrom');
 	    wx.removeStorageSync('setConverInto');
-      wx.navigateTo({
-        url: '../../pages/displacesgoods/displacesgoods'
-      })
+	    wx.navigateTo({
+		    url: '../../pages/displacesgoods/displacesgoods'
+	    })
     } else if (pageindex == 4) { // 调拨
-    	wx.removeStorageSync('transferCacheData');
-    	wx.removeStorageSync('searchTransferCacheData');
-      wx.navigateTo({
-        url: '../../pages/allocation/allocation'
-      })
-    }else{
-      if (pageindex == 0) {
-        wx.navigateTo({ // 订货
-          url: '../../pages/ordergoods/ordergoods?productType=goods'
-        })
-         wx.removeStorageSync('searchGoodsOrderCacheData');
-         wx.removeStorageSync('resultsGoodsOrderCacheData');
-      } else if (pageindex == 1) {
-	      wx.navigateTo({ // 盘点 出库操作 入库操作 库存查询
-		      url: '../../pages/ordergoods/ordergoods'
-	      })
-      }
+	    wx.removeStorageSync('transferCacheData');
+	    wx.removeStorageSync('searchTransferCacheData');
+	    wx.navigateTo({
+		    url: '../../pages/allocation/allocation'
+	    })
+    } else if (pageindex == 6) { // 课程消耗
+	    wx.navigateTo({
+		    url: '../../pages/expendtrim/expendtrim?&isupdate=true&isExpend=1'
+	    })
     }
 	  wx.removeStorageSync('optionStorage');
   },
@@ -63,7 +61,7 @@ Page({
 	 */
 	bindOrderPlace() {
 		this.setData({
-			purchasReceipt: 'purchas',
+			listType: 1,
 			listData: [],
 			pagetListData: [],
 			currPage: 1,
@@ -77,7 +75,7 @@ Page({
 	 */
 	bindOrdergoods() {
 		this.setData({
-			purchasReceipt: 'receipt',
+			listType: 2,
 			listData: [],
 			pagetListData: [],
 			currPage: 1,
@@ -385,9 +383,9 @@ Page({
    */
   onReachBottom: function () {
     if (this.data.pageindex == 0) {
-    	if (this.data.purchasReceipt == 'purchas') {
+    	if (this.data.listType == 1) {
 		    this.getOrderGoods();
-	    } else if(this.data.purchasReceipt == 'receipt') {
+	    } else if(this.data.listType == 2) {
 		    this.getReceipt();
 	    }
     } else if(this.data.pageindex == 1) {
@@ -400,6 +398,8 @@ Page({
     	this.getTransfers();
     } else if (this.data.pageindex == 6) {
     	this.getConsumption();
+    } else if (this.data.pageindex == 7) {
+    	// this.getAppReturn();
     }
   },
 

@@ -62,7 +62,7 @@
         </view>
           <!-- 盘点 end-->
           <!-- 出库操作 start-->
-        <view wx:if="{{pageindex == 2}}" class='goods-txt-box'>
+        <view wx:if="{{pageindex == 2 || pageindex == 7}}" class='goods-txt-box'>
             <view class='goods-txt'>
                 <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
                 <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
