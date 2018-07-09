@@ -12,8 +12,8 @@
     <button class="order-btn" bindtap="scrapSelect" size="mini">报废</button>
   </view>
   <view class="order-btn-box" wx:if="{{ pageindex == 7 }}">
-    <button class="order-btn" size="mini">退货申请</button>
-    <button class="order-btn ml20" size="mini">退货</button>
+    <button class="order-btn" bindtap="bindAppReturn" size="mini">退货申请</button>
+    <button class="order-btn ml20" bindtap="bindReturn" size="mini">退货</button>
     <button class="order-add" bindtap="returnGoods"></button>
   </view>
   <list-order list="{{listData}}" list-type="{{ listType }}"></list-order>

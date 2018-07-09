@@ -224,69 +224,77 @@
   <view class='list-item'
         wx:if="{{ pageindex == 7 && listType == 3}}"
         wx:key="index"
-        wx:for="{{list}}"
+        wx:for="{{[1,2,3,4]}}"
+        data-orderstatus="{{item.status}}"
+        data-orderid="{{item.id}}"
+        bindtap='detail'
+  >
+    <view class='list-title'>
+      <text class='label-txt'>出库单：</text>
+      <text class='label-order'>DDC 123456789123</text>
+      <text class='list-type'>未提交</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>出库类型：</text>
+      <text class='label-name'>退货</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>出库原因：</text>
+      <text class='label-name'>商品破损</text>
+    </view>
+    <view class='list-name'>
+      <text class='label-txt'>提交人：</text>
+      <text class='label-name'>wms</text>
+    </view>
+    <view class='list-time'>
+      <text class='label-time'>2018-07-18 20:00:00</text>
+    </view>
+  </view>
+  <!-- 退货申请 e-->
+  <!-- 退货 s-->
+  <view class='list-item'
+        wx:if="{{ pageindex == 7 && listType == 4}}"
+        wx:key="index"
+        wx:for="{{[1,2,3,4]}}"
         data-orderstatus="{{item.status}}"
         data-orderid="{{item.id}}"
         bindtap='detail'
   >
     <view class='list-title'>
       <text class='label-txt'>订货单：</text>
-      <text class='label-order'>{{item.purchaseSn}}</text>
-      <text class='list-type'>{{item.statusStr}}</text>
+      <text class='label-order'>DDC 123456789123</text>
+      <text class='list-type'>代发货</text>
     </view>
     <view class='list-name'>
-      <text class='label-txt'>提交人：</text>
-      <text class='label-name'>{{item.createName}}</text>
-    </view>
-    <view class='list-time'>
-      <text class='label-time'>{{item.createTime}}</text>
-    </view>
-  </view>
-  <!-- 退货申请 e-->
-  <!-- 退货 s-->
-  <view class='list-item'
-        wx:if="{{ pageindex == 0 && listType == 4}}"
-        wx:key="index"
-        wx:for="{{list}}"
-        data-orderstatus="{{item.status}}"
-        data-orderid="{{item.id}}"
-        bindtap='detail'
-  >
-    <view class='list-title'>
-      <text class='label-txt'>送货单：</text>
-      <text class='label-order'>{{item.freightSn}}</text>
-      <text class='list-type'>{{item.statusStr}}</text>
-    </view>
-    <view class='list-name'>
-      <text class='label-txt'>收货单：</text>
-      <text class='label-name'>{{item.receiptSn}}</text>
+      <text class='label-txt'>退货单：</text>
+      <text class='label-name'>DDC 987654321987</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>送货时间：</text>
-      <text class='label-name'>{{item.freightTime}}</text>
+      <text class='label-name'>2018-07-19</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>配送方式：</text>
-      <text class='label-name'>{{item.deliveryMethodStr}}</text>
+      <text class='label-name'>供应商</text>
     </view>
-    <view class='list-name list-row' wx:if="{{item.deliveryMethodStr == '供应商配送' || item.deliveryMethodStr == '物流配送'}}">
+    <view class='list-name list-row' wx:if="{{'供应商配送' == '供应商配送' || '物流配送' == '物流配送'}}">
       <view class="list-row-contact">
         <text class='label-txt'>联系人：</text>
-        <text class='label-name'>{{item.contacts}}</text>
+        <text class='label-name'>雨神龙泽</text>
       </view>
       <view class="list-row-contact">
         <text class='label-txt'>联系方式：</text>
-        <text class='label-name'>{{item.contactPhone}}</text>
+        <text class='label-name'>158465487987</text>
       </view>
     </view>
-    <view class='list-name list-row' wx:if="{{item.deliveryMethodStr == '快递'}}">
+    <view class='list-name list-row' wx:if="{{'快递' == '快递'}}">
       <view class="list-row-contact">
         <text class='label-txt'>快递公司：</text>
-        <text class='label-name'>{{item.expressCompany}}</text>
+        <text class='label-name'>顺丰</text>
       </view>
       <view class="list-row-contact">
         <text class='label-txt'>运单号：</text>
-        <text class='label-name'>{{item.waybillSn}}</text>
+        <text class='label-name'>ASDF123564564987</text>
       </view>
     </view>
   </view>

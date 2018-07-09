@@ -17,7 +17,7 @@ Page({
     pagetListData: [], // 临时拼接数据需要合并到 lisData中
     pageindex: 0, // 缓存数据中取出 判断是哪个类型
     labelList:[], // 报废 退货 信息 前端字典
-	  listType: 1, // 1 -> 显示订货列表 ；2 -> 显示收货列表;  3 -> 显示申请退货列表 ； 4 -> 显示退货列表
+	  listType: 0, // 1 -> 显示订货列表 ；2 -> 显示收货列表;  3 -> 显示申请退货列表 ； 4 -> 显示退货列表
     currPage: 1,
     pageSize: 10,
   },
@@ -81,6 +81,36 @@ Page({
 			currPage: 1,
 		})
 		this.getReceipt();
+	},
+	/*
+	 * Description: 申请退货 按钮
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/6
+	 */
+	bindAppReturn() {
+		this.setData({
+			listType: 3,
+			listData: [],
+			pagetListData: [],
+			currPage: 1,
+		})
+		this.getAppReturn();
+		console.log('申请退货');
+	},
+	/*
+	 * Description: 退货 按钮
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/6
+	 */
+	bindReturn() {
+		this.setData({
+			listType: 4,
+			listData: [],
+			pagetListData: [],
+			currPage: 1,
+		})
+		this.getReturn();
+		console.log('退货');
 	},
 	/**
 	 * Description: 统一处理 返回信息
@@ -246,7 +276,27 @@ Page({
 			wx.hideLoading();
 		})
 	},
-	/* 报废 按钮 */
+	/*
+	 * Description: 获取申请退货列表
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/6
+	 */
+	getAppReturn() {
+		// 申请退货
+	},
+	/*
+	 * Description: 获取退货列表
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/6
+	 */
+	getReturn() {
+		// 退货
+	},
+	/*
+	 * Description: 报废 按钮
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/6
+	 */
 	scrapSelect(){
 		this.setData({
 			isShow: true,
@@ -254,7 +304,11 @@ Page({
 			labelList: config.dict.outGoType[0]
 		})
 	},
-	/* 退货 按钮*/
+	/*
+	 * Description: 退货 按钮
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/6
+	 */
 	returnGoods(){
 		this.setData({
 			isShow: true,
@@ -304,6 +358,7 @@ Page({
 	   let pageindex = wx.getStorageSync('pageindex');
 	   switch(pageindex){
         case 0: // 订货
+	        this.data.listType = 1;
 	        this.getOrderGoods();
 	        // this.getReceipt();
           break;
@@ -326,8 +381,11 @@ Page({
           btntext = options.titlename;
          // this.getConsumption();
           break;
-		   case 7: // 退货
-			  // this.returnCargo();
+        case 7: // 退货
+	        this.setData({
+		        listType: 3
+	        })
+	        this.getAppReturn();
 			   break;
 	   }
 	   this.setData({
@@ -385,7 +443,7 @@ Page({
     if (this.data.pageindex == 0) {
     	if (this.data.listType == 1) {
 		    this.getOrderGoods();
-	    } else if(this.data.listType == 2) {
+	    } else if (this.data.listType == 2) {
 		    this.getReceipt();
 	    }
     } else if(this.data.pageindex == 1) {
@@ -399,7 +457,11 @@ Page({
     } else if (this.data.pageindex == 6) {
     	this.getConsumption();
     } else if (this.data.pageindex == 7) {
-    	// this.getAppReturn();
+    	if (this.data.listType == 3) {
+		    this.getAppReturn();
+	    } else if (this.data.listType == 4) {
+    		this.getReturn();
+	    }
     }
   },
 

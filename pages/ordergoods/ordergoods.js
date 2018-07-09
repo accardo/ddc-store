@@ -99,7 +99,7 @@ Page({
           item.attrValues = utils.attrValuesSplit(item);
           if (pageIndex == 0) { // 订货
 	          item.needNumber = 0;
-          } else if(pageIndex == 1 || pageIndex == 2) { // 盘点 出库
+          } else if(pageIndex == 1 || pageIndex == 2 || pageIndex == 7) { // 盘点 出库
           	item.unitValue = '';
           	item.materialUnitValue = '';
           }
@@ -179,7 +179,7 @@ Page({
 			  })
 			  return
 		  }
-	  } else if (this.data.pageindex == 2) {
+	  } else if (this.data.pageindex == 2 || this.data.pageindex == 7) {
 		  if (this.conclusion().length <= 0) {
 			  wx.showToast({
 				  title: '请选择商品',

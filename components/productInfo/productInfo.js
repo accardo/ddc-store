@@ -102,7 +102,7 @@ Component({
 			  } else {
 				  this.cacheStorageSpaceInfo(e.currentTarget.dataset.navclassindex);
 			  }
-		  }else if(this.data.pageindex == 2) {
+		  }else if(this.data.pageindex == 2 || this.data.pageindex == 7) {
 			  if (this.data.productList[e.currentTarget.dataset.index].item.deductionType == 1) {
 			  	// 判断输入商品数量不能大于当前库存，直接扣减
 			  	if (parseInt(e.detail.value) > parseInt(this.data.productList[e.currentTarget.dataset.index].item.unitValue)) {
@@ -158,7 +158,7 @@ Component({
 			  } else {
 				  this.cacheStorageSpaceInfo(e.currentTarget.dataset.navclassindex)
 			  }
-		  } else if (this.data.pageindex == 2) {
+		  } else if (this.data.pageindex == 2 || this.data.pageindex == 7) {
 
 			    // 拆零扣减
 				  // 拆零扣减 计算 当前总量 > 库存总量  清空输入框 提示 不能大于当前库存
@@ -213,7 +213,7 @@ Component({
 			  }
 			  this.data.inventoryCacheArray[navClassIndex] = tempInfoData;
 			  wx.setStorageSync('inventoryCacheData', this.data.inventoryCacheArray);
-		  } else if(this.data.pageindex == 2) {
+		  } else if(this.data.pageindex == 2 || this.data.pageindex == 7) {
 			  if (this.data.productConclusion == 1) {
 				  // this.setData({
 					 //  productList: tempInfoData

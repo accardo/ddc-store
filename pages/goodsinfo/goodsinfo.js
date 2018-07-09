@@ -390,7 +390,7 @@ Page({
 	      purchaseId: options.orderId ? options.orderId : null, // 订货单id
       })
     }
-    if (pageindex == 2) {
+    if (pageindex == 2 || pageindex == 7) {
 	  	this.setData({
 			  conclusion: options.conclusion ? options.conclusion : null, // 是否进入出库结果页面
 			  reason: options.reason ? options.reason : null, // 出库原因
