@@ -35,7 +35,7 @@
           <view class='goods-txt'>
                 <text class='goods-type' wx:if="{{configFl[item.shopItemSkuVO.item.itemType]}}">{{configFl[item.shopItemSkuVO.item.itemType]}}</text>
                 <text class='goods-name'>{{item.shopItemSkuVO.item.itemName}}</text>
-                <text>{{item.shopItemSkuVO.item.deductionType == 2 ? item.shopItemSkuVO.item.netWightValue + item.shopItemSkuVO.item.materialUnitName : '' }}</text>
+                <!--<text>{{item.shopItemSkuVO.item.deductionType == 2 ? item.shopItemSkuVO.item.netWightValue + item.shopItemSkuVO.item.materialUnitName : '' }}</text>-->
           </view>
           <view class='goods-label' wx:if="{{item.shopItemSkuVO.attrValues && item.shopItemSkuVO.attrValues.length>0}}">
               <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="ind" class='goods-label-txt'>{{item}}</text>
