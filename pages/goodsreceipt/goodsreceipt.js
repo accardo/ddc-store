@@ -16,8 +16,33 @@ Page({
     receiptList: [], // 订货列表初始化数据
 	  status: '', // 订货状态
 	  tempReceiptList: [], // 子组件返回父组件临时数据待提交用
-    purchaseId: '' // 订货单ID
+    purchaseId: '', // 订货单ID
+	  shipping: config.dict.shipping,
+	  shipName: '联系人',
+	  shipSn: '联系电话',
   },
+	/*
+	 * Description: 切换配送商
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/9
+	 */
+	radioChange(e) {
+		let val = e.detail.value;
+		console.log(e);
+		let shipName = '';
+		let shipSn = '';
+		if (val == '1') {
+			shipName = '联系人';
+			shipSn = '联系电话';
+		} else if(val == '2') {
+			shipName = '快递公司';
+			shipSn = '运单号';
+		}
+		this.setData({
+			shipName,
+			shipSn,
+		})
+	},
 	/**
 	 * Description: 子组件返回的订货数据
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -143,6 +168,7 @@ Page({
    */
   onLoad: function(options) {
 	  let pageindex = wx.getStorageSync('pageindex');
+	  let pagetitle = wx.getStorageSync('pagetitle');
 	  if (pageindex == 0) { // 0 订货页面
 		  this.setData({
 			  purchaseId: options.orderId, // 订货单id
@@ -150,8 +176,11 @@ Page({
 		  })
 		  this.getSreceipt();
 	  }
+	  this.setData({
+		  pageindex,
+	  })
     wx.setNavigationBarTitle({
-      title: '收货'
+      title: pagetitle
     })
   },
 

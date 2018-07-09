@@ -39,6 +39,7 @@
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 100;
 }
 .img-big image {
   width: 90%;
@@ -47,4 +48,17 @@
   transform: translateY(-50%);
   margin: 0 auto;
   display: block;
+}
+
+.btn-review >button{
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 32rpx;
+  border-radius: 0;
+  color: #fff;
+  margin: 0;
+  background-color: rgba(255,0,0,.7);
+}
+.btn-review-disable > button {
+  background-color: rgba(144, 144, 144, 1);
 }

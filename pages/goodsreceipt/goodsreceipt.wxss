@@ -1,15 +1,25 @@
 /* pages/goodsreceipt/goodsreceipt.wxss */
+@import '../../common/common';
 page,.goods-receipt{
   width: 100%;
   height: 100%;
   overflow: hidden;
+}
+.goods-receipt1 {
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
 }
 .scroll-box{
   height: 100%;
   box-sizing: border-box;
   padding-bottom: 80rpx;
 }
+.goods-receipt1 .scroll-box {
+  height: auto;
+}
 .btn-box{
+  background: #fff;
   position: fixed;
   bottom: 0;
   width: 100%;
@@ -20,14 +30,56 @@ page,.goods-receipt{
   left: 0;
   box-sizing: border-box;
   box-shadow: 1px -1px 2px #ccc;
+  z-index: 99;
 }
 .btn-box button{
   margin:0 10rpx;
   padding: 0 30rpx;
   font-size: 30rpx;
+  border-right: #999999 solid 1rpx;
+  border-radius: inherit;
 }
 .btn-box button:last-child{
   color: #fff;
   background-color: rgba(250,0,0,8);
   border: none;
+}
+.receipt-top {
+  font-size: 30rpx;
+  color:#666;
+}
+.receipt-top-1,.receipt-top-2 {
+  padding: 20rpx 30rpx;
+  border-bottom: #999 1rpx solid;
+}
+.receipt-top-1 > view,.receipt-top-2 > view {
+  margin-bottom: 10rpx;
+}
+.mask-content {
+  font-size: 32rpx;
+}
+radio{
+  transform: scale(0.8);
+}
+.radio-temp {
+  padding: 35rpx 0 20rpx 0;
+}
+.radio-temp label {
+  padding: 0 15rpx;
+}
+
+.mask-content view {
+  display: flex;
+  display: -webkit-flex;
+  padding: 20rpx;
+}
+.mask-content view text {
+  width: 35%;
+  text-align: right;
+}
+.mask-content view input {
+  width: 60%;
+  border: #999999 solid 1rpx;
+  text-align: left;
+  text-indent: 10rpx;
 }

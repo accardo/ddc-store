@@ -33,7 +33,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": -1,
+			"current": 6,
 			"list": [
 				{
 					"id": -1,
@@ -73,9 +73,9 @@
 				},
 				{
 					"id": 6,
-					"name": "收货",
+					"name": "退货",
 					"pathName": "pages/goodsreceipt/goodsreceipt",
-					"query": ""
+					"query": "orderId=1&orderStatus=3&pageindex=7"
 				},
 				{
 					"id": -1,
@@ -111,6 +111,12 @@
 					"id": -1,
 					"name": "置换",
 					"pathName": "pages/displacesgoods/displacesgoods",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "退货",
+					"pathName": "pages/goodsreceipt/goodsreceipt",
 					"query": ""
 				}
 			]

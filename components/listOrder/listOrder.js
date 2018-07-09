@@ -103,6 +103,10 @@ Component({
           path = `?orderId=${orderId}&isupdate=${e.currentTarget.dataset.isupdate}`; //isupdate 判断是否需要修改操作
           pageName = 'expendtrim';
           break;
+	      case 7: // 退货
+		      path = `?orderId=${orderId}`;
+		      pageName = orderStatus == 1 ? 'goodsreceipt' : 'orderfrom'
+		      break;
       }
       wx.navigateTo({
         url: config.getPageUrl(true, pageName, path)

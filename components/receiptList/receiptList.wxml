@@ -96,5 +96,34 @@
           </view>
       </view>
         <!-- 调拨 end-->
+      <!-- 退货 start-->
+      <view class='goods-txt-box' wx:if="{{pageindex == 7 }}">
+        <view class='goods-txt'>
+          <text class='goods-type'>原料</text>
+          <text class='goods-name'>雨神龙泽</text>
+          <text>拆零扣减显示净含量</text>
+        </view>
+        <view class='goods-label' >
+          <text class='goods-label-txt'>大</text>
+          <text class='goods-label-txt'>中</text>
+          <text class='goods-label-txt'>小</text>
+        </view>
+        <view class="goods-num">
+          出库数量：<text>70袋</text>
+        </view>
+        <view class="goods-num">
+          实发数量：<text>70袋</text>
+        </view>
+        <view class='goods-num goods-inp'>
+          收货数量：<input data-index="index" bindinput="setNumber" type='number'value="0" placeholder="数量" />袋
+        </view>
+        <view class='goods-num' wx:if="false">
+          <text>出库数量：10个</text>
+          <view class='goods-num goods-inp'>出库数量：
+            <input data-index="index" bindinput="setNumber" type='number'value="0" placeholder="数量" />袋
+          </view>
+        </view>
+      </view>
+      <!-- 退货 end-->
     </view>
   </view>

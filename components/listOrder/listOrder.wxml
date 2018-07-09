@@ -225,8 +225,8 @@
         wx:if="{{ pageindex == 7 && listType == 3}}"
         wx:key="index"
         wx:for="{{[1,2,3,4]}}"
-        data-orderstatus="{{item.status}}"
-        data-orderid="{{item.id}}"
+        data-orderstatus="{{item.status || 0}}"
+        data-orderid="{{item.id || 1}}"
         bindtap='detail'
   >
     <view class='list-title'>
@@ -256,14 +256,14 @@
         wx:if="{{ pageindex == 7 && listType == 4}}"
         wx:key="index"
         wx:for="{{[1,2,3,4]}}"
-        data-orderstatus="{{item.status}}"
+        data-orderstatus="{{item.status || 1}}"
         data-orderid="{{item.id}}"
         bindtap='detail'
   >
     <view class='list-title'>
       <text class='label-txt'>订货单：</text>
       <text class='label-order'>DDC 123456789123</text>
-      <text class='list-type'>代发货</text>
+      <text class='list-type'>待发货</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>退货单：</text>

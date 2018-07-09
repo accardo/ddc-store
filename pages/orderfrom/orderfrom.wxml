@@ -1,6 +1,6 @@
 <!--pages/orderfrom/orderfrom.wxml-->
 <view class="order-from">
-  <view class='img-box' wx:if="{{pageindex == 2}}">
+  <view class='img-box' wx:if="{{pageindex == 2 || pageindex == 7}}">
     <view class='img-txt'>上传图片</view>
     <view class='img-list'>
       <image wx:for="{{ imgList }}" wx:key="index" src="{{item}}" data-index="{{index}}" bindtap="zoomImg"></image>
@@ -9,5 +9,8 @@
    <receipt-list receipt-arr="{{receiptList}}"  order-status="{{ status }}" page-type="{{pagetype}}"></receipt-list>
   <view wx:if="{{ imgIsShow }}" class="img-big" bindtap="imgClose">
     <image src="{{ imgBigUrl }}" mode="widthFix"></image>
+  </view>
+  <view class="btn-review" wx:if="{{pageindex == 7}}">
+    <button class="">保存</button>
   </view>
 </view>

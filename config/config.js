@@ -108,6 +108,12 @@ config.dict={
 		  { 'name': '质量问题', checked: false }
 	  ]
   ],
+
+	/* 发货方式*/
+	shipping: [
+		{name: '供应商自提', value: 1, checked: true},
+		{name: '快递', value: 2, checked: false},
+	]
 }
 
 module.exports = config;

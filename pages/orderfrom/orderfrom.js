@@ -160,7 +160,7 @@ Page({
 	    this.getPurchaseDetail();
     } else if(pageindex == 1) {
 	    this.getInventoryData();
-    } else if (pageindex == 2) {
+    } else if (pageindex == 2 || pageindex == 7) {
 	  	this.getoutboundData();
     } else if (pageindex == 4) {
 	    this.gettransferData();
