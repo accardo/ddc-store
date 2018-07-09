@@ -56,8 +56,8 @@ Component({
 		  return new Date(dateObj)
 	  },
     detail(e){
-	    let orderStatus = e.currentTarget.dataset.orderstatus; // orderStatus 订货单状态(1、待收货 2、部分收货 3、已收货 4、待派单)
-	    let orderId = e.currentTarget.dataset.orderid; // orderId 订货单id 和 盘点id 不同列表区分不同的id
+	    let orderStatus = e.currentTarget.dataset.orderstatus; // 订货单状态(old 1、待收货 2、部分收货 3、已收货 4、待派单；new 1、已提交 4、未提交)
+	    let orderId = e.currentTarget.dataset.orderid; // 订货单id 和 盘点id 不同列表区分不同的id
       let pageName;
       let path;
       let outShopId = e.currentTarget.dataset.outshopid;
@@ -75,7 +75,7 @@ Component({
           break;
         case 1: // 盘点
 	        path = `?orderId=${orderId}&orderStatus=${orderStatus}`; // orderStatus 盘点状态 1 已完成 2待审核 orderId 盘点id
-	        pageName = orderStatus == 1 ? 'orderfrom' : 'inventoryreview';
+	        pageName = 'orderfrom';
 	        if (getuserinfo.roleName == '店长') {
 		        path = `?orderId=${orderId}&orderStatus=${orderStatus}`; // orderStatus 盘点状态 1 已完成 2待审核 orderId 盘点id
 		        pageName = orderStatus == 1 ? 'orderfrom' : 'inventoryreview';
@@ -104,8 +104,8 @@ Component({
           pageName = 'expendtrim';
           break;
 	      case 7: // 退货
-		      path = `?orderId=${orderId}`;
-		      pageName = orderStatus == 1 ? 'goodsreceipt' : 'orderfrom'
+		      path = `?orderId=${orderId}&orderStatus=${orderStatus}`; // orderStatus 退货状态 1、已提交 4、未提交
+		      pageName = (this.data.listType == 3 && orderStatus == 1) ? 'orderfrom' : 'goodsreceipt';
 		      break;
       }
       wx.navigateTo({

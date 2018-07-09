@@ -282,7 +282,16 @@ Page({
 	 * Date: 2018/7/6
 	 */
 	getAppReturn() {
-		// 申请退货
+		wx.showLoading({ title: '加载中' });
+		sysService.returnlist({
+			url: 'list',
+			method: 'get',
+			data: this.getData()
+		}).then((res) => {
+			this.requestReturnInfo(res);
+		}).catch(() => {
+			wx.hideLoading();
+		})
 	},
 	/*
 	 * Description: 获取退货列表
@@ -358,7 +367,9 @@ Page({
 	   let pageindex = wx.getStorageSync('pageindex');
 	   switch(pageindex){
         case 0: // 订货
-	        this.data.listType = 1;
+	        this.setData({
+		        listType: 1
+	        })
 	        this.getOrderGoods();
 	        // this.getReceipt();
           break;

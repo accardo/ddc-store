@@ -18,7 +18,7 @@ Component({
           })
         }
 		    this.setData({
-			    receiptArr: [0,1,2]
+			    receiptArr: newVal
 		    })
 		    this.triggerEvent("bindReceiptData", this.data.receiptArr); // 返回父组件数据
       }

@@ -29,11 +29,11 @@
     <button size="mini" bindtap='completeReceipt'>收货完毕</button>
   </view>
 
-  <view  class='show-bg' bindtap="closeMask"></view>
-  <view  class='show-box'>
+  <view  class='show-bg' wx:if="{{isShow}}" bindtap="closeMask"></view>
+  <view  class='show-box' wx:if="{{isShow}}">
     <view class="mask-content">
       <radio-group class="radio-group radio-temp" bindchange="radioChange">
-        <label class="radio" wx:for="{{shipping}}">
+        <label class="radio" wx:for="{{shipping}}" wx:key="{{index}}">
           <radio value="{{item.value}}" checked="{{item.checked}}"/>{{item.name}}
         </label>
       </radio-group>
@@ -41,7 +41,7 @@
       <view><text>{{shipSn}}：</text><input type="text" value=""/></view>
     </view>
     <view class='btn-box'>
-      <button bindtap='confimNum' class='nobordr btn-def' size="mini" >取消</button>
+      <button bindtap='confimNum' class='nobordr btn-def' bindtap="closeMask" size="mini" >取消</button>
       <button bindtap='confimNum' class='nobordr btn-def' size="mini" >确认</button>
     </view>
   </view>

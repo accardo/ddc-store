@@ -224,30 +224,30 @@
   <view class='list-item'
         wx:if="{{ pageindex == 7 && listType == 3}}"
         wx:key="index"
-        wx:for="{{[1,2,3,4]}}"
-        data-orderstatus="{{item.status || 0}}"
-        data-orderid="{{item.id || 1}}"
+        wx:for="{{list}}"
+        data-orderstatus="{{item.status}}"
+        data-orderid="{{item.id}}"
         bindtap='detail'
   >
     <view class='list-title'>
       <text class='label-txt'>出库单：</text>
-      <text class='label-order'>DDC 123456789123</text>
-      <text class='list-type'>未提交</text>
+      <text class='label-order'>{{item.returnSn}}</text>
+      <text class='list-type'>{{item.statusStr}}</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>出库类型：</text>
-      <text class='label-name'>退货</text>
+      <text class='label-name'>{{item.typeStr}}</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>出库原因：</text>
-      <text class='label-name'>商品破损</text>
+      <text class='label-name'>{{item.reason}}</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>提交人：</text>
-      <text class='label-name'>wms</text>
+      <text class='label-name'>{{item.createName}}</text>
     </view>
     <view class='list-time'>
-      <text class='label-time'>2018-07-18 20:00:00</text>
+      <text class='label-time'>{{item.createTime}}</text>
     </view>
   </view>
   <!-- 退货申请 e-->

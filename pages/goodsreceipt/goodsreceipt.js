@@ -20,6 +20,7 @@ Page({
 	  shipping: config.dict.shipping,
 	  shipName: '联系人',
 	  shipSn: '联系电话',
+	  isShow: true,
   },
 	/*
 	 * Description: 切换配送商
@@ -28,7 +29,6 @@ Page({
 	 */
 	radioChange(e) {
 		let val = e.detail.value;
-		console.log(e);
 		let shipName = '';
 		let shipSn = '';
 		if (val == '1') {
@@ -41,6 +41,16 @@ Page({
 		this.setData({
 			shipName,
 			shipSn,
+		})
+	},
+	/**
+	 * Description: 关闭弹出层
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/6/29
+	 */
+	closeMask() {
+		this.setData({
+			isShow: false
 		})
 	},
 	/**
@@ -163,7 +173,34 @@ Page({
 			}
 		})
   },
-  /**
+	/*
+	 * Description: 申请退货页面数据
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/9
+	 */
+	getAppReturn() {
+		wx.showLoading({ title: '加载中' });
+		let promseData = {
+			returnId: this.data.purchaseId, // 订货单ID
+			shopId: app.selectIndex, // 店铺ID
+		}
+		sysService.returndetail({
+			url:'info',
+			method:'get',
+			data: promseData
+		}).then((res) => {
+			if (res.code == '0') {
+				wx.hideLoading();
+				this.setData({
+					receiptList: res.inventoryDetailVOList // 订货列表数据
+				})
+			} else if (res.code == 401) {
+				config.logOutAll();
+				return
+			}
+		})
+	},
+	/**
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
@@ -175,6 +212,13 @@ Page({
 			  status: options.orderStatus,
 		  })
 		  this.getSreceipt();
+	  }
+	  if (pageindex == 7) { // 7 申请退货页面
+		  this.setData({
+			  purchaseId: options.orderId, // 申请退货单id
+			  status: options.orderStatus,
+		  })
+		  this.getAppReturn();
 	  }
 	  this.setData({
 		  pageindex,

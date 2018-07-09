@@ -120,6 +120,25 @@ Page({
 			this.requestReturnInfo(res, res.transferVO.transferDetailVOList);
 		})
 	},
+	/*
+	 * Description: 获取申请退货详情 info
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/9
+	 */
+	getAppReturn() {
+		wx.showLoading({ title: '加载中' });
+		let promseData = {
+			returnId: this.data.purchaseId,
+			shopId: app.selectIndex,
+		}
+		sysService.returndetail({
+			url:'info',
+			method:'get',
+			data: promseData
+		}).then((res) => {
+			this.requestReturnInfo(res, res.inventoryDetailVOList);
+		})
+	},
 	/**
 	 * Description: 图片放大
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -160,10 +179,12 @@ Page({
 	    this.getPurchaseDetail();
     } else if(pageindex == 1) {
 	    this.getInventoryData();
-    } else if (pageindex == 2 || pageindex == 7) {
+    } else if (pageindex == 2) {
 	  	this.getoutboundData();
     } else if (pageindex == 4) {
 	    this.gettransferData();
+    } else if (pageindex == 7) {
+	  	this.getAppReturn();
     }
     wx.setNavigationBarTitle({
       title: pagetitle+'单'

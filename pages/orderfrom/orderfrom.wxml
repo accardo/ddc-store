@@ -10,7 +10,7 @@
   <view wx:if="{{ imgIsShow }}" class="img-big" bindtap="imgClose">
     <image src="{{ imgBigUrl }}" mode="widthFix"></image>
   </view>
-  <view class="btn-review" wx:if="{{pageindex == 7}}">
+  <view class="btn-review" wx:if="{{pageindex == 7 && status == 4}}">
     <button class="">保存</button>
   </view>
 </view>
