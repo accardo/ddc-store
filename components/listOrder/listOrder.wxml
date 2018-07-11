@@ -227,6 +227,8 @@
         wx:for="{{list}}"
         data-orderstatus="{{item.status}}"
         data-orderid="{{item.id}}"
+        data-orderseason="{{item.reason}}"
+        data-ordertype="{{item.type}}"
         bindtap='detail'
   >
     <view class='list-title'>

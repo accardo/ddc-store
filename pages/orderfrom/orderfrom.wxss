@@ -1,4 +1,5 @@
 /* pages/orderfrom/orderfrom.wxss */
+@import '../../common/common';
 .img-box{
   width: 100%;
   height: auto;
@@ -51,13 +52,18 @@
 }
 
 .btn-review >button{
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
   height: 80rpx;
   line-height: 80rpx;
   font-size: 32rpx;
   border-radius: 0;
   color: #fff;
   margin: 0;
-  background-color: rgba(255,0,0,.7);
+  background-color: rgba(255,0,0,0.7);
 }
 .btn-review-disable > button {
   background-color: rgba(144, 144, 144, 1);

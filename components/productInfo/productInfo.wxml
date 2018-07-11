@@ -85,7 +85,7 @@
                 <view class="number-box" wx:if="{{item.item.deductionType == 1}}">
                     <input type='number' bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
                 </view>
-                <view class="number-box" wx:if="{{item.item.deductionType == 2}}">
+                <view class="number-box" wx:if="{{item.item.deductionType == 2 && pageindex !== 7 }}">
                     <input type="number" bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
                     <input type='number' bindinput="setScattered2" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
                 </view>

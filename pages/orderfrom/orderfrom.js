@@ -1,5 +1,6 @@
 // pages/orderfrom/orderfrom.js
 const config = require('../../config/config.js');
+const utils = require('../../utils/util');
 const sysService = require('../../service/sys.service.js');
 const app = getApp();
 Page({
@@ -12,8 +13,10 @@ Page({
     pagetitle:'',
     status: 0, // 订货状态 或 盘点状态
 	  purchaseId: 0, // 订货单id 或 盘点id 出库id
+	  reason: '', // 破损原因
     imgList:[], // 图片显示
 	  receiptList: [], // 初始化数据
+	  tempReceiptList: [], // 子组件返回父组件临时数据待提交用
 	  pageindex: null, // 判断显示哪一个页面  订单、盘点、出库 等
 	  type: '', // 调拨 状态 1、调拨入库 2、调拨出库
 	  imgBigUrl: '', // 放大的图片
@@ -136,7 +139,7 @@ Page({
 			method:'get',
 			data: promseData
 		}).then((res) => {
-			this.requestReturnInfo(res, res.inventoryDetailVOList);
+			this.requestReturnInfo(res, res.returnDetailVOList, res.imageUrls);
 		})
 	},
 	/**
@@ -162,7 +165,73 @@ Page({
 			imgIsShow: false
 		})
 	},
-  /**
+	/**
+	 * Description: 子组件返回的订货数据
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/5/23
+	 */
+	_bindReceiptData(e) {
+		this.setData({
+			tempReceiptList: e.detail
+		})
+	},
+	/*
+	 * Description: 申请退货更新数据
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/10
+	 */
+	returnUpdate() {
+		let promdData = this.processData();
+		console.log(JSON.stringify(promdData))
+		sysService.returnlist({
+			url: 'save',
+			method: "post",
+			data: promdData
+		}).then((res) => {
+			if (res.code == 0) {
+				utils.showToast({title: '更新成功', page: 1, pages: getCurrentPages()});
+			} else if(res.code == 401) {
+				config.logOutAll();
+				return
+			} else {
+				wx.showToast({
+					title: res.msg,
+					icon: 'none'
+				})
+			}
+		})
+	},
+	/**
+	 * Description: 整理数据逻辑
+	 * Author: yanlichen <lichen.yan@daydaycook.com>
+	 * Date: 2018/7/2
+	 */
+	processData() {
+		let	ArrayDeepCopyData = utils.ArrayDeepCopy(this.data.tempReceiptList);  // 深层拷贝防止子组件数据联动
+		let returnDetailVOList = utils.attrValuesSkuToString(ArrayDeepCopyData); // array 转 string 提交数据
+		returnDetailVOList = returnDetailVOList.filter((item) => {
+			if (item.unitValue !== null && item.unitValue !== '') {
+				delete item.createTime;
+				delete item.purchaseId;
+				delete item.shopItemSkuVO.copyShopItemSkuId;
+				delete item.shopItemSkuVO.costPrice;
+				delete item.shopItemSkuVO.isExist;
+				delete item.shopItemSkuVO.isSale;
+				return item;
+			};
+		})
+		let promeData = {
+			id: this.data.purchaseId || null, // 订单id
+			shopId: app.selectIndex, // 店铺ID
+			status: 4, // 状态  4 未提交
+			type: this.data.type,
+			reason: this.data.reason,
+			imageUrls: this.data.imgList.toString(),
+			returnDetailVOList
+		}
+		return promeData;
+	},
+	/**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
@@ -173,6 +242,7 @@ Page({
 		  purchaseId: options.orderId || '', // 订货id 盘点id 订货id 盘点id 出库id 调拨单id 集于一身
 		  status: options.orderStatus || '', // 订货状态 或 盘点状态
 		  type: options.orderType || '',  // 调拨点状态 订货状态 盘点状态
+		  reason: options.orderReason || '', // 破损原因
 		  pageindex,
 	  })
     if (pageindex == 0) {

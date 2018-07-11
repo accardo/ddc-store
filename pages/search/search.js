@@ -54,7 +54,7 @@ Page({
 		      item.attrValues = utils.attrValuesSplit(item);
 		      if (pageIndex == 0) { // 订货
 			      item.needNumber = 0;
-		      } else if(pageIndex == 1 || pageIndex == 2) { // 盘点
+		      } else if(pageIndex == 1 || pageIndex == 2 || pageIndex == 7) { // 盘点
 			      item.unitValue = '';
 			      item.materialUnitValue = '';
 		      } else if (pageIndex == 3) { // 出库

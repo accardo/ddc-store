@@ -64,8 +64,8 @@ Component({
       let inShopId = e.currentTarget.dataset.inshopid;
       let orderType = e.currentTarget.dataset.ordertype;
       let outTransferId = e.currentTarget.dataset.outtransferid;
+      let orderReason = e.currentTarget.dataset.orderseason; // 破损原因
       let getuserinfo = wx.getStorageSync('getuserinfo');
-
       // 0 订货 - goodsreceipt - 待收货、部分收获路径名， orderfrom - 已收货路径名， goodsinfo - 待派单路径名
       switch (this.data.pageindex){
 	      case 0: // 订货 / 收货
@@ -104,8 +104,8 @@ Component({
           pageName = 'expendtrim';
           break;
 	      case 7: // 退货
-		      path = `?orderId=${orderId}&orderStatus=${orderStatus}`; // orderStatus 退货状态 1、已提交 4、未提交
-		      pageName = (this.data.listType == 3 && orderStatus == 1) ? 'orderfrom' : 'goodsreceipt';
+		      path = `?orderId=${orderId}&orderStatus=${orderStatus}&orderType=${orderType}&orderReason=${orderReason}`; // orderStatus 退货状态 1、已提交 4、未提交
+		      pageName = (this.data.listType == 3 && (orderStatus == 1 || orderStatus == 4)) ? 'orderfrom' : 'goodsreceipt';
 		      break;
       }
       wx.navigateTo({

@@ -63,7 +63,23 @@ Component({
 	   * Date: 2018/5/23
 	   */
 	  setNumber(e) {
-	  	this.data.receiptArr[e.currentTarget.dataset.index].deliveryCount = e.detail.value;
+
+	  	if(this.data.pageindex == 2) {
+			  this.data.receiptArr[e.currentTarget.dataset.index].deliveryCount = e.detail.value;
+		  } else if(this.data.pageindex == 7) {
+	  		if(this.data.receiptArr[e.currentTarget.dataset.index].shopItemSkuVO.item.unitValue < e.detail.value) {
+				  this.data.receiptArr[e.currentTarget.dataset.index].unitValue = '';
+				  this.setData({
+					  receiptArr: this.data.receiptArr
+				  })
+				  wx.showToast({
+					  title: '不能大于当前库存',
+					  icon:'none'
+				  })
+				  return
+			  }
+			  this.data.receiptArr[e.currentTarget.dataset.index].unitValue = e.detail.value;
+		  }
 		  this.triggerEvent("bindReceiptData", this.data.receiptArr); // 返回父组件数据
 	  },
   }

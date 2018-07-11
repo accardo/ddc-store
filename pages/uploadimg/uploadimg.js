@@ -18,7 +18,8 @@ Page({
   /* 提交信息 */
   subInfo(){
   	let promdData = this.processData();
-	  sysService.delivery({
+  	let pageindex = wx.getStorageSync('pageindex');
+  	pageindex != 7 ? sysService.delivery : sysService.returnlist({
 		  url: 'save',
 		  method: "post",
 		  data: promdData
@@ -110,6 +111,7 @@ Page({
 	 * Date: 2018/7/2
 	 */
 	processData() {
+		let pageindex = wx.getStorageSync('pageindex');
 		let outboundCacheData = wx.getStorageSync('outboundCacheData');
 		outboundCacheData = utils.cacheDataDeal(outboundCacheData);
 		let isComplete = outboundCacheData.map((item) => { // 提交数据整理
@@ -136,13 +138,14 @@ Page({
 			delete item.costPrice;
 			return item;
 		})
+		let voList = pageindex != 7 ? 'deliveryDetailVOList' : 'returnDetailVOList'
 		let promdData = {
 			id: null,
 			shopId: app.selectIndex, // 店铺ID
 			type: this.data.outboundType, // 出库类型
 			reason: this.data.reason, // 出库原因
 			imageUrls: this.data.imgList.toString(),
-			deliveryDetailVOList: isComplete
+			[voList]: isComplete
 		}
 		return promdData
 	},

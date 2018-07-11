@@ -166,6 +166,7 @@ Page({
     })
 	  wx.removeStorageSync('searchGoodsOrderCacheData');
 	  wx.removeStorageSync('searchInventoryCacheData');
+	  wx.removeStorageSync('searchOutboundCacheData');
 	  wx.setStorageSync('optionStorage', 2) // 用于判断进入不同页面 在返回获取数据 1是进入订单总结页面，2是进入搜索查询页面
   },
 
