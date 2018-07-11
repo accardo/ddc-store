@@ -95,7 +95,6 @@ Page({
 			currPage: 1,
 		})
 		this.getAppReturn();
-		console.log('申请退货');
 	},
 	/*
 	 * Description: 退货 按钮
@@ -110,7 +109,6 @@ Page({
 			currPage: 1,
 		})
 		this.getReturn();
-		console.log('退货');
 	},
 	/**
 	 * Description: 统一处理 返回信息
@@ -299,7 +297,16 @@ Page({
 	 * Date: 2018/7/6
 	 */
 	getReturn() {
-		// 退货
+		wx.showLoading({ title: '加载中' });
+		sysService.invoice({
+			url: 'list',
+			method: 'get',
+			data: this.getData()
+		}).then((res) => {
+			this.requestReturnInfo(res);
+		}).catch(() => {
+			wx.hideLoading();
+		})
 	},
 	/*
 	 * Description: 报废 按钮

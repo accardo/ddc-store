@@ -2,13 +2,13 @@
 <view class="goods-receipt1">
   <view class="receipt-top" wx:if="{{pageindex == 7}}">
     <view class="receipt-top-1">
-      <view>供应商：上海微食科技有限公司</view>
-      <view><text>联系人: XXX </text><text>联系电话:15840111111</text></view>
-      <view>通讯地址：xxxxxxxxxxxxxxxx</view>
+      <view>供应商：{{invoiceVO.supplier}}</view>
+      <view><text>联系人: {{invoiceVO.supplierContacts}} </text><text>联系电话：{{invoiceVO.supplierContactPhone}}</text></view>
+      <view>通讯地址：{{invoiceVO.address}}</view>
     </view>
     <view class="receipt-top-2">
-      <view>配送方式：供应商自提</view>
-      <view>发货时间：2018-09-06</view>
+      <view>配送方式：{{invoiceVO.deliveryMethodStr}}</view>
+      <view>发货时间：{{invoiceVO.invoiceTime}}</view>
     </view>
   </view>
   <view class='scroll-box'>

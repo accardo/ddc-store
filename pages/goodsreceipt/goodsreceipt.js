@@ -16,6 +16,7 @@ Page({
     receiptList: [], // 订货列表初始化数据
 	  status: '', // 订货状态
 	  tempReceiptList: [], // 子组件返回父组件临时数据待提交用
+	  invoiceVO: [], // 供应商数据
     purchaseId: '', // 订货单ID
 	  shipping: config.dict.shipping,
 	  shipName: '联系人',
@@ -106,9 +107,12 @@ Page({
 		  }
 	  })
   },
-
-  //全部收货
-  completeReceipt(){
+	/*
+	 * Description: 全部收货
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/11
+	 */
+	completeReceipt(){
 	  let	ArrayDeepCopyData = utils.ArrayDeepCopy(this.data.tempReceiptList);  // 深层拷贝防止子组件数据联动
 	  let purchaseDetailVOList = utils.attrValuesSkuToString(ArrayDeepCopyData); // 属性 数组转字符串
 
@@ -174,7 +178,7 @@ Page({
 		})
   },
 	/*
-	 * Description: 申请退货页面数据
+	 * Description: 申请退货页面详情数据
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
 	 * Date: 2018/7/9
 	 */
@@ -192,7 +196,35 @@ Page({
 			if (res.code == '0') {
 				wx.hideLoading();
 				this.setData({
-					receiptList: res.inventoryDetailVOList // 订货列表数据
+					receiptList: res.inventoryDetailVOList
+				})
+			} else if (res.code == 401) {
+				config.logOutAll();
+				return
+			}
+		})
+	},
+	/*
+	 * Description: 退货页面详情数据
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/11
+	 */
+	getReturn() {
+		wx.showLoading({ title: '加载中' });
+		let promseData = {
+			invoiceId: this.data.purchaseId, // 订货单ID
+			shopId: app.selectIndex, // 店铺ID
+		}
+		sysService.invoicedetail({
+			url:'info',
+			method:'get',
+			data: promseData
+		}).then((res) => {
+			if (res.code == '0') {
+				wx.hideLoading();
+				this.setData({
+					receiptList: res.invoiceVO.invoiceDetailVOList,
+					invoiceVO: res.invoiceVO
 				})
 			} else if (res.code == 401) {
 				config.logOutAll();
@@ -206,23 +238,22 @@ Page({
   onLoad: function(options) {
 	  let pageindex = wx.getStorageSync('pageindex');
 	  let pagetitle = wx.getStorageSync('pagetitle');
+		this.setData({
+			purchaseId: options.orderId, // 订货单id
+			status: options.orderStatus,
+			pageindex,
+		})
+		console.log(options)
 	  if (pageindex == 0) { // 0 订货页面
-		  this.setData({
-			  purchaseId: options.orderId, // 订货单id
-			  status: options.orderStatus,
-		  })
 		  this.getSreceipt();
 	  }
 	  if (pageindex == 7) { // 7 申请退货页面
-		  this.setData({
-			  purchaseId: options.orderId, // 申请退货单id
-			  status: options.orderStatus,
-		  })
-		  this.getAppReturn();
+	  	if (options.listType == 3) {
+			  this.getAppReturn();
+		  } else if (options.listType == 4) {
+	  		this.getReturn();
+		  }
 	  }
-	  this.setData({
-		  pageindex,
-	  })
     wx.setNavigationBarTitle({
       title: pagetitle
     })

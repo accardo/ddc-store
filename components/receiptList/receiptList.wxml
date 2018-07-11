@@ -106,6 +106,21 @@
         <view class='goods-label' wx:if="{{item.shopItemSkuVO.attrValues && item.shopItemSkuVO.attrValues.length>0}}">
           <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="ind" class='goods-label-txt'>{{item}}</text>
         </view>
+
+
+        <view class='goods-stock stock-num'>
+          退货数量:
+          <text>70袋</text>
+        </view>
+        <view class='goods-num' >
+          实发数量：
+          <text>-</text><!-- 实收数量默认为 - 当有收货是显示 -->
+        </view>
+        <view class='goods-num goods-inp'>
+          收货数量：<input data-index="{{index}}" bindinput="setNumber" type='number' value="{{item.unitValue}}" placeholder="数量" />{{ item.shopItemSkuVO.item.unitName }}
+        </view>
+
+
         <view class='goods-stock stock-num'>
           库存数量：
           <text>{{ item.shopItemSkuVO.item.unitValue }} {{ item.shopItemSkuVO.item.unitName }}</text>

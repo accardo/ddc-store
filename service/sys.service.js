@@ -71,6 +71,14 @@ function returnlist({ url, method, params, data }) {
 function returndetail({ url, method, params, data }) {
 	return baseService.service({ url: "sys/returndetail/" + url, method, params, data })
 }
+/* 退货列表接口*/
+function invoice({ url, method, params, data }) {
+	return baseService.service({ url: "sys/invoice/" + url, method, params, data })
+}
+/* 退货详情接口*/
+function invoicedetail({ url, method, params, data }) {
+	return baseService.service({ url: "sys/invoicedetail/" + url, method, params, data })
+}
 
 module.exports = {
   api,
@@ -91,4 +99,6 @@ module.exports = {
 	receipt,
 	returnlist,
 	returndetail,
+	invoice,
+	invoicedetail,
 }

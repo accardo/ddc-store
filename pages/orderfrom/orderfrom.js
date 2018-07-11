@@ -182,7 +182,6 @@ Page({
 	 */
 	returnUpdate() {
 		let promdData = this.processData();
-		console.log(JSON.stringify(promdData))
 		sysService.returnlist({
 			url: 'save',
 			method: "post",

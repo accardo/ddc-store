@@ -104,7 +104,7 @@ Component({
           pageName = 'expendtrim';
           break;
 	      case 7: // 退货
-		      path = `?orderId=${orderId}&orderStatus=${orderStatus}&orderType=${orderType}&orderReason=${orderReason}`; // orderStatus 退货状态 1、已提交 4、未提交
+		      path = `?orderId=${orderId}&orderStatus=${orderStatus}&orderType=${orderType}&orderReason=${orderReason}&listType=${this.data.listType}`; // orderStatus 退货状态 1、已提交 4、未提交
 		      pageName = (this.data.listType == 3 && (orderStatus == 1 || orderStatus == 4)) ? 'orderfrom' : 'goodsreceipt';
 		      break;
       }
