@@ -15,19 +15,19 @@
                   <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="ind" class='goods-label-txt'>{{item}}</text>
             </view>
             <view class='goods-num'>订货数量：<text>{{item.needNumber}}</text><text>{{item.shopItemSkuVO.item.unitName}}</text> </view>
-            <!--<view class='goods-num' wx:if="{{ orderStatus == 1 || orderStatus == 2}}">&lt;!&ndash; 订货 状态1 为待收货；状态2 为部分收货；状态3 为已收货  &ndash;&gt;
-                实收数量：{{item.finalNumber > '0' ? item.finalNumber + item.shopItemSkuVO.item.unitName : '-' }} &lt;!&ndash;实收数量默认为 - 当有收货是显示&ndash;&gt;
-            </view>-->
-            <!--<view class='goods-num goods-inp'> &lt;!&ndash; 1.1期： 1已提交 4未提交&ndash;&gt;
-                收货数量：<text wx:if="{{ orderStatus == 1}}">{{item.finalNumber}} {{item.shopItemSkuVO.item.unitName}}</text>
-              <view wx:if="{{ orderStatus == 4}}" style="display: flex; align-items: center">
+            <view class='goods-num' wx:if="{{ listType == 2 && (orderStatus == 1 || orderStatus == 2)}}"><!-- 订货 状态1 为待收货；状态2 为部分收货；状态3 为已收货  -->
+                实收数量：{{item.finalNumber > '0' ? item.finalNumber + item.shopItemSkuVO.item.unitName : '-' }} <!--实收数量默认为 - 当有收货是显示-->
+            </view>
+            <view class='goods-num goods-inp' wx:if="{{listType == 2}}"> <!-- 1.1期： 1已提交 4未提交-->
+                收货数量：<text wx:if="{{ listType == 2 && orderStatus == 3}}">{{item.finalNumber}} {{item.shopItemSkuVO.item.unitName}}</text>
+              <view wx:if="{{ listType == 2 && (orderStatus == 1 || orderStatus == 2)}}" style="display: flex; align-items: center">
                 <input data-index="{{index}}"
                        bindinput="setNumber"
                        type='number'
                        value="{{item.finalNumber}}"
                        placeholder="数量"
                 />{{item.shopItemSkuVO.item.unitName}}</view>
-            </view>-->
+            </view>
         </view>
         <!-- 订货 end-->
         <!--盘点 srtart-->
@@ -104,33 +104,29 @@
           <text>{{item.shopItemSkuVO.item.deductionType == 2 ? item.shopItemSkuVO.item.netWightValue + item.shopItemSkuVO.item.materialUnitName : '' }}</text>
         </view>
         <view class='goods-label' wx:if="{{item.shopItemSkuVO.attrValues && item.shopItemSkuVO.attrValues.length>0}}">
-          <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="ind" class='goods-label-txt'>{{item}}</text>
+          <text wx:for="{{item.shopItemSkuVO.attrValues}}" wx:key="index" class="goods-label-txt">{{item}}</text>
         </view>
-
-
-        <view class='goods-stock stock-num'>
-          退货数量:
-          <text>70袋</text>
-        </view>
-        <view class='goods-num' >
-          实发数量：
-          <text>-</text><!-- 实收数量默认为 - 当有收货是显示 -->
-        </view>
-        <view class='goods-num goods-inp'>
-          收货数量：<input data-index="{{index}}" bindinput="setNumber" type='number' value="{{item.unitValue}}" placeholder="数量" />{{ item.shopItemSkuVO.item.unitName }}
-        </view>
-
-
-        <view class='goods-stock stock-num'>
-          库存数量：
-          <text>{{ item.shopItemSkuVO.item.unitValue }} {{ item.shopItemSkuVO.item.unitName }}</text>
-        </view>
-        <view class='goods-stock stock-num' >
-          <view wx:if="{{orderStatus == 1}}">出库数量：{{ item.number }} {{ item.shopItemSkuVO.item.unitName }}</view>
-          <view class='goods-num goods-inp' wx:if="{{orderStatus == 4}}">
-            出库数量：<input data-index="{{index}}" bindinput="setNumber" type='number' value="{{item.unitValue}}" placeholder="数量" />{{ item.shopItemSkuVO.item.unitName }}
-          </view>
-        </view>
+         <view class='goods-stock stock-num' wx:if="{{listType == 4}}">
+         退货数量：
+         <text>{{item.shippingNumber}} {{ item.shopItemSkuVO.item.unitName }}</text>
+       </view>
+       <view class='goods-stock stock-num' wx:if="{{listType == 4 && orderStatus != 1}}">
+         实发数量：
+         <text>{{item.realityNumber}} {{ item.shopItemSkuVO.item.unitName }}</text><!-- 实收数量默认为 - 当有收货是显示 -->
+       </view>
+       <view class='goods-num goods-inp' wx:if="{{listType == 4 && orderStatus == 1}}">
+         收货数量：<input data-index="{{index}}" bindinput="setNumber" type='number' value="{{item.realityNumber}}" placeholder="数量" />{{ item.shopItemSkuVO.item.unitName }}
+       </view>
+       <view class='goods-stock stock-num' wx:if="{{listType == 3}}">
+         库存数量：
+         <text>{{ item.shopItemSkuVO.item.unitValue }} {{ item.shopItemSkuVO.item.unitName }}</text>
+       </view>
+       <view class='goods-stock stock-num' >
+         <view wx:if="{{listType == 3 && orderStatus == 1}}">出库数量：{{ item.number }} {{ item.shopItemSkuVO.item.unitName }}</view>
+         <view class='goods-num goods-inp' wx:if="{{listType == 3 && orderStatus == 4}}">
+           出库数量：<input data-index="{{index}}" bindinput="setNumber" type='number' value="{{item.unitValue}}" placeholder="数量" />{{ item.shopItemSkuVO.item.unitName }}
+         </view>
+       </view>
       </view>
       <!-- 退货 end-->
     </view>

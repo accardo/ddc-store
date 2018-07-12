@@ -71,8 +71,14 @@ Component({
 	      case 0: // 订货 / 收货
 	        path = `?orderId=${orderId}&update=1&orderStatus=${orderStatus}&goods=goodsdetail`; // goods 待派单 和 订货页面缓存区分
           // pageName = orderStatus ==1 || orderStatus == 2 ? 'goodsreceipt' : ( orderStatus == 3 ? 'orderfrom':'goodsinfo' )
-		      pageName = orderStatus == 1 ? 'orderfrom' : 'goodsinfo';
-          break;
+		      if (this.data.listType == 1) {
+		      	pageName = orderStatus == 1 ? 'orderfrom' : 'goodsinfo'
+		      } else if (this.data.listType == 2) {
+		      	pageName = orderStatus == 1 || orderStatus == 2 ? 'goodsreceipt' : 'orderfrom'
+		      }
+		      //pageName = this.data.listType == 2 && (orderStatus == 1 || orderStatus == 2) ? 'goodsreceipt' : (this.data.listType == 1 && orderStatus == 4 ? 'orderfrom' : 'goodsinfo')
+		      // pageName = this.data.listType == 1 && orderStatus == 1 ? 'orderfrom' : (this.data.listType == 2 ? 'goodsreceipt' : 'goodsinfo')
+		      break;
         case 1: // 盘点
 	        path = `?orderId=${orderId}&orderStatus=${orderStatus}`; // orderStatus 盘点状态 1 已完成 2待审核 orderId 盘点id
 	        pageName = 'orderfrom';

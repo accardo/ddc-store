@@ -25,8 +25,8 @@
     <button type='default' bindtap='partialReceipt' size="mini">部分收货</button>
     <button size="mini" bindtap='completeReceipt'>收货完毕</button>
   </view>
-  <view class='btn-box' wx:if="{{pageindex == 7 }}">
-    <button size="mini" bindtap='completeReceipt'>收货完毕</button>
+  <view class='btn-box' wx:if="{{pageindex == 7 && listType == 3 && status == 1}}">
+    <button size="mini" bindtap='completeDelivery'>发货完毕</button>
   </view>
 
   <view  class='show-bg' wx:if="{{isShow}}" bindtap="closeMask"></view>
@@ -37,11 +37,19 @@
           <radio value="{{item.value}}" checked="{{item.checked}}"/>{{item.name}}
         </label>
       </radio-group>
-      <view><text>{{shipName}}：</text><input type="text" value=""/></view>
-      <view><text>{{shipSn}}：</text><input type="text" value=""/></view>
+      <!--<view><text>{{shipName}}：</text><input type="text" bindinput="setShipName" value="{{shipNameValue}}"/></view>-->
+      <view>
+        <picker
+            bindchange="selectShop"
+            value="{{selectIndex}}"
+            range="{{courierCompany}}"
+        >
+        </picker>
+      </view>
+      <view><text>{{shipSn}}：</text><input type="text" bindinput="setShipSn" value="{{shipSnValue}}"/></view>
     </view>
     <view class='btn-box'>
-      <button bindtap='confimNum' class='nobordr btn-def' bindtap="closeMask" size="mini" >取消</button>
+      <button bindtap='closeMask' class='nobordr btn-def' bindtap="closeMask" size="mini" >取消</button>
       <button bindtap='confimNum' class='nobordr btn-def' size="mini" >确认</button>
     </view>
   </view>

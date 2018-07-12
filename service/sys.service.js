@@ -63,6 +63,10 @@ function coursebilldetail({ url, method, params, data }) {
 function receipt({ url, method, params, data }) {
 	return baseService.service({ url: "sys/receipt/" + url, method, params, data })
 }
+/* 收货详情列表接口*/
+function receiptdetail({ url, method, params, data }) {
+	return baseService.service({ url: "sys/receiptdetail/" + url, method, params, data })
+}
 /* 申请退货列表接口*/
 function returnlist({ url, method, params, data }) {
 	return baseService.service({ url: "sys/return/" + url, method, params, data })
@@ -97,6 +101,7 @@ module.exports = {
 	coursebill,
 	coursebilldetail,
 	receipt,
+	receiptdetail,
 	returnlist,
 	returndetail,
 	invoice,

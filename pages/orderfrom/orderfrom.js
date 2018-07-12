@@ -63,6 +63,25 @@ Page({
       this.requestReturnInfo(res, res.purchaseDetailVOList);
     })
   },
+	/*
+	 * Description: 获取收货详情商品列表 info
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/12
+	 */
+	getReceiptdetail() {
+		wx.showLoading({ title: '加载中' });
+		let promseData = {
+			receiptId: this.data.purchaseId,
+			shopId: app.selectIndex
+		}
+		sysService.receiptdetail({
+			url:'info',
+			method:'get',
+			data: promseData
+		}).then((res) => {
+			this.requestReturnInfo(res, res.receiptDetailVOList);
+		})
+	},
 	/**
 	 * Description: 获取盘点详情列表 info
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -237,6 +256,7 @@ Page({
     console.log(options, 'orderfrom'); // orderId 店铺id ，orderStatus 店铺状态 1、已完成， 2、待审核
     let pageindex = wx.getStorageSync('pageindex');
     let pagetitle = wx.getStorageSync('pagetitle');
+		let listType = getCurrentPages()[1].data.listType // 点击的是 申请退货 或 退货
 	  this.setData({
 		  purchaseId: options.orderId || '', // 订货id 盘点id 订货id 盘点id 出库id 调拨单id 集于一身
 		  status: options.orderStatus || '', // 订货状态 或 盘点状态
@@ -245,7 +265,11 @@ Page({
 		  pageindex,
 	  })
     if (pageindex == 0) {
-	    this.getPurchaseDetail();
+			if (listType == 1) {
+				this.getPurchaseDetail();
+			} else if(listType == 2) {
+				this.getReceiptdetail();
+			}
     } else if(pageindex == 1) {
 	    this.getInventoryData();
     } else if (pageindex == 2) {

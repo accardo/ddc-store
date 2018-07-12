@@ -1,5 +1,4 @@
 /* components/receiptList/receiptList.wxss */
-
 .goods-box{
   padding: 0 30rpx;
   box-sizing: border-box;
@@ -31,14 +30,6 @@
   font-size: 30rpx;
   color: #333;
 }
-.goods-type{
-  padding:0 12rpx;
-  margin-right: 5rpx;
-  border-radius: 10rpx;
-  font-size: 26rpx;
-  color: #fff;
-  background-color: rgba(255,0,0,1);
-}
 .goods-txt text:last-child{
   padding-left: 10rpx;
 }
@@ -50,14 +41,26 @@
 .goods-label{
   margin-top: 8rpx;
 }
-.goods-label text{
-  font-size: 28rpx;
-  color: rgba(255,0,0,1);
-  border: 1px solid rgba(255,0,0,1);
+.goods-label text.goods-label-txt{
+  display: inline-block;
+  color: #FF0000;
+  border: 1rpx solid rgba(255,0,0,1);
   background-color: #fff;
-  padding: 0 20rpx;
-  border-radius: 8rpx; 
+  border-radius: 8rpx;
   margin-right: 20rpx;
+  font-size: 28rpx;
+  padding: 0rpx 20rpx;
+}
+.goods-label text:last-child{
+  margin-right: 0;
+}
+.goods-type{
+  padding:0 12rpx;
+  margin-right: 5rpx;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  color: #fff;
+  background-color: rgba(255,0,0,1);
 }
 .goods-num{
   margin-top: 8rpx;
@@ -76,7 +79,4 @@
   text-align: center;
   border-radius: 8rpx;
   border: 1px solid #e6e6e6;
-}
-.goods-label text:last-child{
-  margin-right: 0;
 }
