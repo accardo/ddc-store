@@ -26,7 +26,7 @@ Page({
 	  shipSnValue: '',
 	  listType: 0,
 	  courierCompany: [],
-	  logisticsCompany: '请选择快递',
+	  logisticsCompa1ny: '请选择快递',
 	  indexId: 0,
 	  radioIsShow: 1, // 1 供应商自提 2快递 默认 1
   },
@@ -156,13 +156,12 @@ Page({
 			return
 		}
 		console.log(this.data.tempReceiptList, promeData)
-		return false
 		wx.showModal({
 			content: '是否确认部分收货!',
 			confirmColor: config.showModal.confirmColor,
 			success: function (res) {
 				if (res.confirm){
-					sysService.purchase({
+					sysService.receipt({
 						url: 'update',
 						method: "post",
 						data: promeData
@@ -192,6 +191,7 @@ Page({
 	  let	ArrayDeepCopyData = utils.ArrayDeepCopy(this.data.tempReceiptList);  // 深层拷贝防止子组件数据联动
 	  let receiptDetailVOList = utils.attrValuesSkuToString(ArrayDeepCopyData); // 属性 数组转字符串
 	  let isComplete = ArrayDeepCopyData.filter((item) => { // 过滤是否有 - 的商品，有如果判断收货数量是否填写，返回为[]责为全部收货
+		  item.goodsId = item.id;
 		  if (item.finalNumber == 0) {
 			  if (item.deliveryCount == '' || item.deliveryCount == null ) {
 				  return item;
@@ -209,7 +209,7 @@ Page({
 		  confirmColor: config.showModal.confirmColor,
 		  success: function (res) {
 			  if (res.confirm){
-				  sysService.purchase({
+				  sysService.receipt({
 					  url: 'update',
 					  method: "post",
 					  data: promeData

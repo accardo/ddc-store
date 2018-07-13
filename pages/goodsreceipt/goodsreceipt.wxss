@@ -44,6 +44,12 @@ page,.goods-receipt{
   background-color: rgba(250,0,0,8);
   border: none;
 }
+.btn-box1 button{
+  border: none;
+}
+.btn-box1 button:last-child {
+  border-radius: 8rpx;
+}
 .receipt-top {
   font-size: 30rpx;
   color:#666;

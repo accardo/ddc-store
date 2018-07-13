@@ -18,7 +18,7 @@
       <view class='bottom-price'>
         共<text>{{shopTotalN}}</text>个商品，<text>{{shopPieceN}}</text>件
       </view>
-      <button class='bottom-btn' bindtap='goNext' size="mini">下一步</button>
+      <button class='bottom-btn' bindtap='goNext' size="mini">编辑完成</button>
   </view>
   <view bindtap='nextGo' wx:if="{{pageindex == 2 || pageindex == 7}}" class='btn-review'>下一步</view>
 </view>
