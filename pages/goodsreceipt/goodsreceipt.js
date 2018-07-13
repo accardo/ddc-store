@@ -26,7 +26,9 @@ Page({
 	  shipSnValue: '',
 	  listType: 0,
 	  courierCompany: [],
-	  selectIndex: 0
+	  logisticsCompany: '请选择快递',
+	  indexId: 0,
+	  radioIsShow: 1, // 1 供应商自提 2快递 默认 1
   },
 	/*
 	 * Description: 切换配送商
@@ -40,10 +42,15 @@ Page({
 		this.data.invoiceVO.deliveryMethod = val;
 		if (val == '1') {
 			this.data.invoiceVO.deliveryMethodStr = '供应商自提';
+			this.data.invoiceVO.expressCompany = '';
+			this.data.invoiceVO.expressCompanyId = '';
+			this.data.invoiceVO.waybillSn = '';
 			shipName = '联系人';
 			shipSn = '联系电话';
 		} else if(val == '2') {
 			this.data.invoiceVO.deliveryMethodStr = '快递';
+			this.data.invoiceVO.contactsPhone = '';
+			this.data.invoiceVO.contacts = '';
 			shipName = '快递公司';
 			shipSn = '运单号';
 		}
@@ -51,7 +58,8 @@ Page({
 			shipName,
 			shipSn,
 			shipNameValue: '',
-			shipSnValue: ''
+			shipSnValue: '',
+			radioIsShow: val
 		})
 	},
 	/*
@@ -60,11 +68,7 @@ Page({
 	 * Date: 2018/7/12
 	 */
 	setShipName(e) {
-		if (this.data.invoiceVO.deliveryMethod == 1) {
-			this.data.invoiceVO.contacts = e.detail.value
-		} else if(this.data.invoiceVO.deliveryMethod == 2) {
-			this.data.invoiceVO.expressCompany = e.detail.value
-		}
+		this.data.invoiceVO.contacts = e.detail.value
 		this.setData({
 			shipNameValue: e.detail.value,
 		})
@@ -76,7 +80,7 @@ Page({
 	 */
 	setShipSn(e) {
 		if (this.data.invoiceVO.deliveryMethod == 1) {
-			this.data.invoiceVO.contactPhone = e.detail.value
+			this.data.invoiceVO.contactsPhone = e.detail.value
 		} else if(this.data.invoiceVO.deliveryMethod == 2) {
 			this.data.invoiceVO.waybillSn = e.detail.value
 		}
@@ -84,7 +88,20 @@ Page({
 			shipSnValue: e.detail.value,
 		})
 	},
-
+	/*
+	 * Description: 快递选择单号
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/13
+	 */
+	bindPickerChange(e) {
+		let _index = parseInt(e.detail.value);
+		this.data.invoiceVO.expressCompany = this.data.courierCompany[_index].logisticsCompany;
+		this.data.invoiceVO.expressCompanyId = this.data.courierCompany[_index].id;
+		this.setData({
+			logisticsCompany : this.data.courierCompany[_index].logisticsCompany,
+			indexId: _index
+		})
+	},
 	/**
 	 * Description: 关闭弹出层
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -112,9 +129,9 @@ Page({
 	 */
 	partialReceipt(){
 		let	ArrayDeepCopyData = utils.ArrayDeepCopy(this.data.tempReceiptList);  // 深层拷贝防止子组件数据联动
-
 		let receiptDetailVOList = utils.attrValuesSkuToString(ArrayDeepCopyData); // array 转 string 提交数据
 		receiptDetailVOList = receiptDetailVOList.filter((item) => {
+					item.goodsId = item.id;
 					if (item.deliveryCount !== null && item.deliveryCount !== '') {
 						delete item.createTime;
 						delete item.purchaseId;
@@ -131,25 +148,40 @@ Page({
 			status: 2, // 状态 (1、待收货 2、部分收货 3、已收货 4、待派单)
 			receiptDetailVOList
 		}
-		console.log(promeData)
-		return false;
-	  sysService.purchase({
-		  url: 'update',
-		  method: "post",
-		  data: promeData
-	  }).then((res) => {
-		  if (res.code == 0) {
-			  utils.showToast({title: '更新成功', page: 1, pages: getCurrentPages()});
-			  } else if (res.code == 401) {
-			  config.logOutAll();
-			  return
-		  } else {
-			  wx.showToast({
-				  title: res.msg,
-				  icon:'none'
-			  })
-		  }
-	  })
+		if (receiptDetailVOList.length == 0) {
+			wx.showToast({
+				title: '至少填写一项部分收货',
+				icon:'none'
+			})
+			return
+		}
+		console.log(this.data.tempReceiptList, promeData)
+		return false
+		wx.showModal({
+			content: '是否确认部分收货!',
+			confirmColor: config.showModal.confirmColor,
+			success: function (res) {
+				if (res.confirm){
+					sysService.purchase({
+						url: 'update',
+						method: "post",
+						data: promeData
+					}).then((res) => {
+						if (res.code == 0) {
+							utils.showToast({title: '更新成功', page: 1, pages: getCurrentPages()});
+						} else if (res.code == 401) {
+							config.logOutAll();
+							return
+						} else {
+							wx.showToast({
+								title: res.msg,
+								icon:'none'
+							})
+						}
+					})
+				}
+			}
+		});
   },
 	/*
 	 * Description: 全部收货
@@ -159,7 +191,6 @@ Page({
 	completeReceipt(){
 	  let	ArrayDeepCopyData = utils.ArrayDeepCopy(this.data.tempReceiptList);  // 深层拷贝防止子组件数据联动
 	  let receiptDetailVOList = utils.attrValuesSkuToString(ArrayDeepCopyData); // 属性 数组转字符串
-
 	  let isComplete = ArrayDeepCopyData.filter((item) => { // 过滤是否有 - 的商品，有如果判断收货数量是否填写，返回为[]责为全部收货
 		  if (item.finalNumber == 0) {
 			  if (item.deliveryCount == '' || item.deliveryCount == null ) {
@@ -270,7 +301,6 @@ Page({
 					receiptList: res.invoiceVO.invoiceDetailVOList,
 					invoiceVO: res.invoiceVO,
 					courierCompany: res.expressCompanys,
-					selectIndex: res.expressCompanys.id,
 				})
 			} else if (res.code == 401) {
 				config.logOutAll();
@@ -294,7 +324,20 @@ Page({
 	 * Date: 2018/7/12
 	 */
 	confimNum() {
-		if (this.data.shipNameValue != '' && this.data.shipSnValue != '') {
+		if (this.data.radioIsShow == 1 && (this.data.shipNameValue == '' || this.data.shipSnValue == '')) {
+			wx.showToast({
+				title: '供应商信息不能为空',
+				icon:'none'
+			})
+			return
+		}
+		if (this.data.radioIsShow == 2 && (this.data.logisticsCompany == '请选择快递' || this.data.shipSnValue == '')) {
+			wx.showToast({
+				title: '快递信息不能为空',
+				icon:'none'
+			})
+			return
+		}
 			this.data.tempReceiptList.forEach((item) => {
 				item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues != null ? item.shopItemSkuVO.attrValues.toString() : null
 			})
@@ -302,6 +345,7 @@ Page({
 				...{...this.data.invoiceVO},
 				invoiceDetailVOList: this.data.tempReceiptList
 			}
+			console.log(promeData)
 			sysService.invoice({
 					url: 'save',
 					method: "post",
@@ -314,12 +358,6 @@ Page({
 						return
 					}
 				})
-		} else {
-			wx.showToast({
-				title: '供应商或快递信息不能为空',
-				icon:'none'
-			})
-		}
 
 	},
 	/**

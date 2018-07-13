@@ -55,11 +55,12 @@ Page({
   openMedia() {
 	  wx.chooseImage({
 		  count: this.data.maxUpNum, // 默认 9
-		  sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+		  sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
 		  sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
 		  success: (res) => {
 			  let i = 0; // 第几个
 			  var length = res.tempFilePaths.length; //总共个数
+			  wx.showLoading({ title: '图片上传中...', mask: true });
 			  this.uploadDIY(res.tempFilePaths, i, length);
 		  }
 	  })
@@ -98,7 +99,8 @@ Page({
         complete: () => {
             i ++;
             if(i == length) {
-              return false
+            	wx.hideLoading();
+	            return false
             } else {
               this.uploadDIY(filePaths, i, length)
           }

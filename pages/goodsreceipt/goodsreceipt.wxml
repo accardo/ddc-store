@@ -7,8 +7,8 @@
       <view>通讯地址：{{invoiceVO.address}}</view>
     </view>
     <view class="receipt-top-2">
-      <view>配送方式：{{invoiceVO.deliveryMethodStr}}</view>
-      <view>发货时间：{{invoiceVO.invoiceTime}}</view>
+      <view>配送方式：{{invoiceVO.deliveryMethodStr || ''}}</view>
+      <view>发货时间：{{invoiceVO.invoiceTime || ''}}</view>
     </view>
   </view>
   <view class='scroll-box'>
@@ -25,7 +25,7 @@
     <button type='default' bindtap='partialReceipt' size="mini">部分收货</button>
     <button size="mini" bindtap='completeReceipt'>收货完毕</button>
   </view>
-  <view class='btn-box' wx:if="{{pageindex == 7 && listType == 3 && status == 1}}">
+  <view class='btn-box' wx:if="{{pageindex == 7 && listType == 4 && status == 1}}">
     <button size="mini" bindtap='completeDelivery'>发货完毕</button>
   </view>
 
@@ -37,13 +37,17 @@
           <radio value="{{item.value}}" checked="{{item.checked}}"/>{{item.name}}
         </label>
       </radio-group>
-      <!--<view><text>{{shipName}}：</text><input type="text" bindinput="setShipName" value="{{shipNameValue}}"/></view>-->
       <view>
+        <text>{{shipName}}：</text>
+        <input wx:if="{{radioIsShow == 1}}" type="text" bindinput="setShipName" value="{{shipNameValue}}"/>
         <picker
-            bindchange="selectShop"
-            value="{{selectIndex}}"
+            wx:if="{{radioIsShow == 2}}"
+            bindchange="bindPickerChange"
+            value="{{indexId}}"
             range="{{courierCompany}}"
+            range-key="logisticsCompany"
         >
+          <text>{{logisticsCompany}}</text>
         </picker>
       </view>
       <view><text>{{shipSn}}：</text><input type="text" bindinput="setShipSn" value="{{shipSnValue}}"/></view>

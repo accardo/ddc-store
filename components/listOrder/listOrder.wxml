@@ -277,7 +277,7 @@
     </view>
     <view class='list-name' wx:if="{{item.status !==1}}">
       <text class='label-txt'>配送方式：</text>
-      <text class='label-name'>{{item.deliveryMethodStr}}</text>
+      <text class='label-name'>{{item.deliveryMethodStr || ''}}</text>
     </view>
     <view class='list-name list-row' wx:if="{{item.deliveryMethodStr == '供应商配送' || item.deliveryMethodStr == '物流配送'}}">
       <view class="list-row-contact">
@@ -286,7 +286,7 @@
       </view>
       <view class="list-row-contact">
         <text class='label-txt'>联系方式：</text>
-        <text class='label-name'>{{item.contactPhone}}</text>
+        <text class='label-name'>{{item.contactsPhone}}</text>
       </view>
     </view>
     <view class='list-name list-row' wx:if="{{item.deliveryMethodStr == '快递'}}">

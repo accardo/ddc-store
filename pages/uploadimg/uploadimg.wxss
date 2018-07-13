@@ -63,3 +63,6 @@ page,.upload{
   height: 100%;
   border-radius: 10rpx;
 }
+.btn-review {
+  border-radius: inherit;
+}

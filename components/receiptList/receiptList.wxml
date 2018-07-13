@@ -24,7 +24,7 @@
                 <input data-index="{{index}}"
                        bindinput="setNumber"
                        type='number'
-                       value="{{item.finalNumber}}"
+                       value="{{item.deliveryCount}}"
                        placeholder="数量"
                 />{{item.shopItemSkuVO.item.unitName}}</view>
             </view>
