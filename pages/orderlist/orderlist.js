@@ -17,7 +17,7 @@ Page({
     pagetListData: [], // 临时拼接数据需要合并到 lisData中
     pageindex: 0, // 缓存数据中取出 判断是哪个类型
     labelList:[], // 报废 退货 信息 前端字典
-	  listType: 0, // 1 -> 显示订货列表 ；2 -> 显示收货列表;  3 -> 显示申请退货列表 ； 4 -> 显示退货列表
+	  listType: 1, // 1 -> 显示订货列表 ；2 -> 显示收货列表;  3 -> 显示申请退货列表 ； 4 -> 显示退货列表
     currPage: 1,
     pageSize: 10,
   },
@@ -372,13 +372,14 @@ Page({
   onLoad: function (options) {
 	   let btntext = ''; // 拼接按钮提示
 	   let pageindex = wx.getStorageSync('pageindex');
+	   console.log(options)
 	   switch(pageindex){
         case 0: // 订货
-	        this.setData({
-		        listType: 1
-	        })
-	        this.getOrderGoods();
-	        // this.getReceipt();
+	        if (this.data.listType == 1) {
+		        this.getOrderGoods();
+	        } else if (this.data.listType ==2){
+		        this.getReceipt();
+	        }
           break;
         case 1: // 盘点
           btntext = options.titlename || '盘点';
@@ -400,10 +401,16 @@ Page({
          // this.getConsumption();
           break;
         case 7: // 退货
-	        this.setData({
-		        listType: 3
-	        })
-	        this.getAppReturn();
+	        if (this.data.listType == 3) {
+		        this.getAppReturn();
+	        }else if(this.data.listType ==4) {
+	        	this.bindReturn();
+	        } else {
+	        	this.setData({
+			        listType: 3
+		        })
+		        this.getAppReturn();
+	        }
 			   break;
 	   }
 	   this.setData({
@@ -419,7 +426,6 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-
   },
 
   /**
