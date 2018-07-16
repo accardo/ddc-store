@@ -76,8 +76,8 @@ Page({
         url: `${baseService.apiPrefix}sys/oss/upload`,
         filePath: filePaths[i],
         name: 'file',
-        formData:{
-          'token': token
+        formData: {
+          token
         },
         success: (res) => {
           let resData = JSON.parse(res.data);
@@ -115,7 +115,7 @@ Page({
 	processData() {
 		let pageindex = wx.getStorageSync('pageindex');
 		let outboundCacheData = wx.getStorageSync('outboundCacheData');
-		outboundCacheData = utils.cacheDataDeal(outboundCacheData);
+				outboundCacheData = utils.cacheDataDeal(outboundCacheData);
 		let isComplete = outboundCacheData.map((item) => { // 提交数据整理
 			item.goodsId = item.id;
 			item.shopItemSkuVO = {

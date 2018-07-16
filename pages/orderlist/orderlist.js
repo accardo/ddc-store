@@ -55,30 +55,26 @@ Page({
 	  wx.removeStorageSync('optionStorage');
   },
 	/**
-	 * Description: 订货 1.1
+	 * Description: 订货
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/6/27
 	 */
 	bindOrderPlace() {
 		this.setData({
 			listType: 1,
-			listData: [],
-			pagetListData: [],
-			currPage: 1,
+			...this.orderPlaceGoods()
 		})
 		this.getOrderGoods();
 	},
 	/**
-	 * Description: 收货 1.1
+	 * Description: 收货
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/6/27
 	 */
 	bindOrdergoods() {
 		this.setData({
 			listType: 2,
-			listData: [],
-			pagetListData: [],
-			currPage: 1,
+			...this.orderPlaceGoods()
 		})
 		this.getReceipt();
 	},
@@ -90,9 +86,7 @@ Page({
 	bindAppReturn() {
 		this.setData({
 			listType: 3,
-			listData: [],
-			pagetListData: [],
-			currPage: 1,
+			...this.orderPlaceGoods()
 		})
 		this.getAppReturn();
 	},
@@ -104,11 +98,98 @@ Page({
 	bindReturn() {
 		this.setData({
 			listType: 4,
+			...this.orderPlaceGoods()
+		})
+		this.getReturn();
+	},
+	/*
+ * Description: 整合重复代码
+ * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+ * Date: 2018/7/16
+ */
+	orderPlaceGoods() {
+		return {
 			listData: [],
 			pagetListData: [],
 			currPage: 1,
+		}
+	},
+	/*
+ * Description: 报废 按钮
+ * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+ * Date: 2018/7/6
+ */
+	scrapSelect(){
+		this.setData({
+			outboundType: 1,
+			isShow: true,
+			labelList: config.dict.outGoType[0]
 		})
-		this.getReturn();
+	},
+	/*
+	 * Description: 退货 +号 按钮
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/6
+	 */
+	returnGoods(){
+		this.setData({
+			outboundType: 2,
+			isShow: true,
+			labelList: config.dict.outGoType[1]
+		})
+	},
+	/* 报废 或 退货  选中的值 radio */
+	radioChange(e){
+		this.setData({
+			selectRadio: e.detail.value
+		})
+	},
+	/* 确定 跳转到相对应的页面*/
+	confirmFun(){
+		if (this.data.selectRadio !== '') {
+			this.dialogClose();
+			let reasonRadio = wx.getStorageSync('reasonRadio'); // 判断页面进入的是哪个类别
+			if (reasonRadio != this.data.selectRadio) {
+				wx.removeStorageSync('outboundCacheData');
+			}
+			wx.removeStorageSync('optionStorage');
+			wx.removeStorageSync('searchOutboundCacheData');
+			wx.navigateTo({
+				url: `../../pages/ordergoods/ordergoods?reason=${this.data.selectRadio}&outboundType=${this.data.outboundType}`
+			})
+		} else {
+			wx.showToast({
+				title: '请选择类型',
+				icon: 'none'
+			})
+		}
+	},
+	/* 关闭 遮罩层 取消*/
+	dialogClose(){
+		this.setData({
+			isShow: false
+		})
+	},
+	/*
+ * Description: 统一处理请求
+ * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+ * Date: 2018/7/16
+ */
+	getGlobalInfo(interFace) {
+		wx.showLoading({ title: '加载中' });
+		sysService[interFace]({
+			url: 'list',
+			method: 'get',
+			data: {
+				currPage: this.data.currPage,
+				pageSize: this.data.pageSize,
+				shopId: app.selectIndex,
+			}
+		}).then((res) => {
+			this.requestReturnInfo(res);
+		}).catch(() => {
+			wx.hideLoading();
+		})
 	},
 	/**
 	 * Description: 统一处理 返回信息
@@ -143,34 +224,12 @@ Page({
 		}
 	},
 	/**
-	 * Description: 请求数据 整合
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/6/8
-	 */
-	getData() {
-		let getParm = {
-			currPage: this.data.currPage,
-			pageSize: this.data.pageSize,
-			shopId: app.selectIndex,
-		}
-		return getParm
-	},
-	/**
 	 * Description: 获取订货信息
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/5/31
 	 */
   getOrderGoods() {
-    wx.showLoading({ title: '加载中' });
-    sysService.purchase({
-      url: 'list',
-      method: 'get',
-      data: this.getData()
-    }).then((res) => {
-    	this.requestReturnInfo(res);
-    }).catch(() => {
-    	wx.hideLoading();
-    })
+		this.getGlobalInfo('purchase');
   },
 	/*
 	 * Description: 获取收货信息
@@ -178,16 +237,7 @@ Page({
 	 * Date: 2018/7/5
 	 */
 	getReceipt() {
-		wx.showLoading({ title: '加载中' });
-		sysService.receipt({
-			url: 'list',
-			method: 'get',
-			data: this.getData()
-		}).then((res) => {
-			this.requestReturnInfo(res);
-		}).catch(() => {
-			wx.hideLoading();
-		})
+		this.getGlobalInfo('receipt');
 	},
 	/**
 	 * Description: 获取盘点信息
@@ -195,16 +245,7 @@ Page({
 	 * Date: 2018/5/25
 	 */
   getInventory() {
-		wx.showLoading({ title: '加载中' });
-		sysService.inventory({
-			url: 'list',
-			method: 'get',
-			data: this.getData()
-		}).then((res) => {
-			this.requestReturnInfo(res);
-		}).catch(() => {
-			wx.hideLoading();
-		})
+		this.getGlobalInfo('inventory');
   },
 	/**
 	 * Description: 获取出库信息
@@ -212,16 +253,7 @@ Page({
 	 * Date: 2018/5/31
 	 */
 	getOutbound() {
-		wx.showLoading({ title: '加载中' });
-		sysService.delivery({
-			url: 'list',
-			method: 'get',
-			data: this.getData()
-		}).then((res) => {
-			this.requestReturnInfo(res);
-		}).catch(() => {
-			wx.hideLoading();
-		})
+		this.getGlobalInfo('delivery');
 	},
 	/**
 	 * Description: 获取置换信息
@@ -229,16 +261,7 @@ Page({
 	 * Date: 2018/6/4
 	 */
 	getSubstitution() {
-		wx.showLoading({ title: '加载中' });
-		sysService.displace({
-			url: 'list',
-			method: 'get',
-			data: this.getData()
-		}).then((res) => {
-			this.requestReturnInfo(res);
-		}).catch(() => {
-			wx.hideLoading();
-		})
+		this.getGlobalInfo('displace');
 	},
 	/**
 	 * Description: 获取调拨信息
@@ -246,16 +269,7 @@ Page({
 	 * Date: 2018/6/5
 	 */
 	getTransfers() {
-		wx.showLoading({ title: '加载中' });
-		sysService.transfer({
-			url: 'list',
-			method: 'get',
-			data: this.getData()
-		}).then((res) => {
-			this.requestReturnInfo(res);
-		}).catch(() => {
-			wx.hideLoading();
-		})
+		this.getGlobalInfo('transfer');
 	},
 	/**
 	 * Description: 获取课程消耗信息
@@ -263,16 +277,7 @@ Page({
 	 * Date: 2018/6/6
 	 */
 	getConsumption() {
-		wx.showLoading({ title: '加载中' });
-		sysService.coursebill({
-			url: 'list',
-			method: 'get',
-			data: this.getData()
-		}).then((res) => {
-			this.requestReturnInfo(res);
-		}).catch(() => {
-			wx.hideLoading();
-		})
+		this.getGlobalInfo('coursebill');
 	},
 	/*
 	 * Description: 获取申请退货列表
@@ -280,16 +285,7 @@ Page({
 	 * Date: 2018/7/6
 	 */
 	getAppReturn() {
-		wx.showLoading({ title: '加载中' });
-		sysService.returnlist({
-			url: 'list',
-			method: 'get',
-			data: this.getData()
-		}).then((res) => {
-			this.requestReturnInfo(res);
-		}).catch(() => {
-			wx.hideLoading();
-		})
+		this.getGlobalInfo('returnlist');
 	},
 	/*
 	 * Description: 获取退货列表
@@ -297,99 +293,32 @@ Page({
 	 * Date: 2018/7/6
 	 */
 	getReturn() {
-		wx.showLoading({ title: '加载中' });
-		sysService.invoice({
-			url: 'list',
-			method: 'get',
-			data: this.getData()
-		}).then((res) => {
-			this.requestReturnInfo(res);
-		}).catch(() => {
-			wx.hideLoading();
-		})
+		this.getGlobalInfo('invoice');
 	},
-	/*
-	 * Description: 报废 按钮
-	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
-	 * Date: 2018/7/6
-	 */
-	scrapSelect(){
-		this.setData({
-			isShow: true,
-			outboundType: 1,
-			labelList: config.dict.outGoType[0]
-		})
-	},
-	/*
-	 * Description: 退货 按钮
-	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
-	 * Date: 2018/7/6
-	 */
-	returnGoods(){
-		this.setData({
-			isShow: true,
-			outboundType: 2,
-			labelList: config.dict.outGoType[1]
-		})
-	},
-	/* 报废 或 退货  选中的值 radio */
-	radioChange(e){
-		this.setData({
-			selectRadio: e.detail.value
-		})
-	},
-  /* 确定 跳转到相对应的页面*/
-  confirmFun(){
-    if (this.data.selectRadio !== '') {
-	    this.dialogClose();
-	    let reasonRadio = wx.getStorageSync('reasonRadio'); // 判断页面进入的是哪个类别
-	    if (reasonRadio != this.data.selectRadio) {
-		    wx.removeStorageSync('outboundCacheData');
-		    wx.removeStorageSync('searchOutboundCacheData');
-	    }
-	    wx.removeStorageSync('optionStorage');
-	    wx.removeStorageSync('searchOutboundCacheData');
-	    wx.navigateTo({
-		    url: `../../pages/ordergoods/ordergoods?reason=${this.data.selectRadio}&outboundType=${this.data.outboundType}`
-	    })
-    } else {
-	    wx.showToast({
-		    title: '请选择类型',
-		    icon: 'none'
-	    })
-    }
-  },
-	/* 关闭 遮罩层 取消*/
-  dialogClose(){
-    this.setData({
-      isShow: false
-    })
-  },
-
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
 	   let btntext = ''; // 拼接按钮提示
 	   let pageindex = wx.getStorageSync('pageindex');
-	   console.log(options)
+	   console.log(options);
 	   switch(pageindex){
         case 0: // 订货
-	        if (this.data.listType == 1) {
+	        if (this.data.listType == 1) { // 订货
 		        this.getOrderGoods();
-	        } else if (this.data.listType ==2){
+	        } else if (this.data.listType ==2){ // 收货
 		        this.getReceipt();
 	        }
           break;
         case 1: // 盘点
-          btntext = options.titlename || '盘点';
+          btntext = '盘点';
 	        this.getInventory();
           break;
         case 2: // 出库操作
 	        this.getOutbound();
           break;
         case 3: // 置换
-          btntext = options.titlename;
+          btntext = '置换';
 	        this.getSubstitution();
           break;
         case 4: // 调拨
@@ -397,13 +326,12 @@ Page({
           this.getTransfers();
           break;
         case 6: // 课程消耗
-          btntext = options.titlename;
-         // this.getConsumption();
+          btntext = '课程消耗';
           break;
         case 7: // 退货
-	        if (this.data.listType == 3) {
+	        if (this.data.listType == 3) { // 申请退货
 		        this.getAppReturn();
-	        }else if(this.data.listType ==4) {
+	        }else if(this.data.listType ==4) { // 退货
 	        	this.bindReturn();
 	        } else {
 	        	this.setData({
