@@ -16,7 +16,7 @@ Page({
 	  listData: [], // 总数据
     pagetListData: [], // 临时拼接数据需要合并到 lisData中
     pageindex: 0, // 缓存数据中取出 判断是哪个类型
-    labelList:[], // 报废 退货 信息 前端字典
+    labelList:[], // 报废 退货 前端字典
 	  listType: 1, // 1 -> 显示订货列表 ；2 -> 显示收货列表;  3 -> 显示申请退货列表 ； 4 -> 显示退货列表
     currPage: 1,
     pageSize: 10,

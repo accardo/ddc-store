@@ -17,9 +17,11 @@ Page({
 
   /* 提交信息 */
   subInfo(){
+
   	let promdData = this.processData();
   	let pageindex = wx.getStorageSync('pageindex');
-  	pageindex != 7 ? sysService.delivery : sysService.returnlist({
+  	let serviceUrl = pageindex != 7 ? 'delivery' : 'returnlist'
+  	sysService[serviceUrl]({
 		  url: 'save',
 		  method: "post",
 		  data: promdData

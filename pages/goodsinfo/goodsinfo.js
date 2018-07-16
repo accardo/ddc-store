@@ -308,8 +308,8 @@ Page({
 			setShop = utils.setTotalNumber(cacheData)
 		}
 		this.setData({
-			shopTotalN: setShop.total,
-			shopPieceN: setShop.shopPieceN
+			shopTotalN: setShop.total || 0,
+			shopPieceN: setShop.shopPieceN || 0
 		})
 	},
 	/**
@@ -397,7 +397,6 @@ Page({
 			  outboundType: options.outboundType ? options.outboundType : null // 1 报废 2 退货
 		  })
 	    this.outboundResultePage();
-	  	// this._watchChange();
     }
 	  if (options.goods == 'goodsdetail') {
 		  this.getShopListData();

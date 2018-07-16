@@ -13,5 +13,5 @@
         <image src="{{item}}"></image>
       </view>
   </view>
-  <button bindtap='subInfo'  class='btn-review'>完成</button>
+  <button bindtap='subInfo' class='btn-review'>完成</button>
 </view>
