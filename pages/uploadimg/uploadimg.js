@@ -17,7 +17,6 @@ Page({
 
   /* 提交信息 */
   subInfo(){
-
   	let promdData = this.processData();
   	let pageindex = wx.getStorageSync('pageindex');
   	let serviceUrl = pageindex != 7 ? 'delivery' : 'returnlist'

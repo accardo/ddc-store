@@ -97,15 +97,15 @@ config.dict={
   /* 出库类型 0 报废原因 1 退货原因 */
   outGoType:[
 	  [
-		  { 'name': '商品破损', checked:false},
-		  { 'name': '商品过期', checked: false },
-		  { 'name': '商品变质', checked: false }
+		  { name: '商品破损', checked:false},
+		  { name: '商品过期', checked: false },
+		  { name: '商品变质', checked: false }
 	  ],
 	  [
-		  { 'name': '临期', checked: false },
-		  { 'name': '过期', checked: false },
-		  { 'name': '在库退货', checked: false },
-		  { 'name': '质量问题', checked: false }
+		  { name: '临期', checked: false },
+		  { name: '过期', checked: false },
+		  { name: '在库退货', checked: false },
+		  { name: '质量问题', checked: false }
 	  ]
   ],
 

@@ -9,7 +9,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    pagetype:'orderfrom',
     pagetitle:'',
     status: 0, // 订货状态 或 盘点状态
 	  purchaseId: 0, // 订货单id 或 盘点id 出库id
@@ -119,7 +118,6 @@ Page({
 			data: promseData
 		}).then((res) => {
 			this.requestReturnInfo(res, res.deliveryDetailVOList, res.imageUrls);
-
 		})
 	},
 	/**
@@ -172,7 +170,6 @@ Page({
 			imgBigUrl: this.data.imgList[index],
 			imgIsShow: true
 		})
-		console.log(e, this.data.imgBigUrl);
 	},
 	/**
 	 * Description: 图片关闭
@@ -253,7 +250,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log(options, 'orderfrom'); // orderId 店铺id ，orderStatus 店铺状态 1、已完成， 2、待审核
     let pageindex = wx.getStorageSync('pageindex');
     let pagetitle = wx.getStorageSync('pagetitle');
 		let listType = getCurrentPages()[1].data.listType // 点击的是 申请退货 或 退货

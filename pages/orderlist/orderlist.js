@@ -29,6 +29,7 @@ Page({
 	    wx.navigateTo({ // 订货
 		    url: '../../pages/ordergoods/ordergoods?productType=goods'
 	    })
+	    this.data.listType = 1;
 	    wx.removeStorageSync('searchGoodsOrderCacheData');
 	    wx.removeStorageSync('resultsGoodsOrderCacheData');
     } else if (pageindex == 1) {
@@ -147,7 +148,6 @@ Page({
 	/* 确定 跳转到相对应的页面*/
 	confirmFun(){
 		if (this.data.selectRadio !== '') {
-			this.dialogClose();
 			let reasonRadio = wx.getStorageSync('reasonRadio'); // 判断页面进入的是哪个类别
 			if (reasonRadio != this.data.selectRadio) {
 				wx.removeStorageSync('outboundCacheData');
@@ -157,6 +157,8 @@ Page({
 			wx.navigateTo({
 				url: `../../pages/ordergoods/ordergoods?reason=${this.data.selectRadio}&outboundType=${this.data.outboundType}`
 			})
+			this.data.listType = 3;
+			this.dialogClose();
 		} else {
 			wx.showToast({
 				title: '请选择类型',
@@ -167,7 +169,8 @@ Page({
 	/* 关闭 遮罩层 取消*/
 	dialogClose(){
 		this.setData({
-			isShow: false
+			isShow: false,
+			selectRadio: ''
 		})
 	},
 	/*
@@ -211,7 +214,8 @@ Page({
 			this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
 			this.setData({
 				listData: this.data.pagetListData,
-				currPage: this.data.currPage + 1
+				currPage: this.data.currPage + 1,
+				listType: this.data.listType,
 			})
 		} else if (res.code == 401) {
 			config.logOutAll();

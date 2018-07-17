@@ -24,10 +24,6 @@ Component({
 		    this.triggerEvent("bindReceiptData", this.data.receiptArr); // 返回父组件数据
       }
     },
-    pageType:{
-      type: String,
-      value: ''
-    },
 	  orderStatus: { // 订货状态
       type: String,
       value: 0
@@ -39,7 +35,6 @@ Component({
    */
   data: {
     defImg: config.pageImgUrl+'logo.png',
-    pageType: '',
     // titlename:'',
 	  pageindex: 0,
 	  listType: 0,

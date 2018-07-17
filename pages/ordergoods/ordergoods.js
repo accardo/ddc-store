@@ -268,9 +268,9 @@ Page({
 	processData() {
 		//处理数据结构 start
 		let tempInventList = wx.getStorageSync('inventoryCacheData');
-		tempInventList = tempInventList ? tempInventList : this.data.productlist;
+				tempInventList = tempInventList ? tempInventList : this.data.productlist;
 		let inventoryDetailVOList = utils.ArrayDeepCopy(tempInventList);  // 数组深层拷贝
-		inventoryDetailVOList = utils.cacheDataDeal(inventoryDetailVOList); // 二维数组结构为一维数组进行 过滤
+				inventoryDetailVOList = utils.cacheDataDeal(inventoryDetailVOList); // 二维数组结构为一维数组进行 过滤
 		let isComplete = inventoryDetailVOList.filter((item) =>{ // 过滤 没有填写数据
 			if (item.unitValue !== '' || item.materialUnitValue !== '') { // 提交数据整理
 				item.goodsId = item.id;
@@ -328,7 +328,7 @@ Page({
 	    pagetListData: [],
 	    currPage: 1,
     })
-	  this.getProductByNav()
+	  this.getProductByNav();
   },
 	/**
 	 * Description: 过滤数据
@@ -402,8 +402,8 @@ Page({
 		 * Date: 2018/7/16
 		 */
 	dpctGlobalModule(a1, a2, a3) { //a1 -> 选中数据缓存 type []; a2 -> 搜索缓存 type [];; a3 -> 缓存的key type string;
-		let ty1 = []; // ty1-> 临时存放数组1；tempArray
-		let ty2 = []; // ty2-> 临时存放数组2; tempArray1
+		let ty1 = []; // ty1-> 临时存放数组1；
+		let ty2 = []; // ty2-> 临时存放数组2;
 		let os = wx.getStorageSync('optionStorage'); // 判断进入是哪个一个页面 1、订单结果页 2、搜索查询页
 		if (os == 2) {
 			ty2 = this.filterData(a2, 2); // 搜索数据获取数据输入不为0的数据
@@ -446,24 +446,18 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  	console.log(options)
     this.getMenuList();
+    console.log(options, 'ordergoods');
     let pageindex = wx.getStorageSync('pageindex');
-	  if (pageindex == 0) {
-	    this.setData({
-		    productType: options.productType,
-      })
-    }
-    if (pageindex == 2 || pageindex == 7) {
-	    wx.setStorageSync('reasonRadio', options.reason); // 判断页面进入的是哪个类别
-	  	this.setData({
-			  reason: options.reason, // 出库原因  报废：商品破损、商品过期、商品变质； 退货：临期、过期、在库退货、质量问题；
-			  outboundType: options.outboundType, // 出库类型 1、报废 2、退货
-		  })
-    }
     this.setData({
       pageindex,
+	    productType: options.productType || '',
+	    reason: options.reason || '', // 出库原因  报废：商品破损、商品过期、商品变质； 退货：临期、过期、在库退货、质量问题；
+	    outboundType: options.outboundType || 0, // 出库类型 1、报废 2、退货
     })
+		if (pageindex == 2 || pageindex == 7) {
+			wx.setStorageSync('reasonRadio', options.reason); // 判断页面进入的是哪个类别
+		}
     /* 根据页面标题 获取对应的数据源 */
     wx.setNavigationBarTitle({
       title: wx.getStorageSync('pagetitle')

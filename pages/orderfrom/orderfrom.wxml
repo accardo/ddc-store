@@ -10,7 +10,6 @@
      <receipt-list
          receipt-arr="{{receiptList}}"
          order-status="{{ status }}"
-         page-type="{{pagetype}}"
          bind:bindReceiptData="_bindReceiptData"
      ></receipt-list>
     <view wx:if="{{ imgIsShow }}" class="img-big" bindtap="imgClose">
