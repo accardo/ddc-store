@@ -95,54 +95,22 @@ Component({
 	   * Date: 2018/5/25
 	   */
 	  setScattered1(e) {
-		  this.data.productList[e.currentTarget.dataset.index].unitValue = e.detail.value;
+	  	let uIndex = e.currentTarget.dataset.index; // 当前选中索引号
+		  let navClassIndex = e.currentTarget.dataset.navclassindex;
+		  this.data.productList[uIndex].unitValue = e.detail.value;
 		  if (this.data.pageindex == 1) {
-		  	if (this.data.shopTypeSearch == 'search') {
-				  wx.setStorageSync('searchInventoryCacheData', this.data.productList); // 查询页面 设置盘点缓存
-			  } else {
-				  this.cacheStorageSpaceInfo(e.currentTarget.dataset.navclassindex);
-			  }
+			  this.setInventoryCache('searchInventoryCacheData', navClassIndex);
 		  }else if(this.data.pageindex == 2 || this.data.pageindex == 7) {
-			  if (this.data.productList[e.currentTarget.dataset.index].item.deductionType == 1) {
+			  if (this.data.productList[uIndex].item.deductionType == 1) {
 			  	// 判断输入商品数量不能大于当前库存，直接扣减
-			  	if (parseInt(e.detail.value) > parseInt(this.data.productList[e.currentTarget.dataset.index].item.unitValue)) {
-					  this.data.productList[e.currentTarget.dataset.index].unitValue = ''
-			  		this.setData({
-						  productList: this.data.productList
-					  })
-					  wx.showToast({
-						  title: '不能大于当前库存',
-						  icon: 'none'
-					  })
+			  	if (parseInt(e.detail.value) > parseInt(this.data.productList[uIndex].item.unitValue)) {
+					  this.data.productList[uIndex].unitValue = '';
+			  		this.setVerTosast();
 				  }
-			  } else if(this.data.productList[e.currentTarget.dataset.index].item.deductionType == 2) { // 拆零扣减
-			  	// 拆零扣减 计算 当前总量 > 库存总量  清空输入框 提示 不能大于当前库存
-				  // 库存总量 = 拆零扣减整数 * 净含量 + 拆零扣减拆零位
-				  // 当前总量 = 输入拆零扣减整数位 * 净含量 + 输入拆零扣减拆零位
-				  let itemUnitValue = this.data.productList[e.currentTarget.dataset.index].item.unitValue; // 拆零扣减 整数位
-				  let itemMaterialUnitValue = this.data.productList[e.currentTarget.dataset.index].item.materialUnitValue; // 拆零扣减 拆零位
-				  let netWightValue = this.data.productList[e.currentTarget.dataset.index].item.netWightValue; // 净含量
-				  let itemTotal = utils.add(utils.sub(itemUnitValue, netWightValue), itemMaterialUnitValue); // 库存总量
-
-				  let inputUnitValue = this.data.productList[e.currentTarget.dataset.index].unitValue; // 输入拆零扣减 整数位
-				  let inputMaterialUnitValue = this.data.productList[e.currentTarget.dataset.index].materialUnitValue; //输入拆零扣减 拆零位
-				  let total = utils.add(utils.sub(inputUnitValue, netWightValue), inputMaterialUnitValue); // 当前总量
-				  if (total > itemTotal) {
-					  this.data.productList[e.currentTarget.dataset.index].unitValue = '';
-					  this.setData({
-						  productList: this.data.productList
-					  })
-					  wx.showToast({
-						  title: '不能大于当前库存',
-						  icon: 'none'
-					  })
-				  }
+			  } else if(this.data.productList[uIndex].item.deductionType == 2) { // 拆零扣减
+			  	this.setVerification(uIndex, 1);
 			  }
-		  	if (this.data.shopTypeSearch == 'search') {
-				  wx.setStorageSync('searchOutboundCacheData', this.data.productList); // 查询页面 设置出库缓存
-			  } else {
-				  this.cacheStorageSpaceInfo(e.currentTarget.dataset.navclassindex)
-			  }
+			  this.setInventoryCache('searchOutboundCacheData', navClassIndex);
 		  }
     },
 	  /**
@@ -151,45 +119,68 @@ Component({
 	   * Date: 2018/5/25
 	   */
 	  setScattered2(e) {
-		  this.data.productList[e.currentTarget.dataset.index].materialUnitValue = e.detail.value;
+	  	let uIndex = e.currentTarget.dataset.index;
+		  let navClassIndex = e.currentTarget.dataset.navclassindex;
+		  this.data.productList[uIndex].materialUnitValue = e.detail.value;
 		  if (this.data.pageindex == 1) {
-			  if (this.data.shopTypeSearch == 'search') {
-				  wx.setStorageSync('searchInventoryCacheData', this.data.productList); // 查询页面 设置盘点缓存
-			  } else {
-				  this.cacheStorageSpaceInfo(e.currentTarget.dataset.navclassindex)
-			  }
+			  this.setInventoryCache('searchInventoryCacheData', navClassIndex);
 		  } else if (this.data.pageindex == 2 || this.data.pageindex == 7) {
-
-			    // 拆零扣减
-				  // 拆零扣减 计算 当前总量 > 库存总量  清空输入框 提示 不能大于当前库存
-				  // 库存总量 = 拆零扣减整数 * 净含量 + 拆零扣减拆零位
-				  // 当前总量 = 输入拆零扣减整数位 * 净含量 + 输入拆零扣减拆零位
-				  let itemUnitValue = this.data.productList[e.currentTarget.dataset.index].item.unitValue; // 拆零扣减 整数位
-				  let itemMaterialUnitValue = this.data.productList[e.currentTarget.dataset.index].item.materialUnitValue; // 拆零扣减 拆零位
-				  let netWightValue = this.data.productList[e.currentTarget.dataset.index].item.netWightValue; // 净含量
-				  let itemTotal = utils.add(utils.sub(itemUnitValue, netWightValue), itemMaterialUnitValue); // 库存总量
-
-				  let inputUnitValue = this.data.productList[e.currentTarget.dataset.index].unitValue; // 输入拆零扣减 整数位
-				  let inputMaterialUnitValue = this.data.productList[e.currentTarget.dataset.index].materialUnitValue; //输入拆零扣减 拆零位
-				  let total = utils.add(utils.sub(inputUnitValue, netWightValue), inputMaterialUnitValue); // 当前总量
-				  if (total > itemTotal) {
-					  this.data.productList[e.currentTarget.dataset.index].materialUnitValue = '';
-					  this.setData({
-						  productList: this.data.productList
-					  })
-					  wx.showToast({
-						  title: '不能大于当前库存',
-						  icon: 'none'
-					  })
-				  }
-
-			  if (this.data.shopTypeSearch == 'search') {
-				  wx.setStorageSync('searchOutboundCacheData', this.data.productList); // 查询页面 设置出库缓存
-			  } else {
-				  this.cacheStorageSpaceInfo(e.currentTarget.dataset.navclassindex)
-			  }
+			  this.setVerification(uIndex, 2);
+			  this.setInventoryCache('searchOutboundCacheData', navClassIndex);
 		  }
     },
+	  /*
+	   * Description: 查询缓存设置 公共整合
+	   * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	   * Date: 2018/7/18
+	   */
+	  setInventoryCache(cacheKey, navClassIndex) {
+		  if (this.data.shopTypeSearch == 'search') {
+			  wx.setStorageSync(cacheKey, this.data.productList); // 查询页面 设置盘点缓存
+		  } else {
+			  this.cacheStorageSpaceInfo(navClassIndex);
+		  }
+	  },
+	  /**
+		 * Description: 验证信息 拆零 整合
+		 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+		 * Date: 2018/7/18
+		 */
+	  setVerification(uIndex, uInput) {
+		  // 拆零扣减
+		  // 拆零扣减 计算 当前总量 > 库存总量  清空输入框 提示 不能大于当前库存
+		  // 库存总量 = 拆零扣减整数 * 净含量 + 拆零扣减拆零位
+		  // 当前总量 = 输入拆零扣减整数位 * 净含量 + 输入拆零扣减拆零位
+		  let itemUnitValue = this.data.productList[uIndex].item.unitValue; // 拆零扣减 整数位
+		  let itemMaterialUnitValue = this.data.productList[uIndex].item.materialUnitValue; // 拆零扣减 拆零位
+		  let netWightValue = this.data.productList[uIndex].item.netWightValue; // 净含量
+		  let itemTotal = utils.add(utils.sub(itemUnitValue, netWightValue), itemMaterialUnitValue); // 库存总量
+		  let inputUnitValue = this.data.productList[uIndex].unitValue; // 输入拆零扣减 整数位
+		  let inputMaterialUnitValue = this.data.productList[uIndex].materialUnitValue; //输入拆零扣减 拆零位
+		  let total = utils.add(utils.sub(inputUnitValue, netWightValue), inputMaterialUnitValue); // 当前总量
+		  if (total > itemTotal) {
+			  if (uInput == 1) {
+				  this.data.productList[uIndex].unitValue = '';
+			  } else if (uInput == 2) {
+				  this.data.productList[uIndex].materialUnitValue = '';
+			  }
+			  this.setVerTosast();
+		  }
+	  },
+	  /*
+	   * Description: 提示信息
+	   * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	   * Date: 2018/7/18
+	   */
+	  setVerTosast() {
+		  this.setData({
+			  productList: this.data.productList
+		  })
+		  wx.showToast({
+			  title: '不能大于当前库存',
+			  icon: 'none'
+		  })
+	  },
 	  /* 盘点部分 end*/
 	  /**
 	   * Description: 盘点存储所有缓存数据
@@ -197,39 +188,19 @@ Component({
 	   * Date: 2018/6/4
 	   */
 	  cacheStorageSpaceInfo(navClassIndex) {
-		  let tempInfoData = [];
-		  let getDatas = wx.getStorageSync('outboundCacheData');
+		  let getOutboundCacheData = wx.getStorageSync('outboundCacheData');
 		  let getInventoryCacheData = wx.getStorageSync('inventoryCacheData');
-		  let navlistLength = wx.getStorageSync('navlistLength');
-		  tempInfoData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
-			  return item.unitValue != '' || item.materialUnitValue != '';
-		  })
+		  let tempInfoData = this.setFilterData(1);
 		  if (this.data.pageindex == 1) {
-		  	console.log(navClassIndex, getInventoryCacheData, !getInventoryCacheData, '看问题')
-			  if (!getInventoryCacheData) {
-				  for (let i=0; i < navlistLength; i++) {
-					  this.data.inventoryCacheArray[i] = [];
-				  }
-			  }
-			  this.data.inventoryCacheArray[navClassIndex] = tempInfoData;
-			  wx.setStorageSync('inventoryCacheData', this.data.inventoryCacheArray);
+		  	// 缓存数据 , 盘点临时存放空数组， 读取盘点缓存数据， 过滤后的数据 , 分类索引号：用于创建第几空数组
+		  	this.setEmptyArray('inventoryCacheData', 'inventoryCacheArray', getInventoryCacheData, tempInfoData, navClassIndex);
 		  } else if(this.data.pageindex == 2 || this.data.pageindex == 7) {
 			  if (this.data.productConclusion == 1) {
-				  // this.setData({
-					 //  productList: tempInfoData
-				  // })
 				  tempInfoData = tempInfoData.filter((item) => {
 				  	return item.navClass == navClassIndex;
 				  })
 			  }
-
-			  if (!getDatas) {
-				  for (let i=0; i < navlistLength; i++) {
-					  this.data.outboundCacheArray[i] = [];
-				  }
-			  }
-			  this.data.outboundCacheArray[navClassIndex] = tempInfoData;
-			  wx.setStorageSync('outboundCacheData', this.data.outboundCacheArray);
+			  this.setEmptyArray('outboundCacheData', 'outboundCacheArray', getOutboundCacheData, tempInfoData, navClassIndex);
 		  }
 	  },
 	  /**
@@ -238,29 +209,17 @@ Component({
 	   * Date: 2018/6/2
 	   */
 	  cacheStorageSpace(navClassIndex) {
-		  let tempGoodsOrderData = [];
-		  let getDatas = wx.getStorageSync('cacheData');
-		  let navlistLength = wx.getStorageSync('navlistLength');
-		  tempGoodsOrderData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
-			  return item.needNumber != '' || item.needNumber != '0';
-		  })
-		  console.log(this.data.productConclusion, this.data.productList, tempGoodsOrderData,  '设置数据 用navclass');
-
+		  let getCacheData = wx.getStorageSync('cacheData');
+		  let tempInfoData = this.setFilterData(2);
 		  if (this.data.productConclusion == 1) { // 当是结果页面 返回 当前分类的数据 放入到对应的数据中
 			  this.setData({
-			   productList: tempGoodsOrderData
+			   productList: tempInfoData
 			  })
-		  	tempGoodsOrderData = tempGoodsOrderData.filter((item) => {
+		  	tempInfoData = tempInfoData.filter((item) => {
 				  return item.navClass == navClassIndex;
 			  })
 		  }
-		  if (!getDatas) {
-		  	for (let i=0; i < navlistLength; i++) {
-				  this.data.cacheArray[i] = [];
-			  }
-		  }
-		  this.data.cacheArray[navClassIndex] = tempGoodsOrderData;
-		  wx.setStorageSync('cacheData', this.data.cacheArray);
+		  this.setEmptyArray('cacheData', 'cacheArray', getCacheData, tempInfoData, navClassIndex);
 	  },
 	  /**
 	   * Description: 订单存储所有详情缓存数据 radio
@@ -268,11 +227,43 @@ Component({
 	   * Date: 2018/6/4
 	   */
 	  cacheStorageSpaceDetial() {
-		  let tempGoodsOrderData = [];
-		  tempGoodsOrderData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
-			  return item.needNumber != '' || item.needNumber != null;
+		  let tempInfoData = this.setFilterData(3);
+		  wx.setStorageSync('cacheDataDetial', tempInfoData);
+	  },
+	  /*
+	 * Description: 设置空数组 占位 有多少分类设置多少个空数组
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/18
+	 */
+	  setEmptyArray(cacheKey, tempArray, cacheData, filterData, navClassIndex) {
+		  let navlistLength = wx.getStorageSync('navlistLength');
+		  if (!cacheData) {
+			  for (let i=0; i < navlistLength; i++) {
+				  this.data[tempArray][i] = [];
+			  }
+		  }
+		  this.data[tempArray][navClassIndex] = filterData;
+		  wx.setStorageSync(cacheKey, this.data[tempArray]);
+	  },
+	  /*
+	   * Description: 过滤数据
+	   * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	   * Date: 2018/7/18
+	   */
+	  setFilterData(fNam) {
+		  let tempInfoData = [];
+		  tempInfoData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
+			  if (fNam == 1) {
+				  return item.unitValue != '' || item.materialUnitValue != '';
+			  } else if (fNam == 2) {
+				  return item.needNumber != '' || item.needNumber != '0';
+			  } else if (fNam == 3) {
+				  return item.needNumber != '' || item.needNumber != null;
+			  } else if (fNam == 4) {
+				  return item.outNumber != '' || item.outNumber != 0;
+			  }
 		  })
-		  wx.setStorageSync('cacheDataDetial', tempGoodsOrderData);
+		  return tempInfoData;
 	  },
     /**
      * Description: 加号
@@ -297,32 +288,18 @@ Component({
      * Date: 2018/5/27
      */
     setCurrentNum(e,isAddRed) {
-      // let current = this.getCurrent(e);
       let index = e.currentTarget.dataset.index;
-      if ( isAddRed) {// 加法
+      let navClassIndex = e.currentTarget.dataset.navclassindex
+      if (isAddRed) {// 加法
         if (this.data.productType == 'goods') { // 订货详情
           ++ this.data.productList[index].needNumber;
-           if(this.data.shopTypeSearch == 'search') {
-	           wx.setStorageSync('searchGoodsOrderCacheData', this.data.productList); // 搜索页面的缓存数据 需要处理
-           } else if (this.data.productStatus == 'goodsdetail') {
-	           this.cacheStorageSpaceDetial();
-           } else {
-	           this.cacheStorageSpace(e.currentTarget.dataset.navclassindex);
-           }
-
+	        this.setCurrentInput(navClassIndex)
         }
       } else { // 减法
         if (this.data.productType == 'goods') {
           if (this.data.productList[index].needNumber > 0) {
             -- this.data.productList[index].needNumber;
-	          if(this.data.shopTypeSearch == 'search') {
-		          wx.setStorageSync('searchGoodsOrderCacheData', this.data.productList); // 搜索页面的缓存数据 需要处理
-            } else if(this.data.productStatus == 'goodsdetail') {
-		          this.cacheStorageSpaceDetial();
-	          } else {
-		          this.cacheStorageSpace(e.currentTarget.dataset.navclassindex);
-	          }
-
+	          this.setCurrentInput(navClassIndex);
           }
         }
       }
@@ -335,18 +312,28 @@ Component({
 		    this.triggerEvent("watchChange", "click");
 	    }
     },
+	  /*
+	   * Description: 合并代码
+	   * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	   * Date: 2018/7/18
+	   */
+	  setCurrentInput(navClassIndex) {
+		  if(this.data.shopTypeSearch == 'search') {
+			  wx.setStorageSync('searchGoodsOrderCacheData', this.data.productList); // 搜索页面的缓存数据 需要处理
+		  } else if (this.data.productStatus == 'goodsdetail') {
+			  this.cacheStorageSpaceDetial();
+		  } else {
+			  this.cacheStorageSpace(navClassIndex);
+		  }
+	  },
 	  /**
 	   * Description: 调拨独立设置
 	   * Author: yanlichen <lichen.yan@daydaycook.com>
 	   * Date: 2018/6/6
 	   */
 	  transfercacheStorageSpace() {
-		  let tempGoodsOrderData = [];
-		  tempGoodsOrderData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
-			  return item.outNumber != '' || item.outNumber != 0;
-		  })
-		  console.log(this.data.productList, tempGoodsOrderData,  '设置数据 用navclass');
-		  this.data.transferCacheArray = tempGoodsOrderData
+		  let tempInfoData = this.setFilterData(4);
+		  this.data.transferCacheArray = tempInfoData
 		  wx.setStorageSync('transferCacheData', this.data.transferCacheArray);
 		  this.setData({
 			  productList: this.data.transferCacheArray
@@ -371,36 +358,34 @@ Component({
 	  },
 	  transferSetCurrentNum(e,isAddRed) {
 		  let index = e.currentTarget.dataset.index;
-	  	if (isAddRed ) { // 加
+	  	if (isAddRed) { // 加
 			  if (this.data.productList[index].outNumber >= this.data.productList[index].item.unitValue) {
-				  this.setData({
-					  productList: this.data.productList
-				  })
-				  wx.showToast({
-					  title: '不能大于当前库存',
-					  icon: 'none'
-				  })
+			  	this.setVerTosast();
 			  } else {
 				  ++ this.data.productList[index].outNumber;
 			  }
-	  		if (this.data.shopTypeSearch == 'search') {
-				  wx.setStorageSync('searchTransferCacheData', this.data.productList);
-			  } else {
-	  			this.transfercacheStorageSpace();
-			  }
+			  this.setTransfer();
 		  } else { // 减
 	  		if (this.data.productList[index].outNumber > 0) {
 				  -- this.data.productList[index].outNumber;
-				  if (this.data.shopTypeSearch == 'search') {
-					  wx.setStorageSync('searchTransferCacheData', this.data.productList);
-				  } else {
-					  this.transfercacheStorageSpace()
-				  }
+				  this.setTransfer();
 			  }
 		  }
 		  this.setData({
 			  productList: this.data.productList
 		  })
+	  },
+	  /*
+	   * Description: 代码整合
+	   * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	   * Date: 2018/7/18
+	   */
+	  setTransfer() {
+		  if (this.data.shopTypeSearch == 'search') {
+			  wx.setStorageSync('searchTransferCacheData', this.data.productList);
+		  } else {
+			  this.transfercacheStorageSpace();
+		  }
 	  },
 	  /**
 	   * Description: 设置调拨收货 输入数量
@@ -423,13 +408,7 @@ Component({
 		  // 判断输入商品数量不能大于当前库存，直接扣减
 		  if (parseInt(e.detail.value) > parseInt(this.data.productList[e.currentTarget.dataset.index].item.unitValue)) {
 			  this.data.productList[e.currentTarget.dataset.index].resultNumber = ''
-			  this.setData({
-				  productList: this.data.productList
-			  })
-			  wx.showToast({
-				  title: '不能大于当前库存',
-				  icon: 'none'
-			  })
+			  this.setVerTosast();
 		  }
       wx.setStorageSync('setConverFrom', this.data.productList);
     },

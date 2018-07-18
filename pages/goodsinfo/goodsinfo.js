@@ -68,7 +68,7 @@ Page({
 	 * Date: 2018/5/29
 	 */
 	shopListDataProcess(data) {
-		console.log(data);
+		console.log(data, '12345');
 		let shopTempArray = [];
 		data.forEach((item) => {
 			let shopTempObject = {};
@@ -383,18 +383,18 @@ Page({
 	  }
     if (pageindex == 0) {
       this.setData({
-	      update: options.update ? options.update :null,
-	      conclusion: options.conclusion ? options.conclusion : null, // 是否进入订货结果页面
-        productType: options.productType ? options.productType : null,
-	      status: options.orderStatus ? options.orderStatus : null,  // 订货单状态
-	      purchaseId: options.orderId ? options.orderId : null, // 订货单id
+	      update: options.update || null,
+	      conclusion: options.conclusion || null, // 是否进入订货结果页面
+        productType: options.productType || null,
+	      status: options.orderStatus || null,  // 订货单状态
+	      purchaseId: options.orderId || null, // 订货单id
       })
     }
     if (pageindex == 2 || pageindex == 7) {
 	  	this.setData({
-			  conclusion: options.conclusion ? options.conclusion : null, // 是否进入出库结果页面
-			  reason: options.reason ? options.reason : null, // 出库原因
-			  outboundType: options.outboundType ? options.outboundType : null // 1 报废 2 退货
+			  conclusion: options.conclusion || null, // 是否进入出库结果页面
+			  reason: options.reason || null, // 出库原因
+			  outboundType: options.outboundType || null // 1 报废 2 退货
 		  })
 	    this.outboundResultePage();
     }

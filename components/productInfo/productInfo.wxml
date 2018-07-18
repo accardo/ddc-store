@@ -39,7 +39,7 @@
             <view class='goods-txt'>
               <text class='goods-type'>{{shopType[item.item.itemType]}}</text>
               <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
-              <text>{{item.item.deductionType ==2 ? ( item.item.netWightValue +''+ item.item.materialUnitName):''}}</text>
+              <!--<text>{{item.item.deductionType ==2 ? ( item.item.netWightValue +''+ item.item.materialUnitName):''}}</text>-->
             </view>
             <view class='goods-label'
                   wx:if="{{item.attrValues && item.attrValues.length>0}}"
