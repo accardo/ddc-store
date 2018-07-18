@@ -66,7 +66,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log(options, '课程消耗');
     this.setData({
 	    courseBillId: options.orderId, // 课程消耗id
 	    isupdate: options.isupdate  // 判断是否显示可调整

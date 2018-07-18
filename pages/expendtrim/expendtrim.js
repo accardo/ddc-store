@@ -133,7 +133,6 @@ Page({
 		    })
 		   return false
 	  }
-		console.log(course.useCount, course.number, '数值计算')
 		if (this.data.name == 'useCount') {
 			if (parseInt(course.useCount) < parseInt(course.number)) {
 				wx.showToast({

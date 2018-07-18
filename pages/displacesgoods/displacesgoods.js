@@ -66,22 +66,55 @@ Page({
 	 * Date: 2018/6/5
 	 */
   subDisplace(){
-    let converFrom = wx.getStorageSync('setConverFrom'); // 要转换商品 数据
+  	let processData = this.processData();
+    let resultNumber = processData.promdData.displaceDetailVOList[0].resultNumber;
+    if (resultNumber != '' && resultNumber > 0) {
+	    sysService.displace({
+		    url: 'save',
+		    method: "post",
+		    data: processData.promdData
+	    }).then((res) => {
+		    if (res.code == 0) {
+			    utils.showToast({title: '置换成功', page: 1, pages: getCurrentPages()});
+		    } else if(res.code == 401) {
+			    config.logOutAll();
+			    return
+		    } else {
+			    wx.showToast({
+				    title: res.msg,
+				    icon: 'none'
+			    })
+		    }
+	    })
+    } else {
+	    wx.showToast({
+		    title: '请填写转化数量',
+		    icon: 'none'
+	    })
+    }
+  },
+	/*
+	 * Description: 数据整理
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/18
+	 */
+	processData() {
+		let converFrom = wx.getStorageSync('setConverFrom'); // 要转换商品 数据
 		let converInto = wx.getStorageSync('setConverInto'); // 转化为商品 数据
-    let isComplete = converFrom.map((item, index) => { // 提交数据整理
+		let isComplete = converFrom.map((item, index) => { // 提交数据整理
 			item.needShopItemSkuVO = {
 				attrValues: utils.attrValuesToString(item), // array 转 string 提交数据
 				id: item.id,
 				skuId: item.skuId,
 				item: item.item
 			}
-	    item.shopItemSkuVO = {
-		    attrValues: utils.attrValuesToString(converInto[index]), // array 转 string 提交数据
-		    id: converInto[index].id,
-		    skuId: converInto[index].skuId,
-		    item: converInto[index].item
-      }
-      item.id = null;
+			item.shopItemSkuVO = {
+				attrValues: utils.attrValuesToString(converInto[index]), // array 转 string 提交数据
+				id: converInto[index].id,
+				skuId: converInto[index].skuId,
+				item: converInto[index].item
+			}
+			item.id = null;
 			delete item.attrValues;
 			delete item.copyShopItemSkuId;
 			delete item.isExist;
@@ -104,33 +137,8 @@ Page({
 			shopId: app.selectIndex, // 店铺ID
 			displaceDetailVOList: isComplete
 		}
-    let resultNumber = promdData.displaceDetailVOList[0].resultNumber;
-    if (resultNumber != '' && resultNumber > 0) {
-	    sysService.displace({
-		    url: 'save',
-		    method: "post",
-		    data: promdData
-	    }).then((res) => {
-		    if (res.code == 0) {
-			    utils.showToast({title: '置换成功', page: 1, pages: getCurrentPages()});
-		    } else if(res.code == 401) {
-			    config.logOutAll();
-			    return
-		    } else {
-			    wx.showToast({
-				    title: res.msg,
-				    icon: 'none'
-			    })
-		    }
-	    })
-    } else {
-	    wx.showToast({
-		    title: '请填写转化数量',
-		    icon: 'none'
-	    })
-    }
-  },
-
+		return promdData;
+	},
   /**
    * 生命周期函数--监听页面加载
    */

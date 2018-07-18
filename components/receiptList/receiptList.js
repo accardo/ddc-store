@@ -42,10 +42,8 @@ Component({
   },
 	ready(){
     let pageindex = wx.getStorageSync('pageindex');
-    // let titlename ='';
     this.setData({
       pageindex,
-      // titlename
     })
   },
 
