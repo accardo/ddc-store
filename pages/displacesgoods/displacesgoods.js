@@ -67,12 +67,13 @@ Page({
 	 */
   subDisplace(){
   	let processData = this.processData();
-    let resultNumber = processData.promdData.displaceDetailVOList[0].resultNumber;
+		console.log(processData, '置换');
+    let resultNumber = processData.displaceDetailVOList[0].resultNumber;
     if (resultNumber != '' && resultNumber > 0) {
 	    sysService.displace({
 		    url: 'save',
 		    method: "post",
-		    data: processData.promdData
+		    data: processData
 	    }).then((res) => {
 		    if (res.code == 0) {
 			    utils.showToast({title: '置换成功', page: 1, pages: getCurrentPages()});

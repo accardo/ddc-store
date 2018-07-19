@@ -50,7 +50,7 @@
       <text class='label-txt'>配送方式：</text>
       <text class='label-name'>{{item.deliveryMethodStr}}</text>
     </view>
-    <view class='list-name list-row' wx:if="{{item.deliveryMethodStr == '供应商配送' || item.deliveryMethodStr == '物流配送'}}">
+    <view class='list-name list-row' wx:if="{{item.deliveryMethodStr == '供应商配送' || item.deliveryMethodStr == '物流'}}">
       <view class="list-row-contact">
         <text class='label-txt'>联系人：</text>
         <text class='label-name'>{{item.contacts}}</text>
@@ -271,32 +271,32 @@
       <text class='label-txt'>退货单：</text>
       <text class='label-name'>{{item.rtvReturnSn}}</text>
     </view>
-    <view class='list-name' wx:if="{{item.status !==1}}">
+    <view class='list-name'>
       <text class='label-txt'>送货时间：</text>
-      <text class='label-name'>{{item.invoiceTime}}</text>
+      <text class='label-name'>{{item.invoiceTime || ''}}</text>
     </view>
-    <view class='list-name' wx:if="{{item.status !==1}}">
+    <view class='list-name'>
       <text class='label-txt'>配送方式：</text>
       <text class='label-name'>{{item.deliveryMethodStr || ''}}</text>
     </view>
-    <view class='list-name list-row' wx:if="{{item.deliveryMethodStr == '供应商配送' || item.deliveryMethodStr == '物流配送'}}">
+    <view class='list-name list-row' wx:if="{{item.deliveryMethodStr == '供应商配送' || item.deliveryMethodStr == '物流'}}">
       <view class="list-row-contact">
         <text class='label-txt'>联系人：</text>
-        <text class='label-name'>{{item.contacts}}</text>
+        <text class='label-name'>{{item.contacts || ''}}</text>
       </view>
       <view class="list-row-contact">
         <text class='label-txt'>联系方式：</text>
-        <text class='label-name'>{{item.contactsPhone}}</text>
+        <text class='label-name'>{{item.contactsPhone || ''}}</text>
       </view>
     </view>
     <view class='list-name list-row' wx:if="{{item.deliveryMethodStr == '快递'}}">
       <view class="list-row-contact">
         <text class='label-txt'>快递公司：</text>
-        <text class='label-name'>{{item.expressCompany}}</text>
+        <text class='label-name'>{{item.expressCompany || ''}}</text>
       </view>
       <view class="list-row-contact">
         <text class='label-txt'>运单号：</text>
-        <text class='label-name'>{{item.waybillSn}}</text>
+        <text class='label-name'>{{item.waybillSn || ''}}</text>
       </view>
     </view>
   </view>

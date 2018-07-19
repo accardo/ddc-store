@@ -1,5 +1,4 @@
 const sysService = require('../../service/sys.service.js');
-const baseService = require('../../service/base.service.js');
 const utils = require('../../utils/util');
 const app = getApp();
 // pages/uploadimg/uploadimg.js
@@ -9,12 +8,18 @@ Page({
    * 页面的初始数据
    */
   data: {
-    maxUpNum: 5, // 上传最大的数量
     imgList: [],  // 图片存储
 	  reason: '', //  出库原因  报废：商品破损、商品过期、商品变质； 退货：临期、过期、在库退货、质量问题；
 	  outboundType: 0, // 出库类型 1 报废  2 退货
   },
-
+	/*
+	 * Description: 子组件返回的上传信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/19
+	 */
+	_bindUploadImg(e) {
+		this.data.imgList = e.detail
+	},
   /* 提交信息 */
   subInfo(){
   	let promdData = this.processData();
@@ -39,74 +44,6 @@ Page({
 			  })
 		  }
 	  })
-  },
-	/**
-	 * Description: 删除图片
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/6/22
-	 */
-	closeImg(e) {
-		let index = e.currentTarget.dataset.index;
-		this.data.imgList.splice(index, 1);
-		this.setData({
-			imgList: this.data.imgList
-		})
-	},
-  /* 图片上传 */
-  openMedia() {
-	  wx.chooseImage({
-		  count: this.data.maxUpNum, // 默认 9
-		  sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
-		  sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
-		  success: (res) => {
-			  let i = 0; // 第几个
-			  var length = res.tempFilePaths.length; //总共个数
-			  wx.showLoading({ title: '图片上传中...', mask: true });
-			  this.uploadDIY(res.tempFilePaths, i, length);
-		  }
-	  })
-  },
-	/**
-	 * Description: 多文件上传  递归方式。 小程序不支持多文件上传
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/6/1
-	 */
-	uploadDIY(filePaths,i,length) {
-		   let token = wx.getStorageSync('getusertoken');
-       wx.uploadFile({
-        url: `${baseService.apiPrefix}sys/oss/upload`,
-        filePath: filePaths[i],
-        name: 'file',
-        formData: {
-          token
-        },
-        success: (res) => {
-          let resData = JSON.parse(res.data);
-          if (resData.code == 0) {
-	          if (this.data.imgList.length >= 5 ) {
-		          wx.showToast({
-			          title: '最多上传5张照片',
-			          icon: 'none'
-		          })
-		          return
-	          } else {
-		          this.data.imgList.push(resData.url[0]);
-	          }
-	          this.setData({
-		          imgList: this.data.imgList
-            })
-          }
-        },
-        complete: () => {
-            i ++;
-            if(i == length) {
-            	wx.hideLoading();
-	            return false
-            } else {
-              this.uploadDIY(filePaths, i, length)
-          }
-         }
-		 })
   },
 	/**
 	 * Description: 整理数据逻辑

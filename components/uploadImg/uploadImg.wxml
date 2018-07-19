@@ -1,0 +1,14 @@
+<!--components/uploadImg/uploadImg.wxml-->
+<view class='img-list'>
+  <view class="img-sk" wx:for="{{imgList}}" wx:key="index" data-index="{{ index }}" catchtap="zoomImg">
+    <view class="img-close" data-index="{{ index }}" catchtap="closeImg" wx:if="{{orderStatus != 1}}">X</view>
+    <image src="{{item}}"></image>
+  </view>
+</view>
+<view class='upload-box' bindtap='openMedia' wx:if="{{orderStatus != 1}}">
+  <image  src='../../icons/camera1.png'></image>
+  <text>上传图片</text>
+</view>
+<view wx:if="{{ imgIsShow }}" class="img-big" bindtap="imgClose">
+  <image src="{{ imgBigUrl }}" mode="widthFix"></image>
+</view>

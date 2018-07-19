@@ -273,7 +273,7 @@ Page({
 	  if (outboundCacheData.length > 0) {
 			if (this.data.productlist.length == outboundCacheArray.length) {
 				wx.navigateTo({
-					url: `../../pages/uploadimg/uploadimg?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
+					url: `../../pages/upload/upload?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
 				})
 			} else {
 				wx.showModal({
@@ -282,7 +282,7 @@ Page({
 					success:(res) => {
 						if(res.confirm){
 							wx.navigateTo({
-								url: `../../pages/uploadimg/uploadimg?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
+								url: `../../pages/upload/upload?reason=${this.data.reason}&outboundType=${this.data.outboundType}`
 							})
 						}
 					}

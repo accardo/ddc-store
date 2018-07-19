@@ -1,0 +1,9 @@
+<!--pages/uploadimg/uploadimg.wxml-->
+<view class='upload'>
+    <view style="margin-top: -90rpx;">
+      <tip-info reason="{{reason}}"></tip-info>
+    </view>
+  <upload-img bind:bindUploadImg="_bindUploadImg">
+  </upload-img>
+  <button bindtap='subInfo' class='btn-review'>完成</button>
+</view>

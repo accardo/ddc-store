@@ -1,6 +1,6 @@
 {
   "usingComponents": {
-    "receipt-list": "../../components/receiptList/receiptList",
+    "tip-info": "../../components/tipInfo/tipInfo",
     "upload-img": "../../components/uploadImg/uploadImg"
   }
 }

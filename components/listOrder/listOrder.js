@@ -92,7 +92,7 @@ Component({
 	        }
           break;
         case 2: // 出库
-          path = `?orderId=${orderId}`; // 出库单 id
+          path = `?orderId=${orderId}&orderStatus=1`; // 出库单 id
           pageName = 'orderfrom';
           break;
         case 3: // 置换

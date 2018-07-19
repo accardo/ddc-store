@@ -26,9 +26,10 @@ Page({
 	  shipSnValue: '',
 	  listType: 0,
 	  courierCompany: [],
-	  logisticsCompa1ny: '请选择快递',
+	  logisticsCompany: '请选择快递',
 	  indexId: 0,
 	  radioIsShow: 1, // 1 供应商自提 2快递 默认 1
+
   },
 	/*
 	 * Description: 切换配送商

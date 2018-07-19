@@ -160,28 +160,6 @@ Page({
 		})
 	},
 	/**
-	 * Description: 图片放大
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/6/15
-	 */
-	zoomImg(e) {
-		let index = e.currentTarget.dataset.index;
-		this.setData({
-			imgBigUrl: this.data.imgList[index],
-			imgIsShow: true
-		})
-	},
-	/**
-	 * Description: 图片关闭
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/6/15
-	 */
-	imgClose() {
-		this.setData({
-			imgIsShow: false
-		})
-	},
-	/**
 	 * Description: 子组件返回的订货数据
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/5/23
@@ -190,6 +168,14 @@ Page({
 		this.setData({
 			tempReceiptList: e.detail
 		})
+	},
+	/*
+	 * Description: 上传图片子组件
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/19
+	 */
+	_bindUploadImg(e) {
+		this.data.imgList = e.detail
 	},
 	/*
 	 * Description: 申请退货更新数据
