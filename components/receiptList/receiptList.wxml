@@ -111,7 +111,7 @@
          <text>{{item.realityNumber}} {{ item.shopItemSkuVO.item.unitName }}</text><!-- 实收数量默认为 - 当有收货是显示 -->
        </view>
        <view class='goods-num goods-inp' wx:if="{{listType == 4 && orderStatus == 1}}">
-         收货数量：<input data-index="{{index}}" bindinput="setNumber" type='number' value="{{item.realityNumber}}" placeholder="数量" />{{ item.shopItemSkuVO.item.unitName }}
+         实发数量：<input data-index="{{index}}" bindinput="setNumber" type='number' value="{{item.realityNumber == 0 ? '' : item.realityNumber}}" placeholder="数量" />{{ item.shopItemSkuVO.item.unitName }}
        </view>
        <view class='goods-stock stock-num' wx:if="{{listType == 3}}">
          库存数量：

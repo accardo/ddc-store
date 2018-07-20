@@ -16,13 +16,13 @@
                 <text class='goods-name'>{{item.item.itemName ?item.item.itemName :'' }}</text>
                 <text>{{item.item.deductionType ==2 ? ( item.item.netWightValue +''+ item.item.materialUnitName):''}}</text>
               </view>
-              <view class='goods-stock'>
-                当前库存：<text>{{item.item.deductionType ==1 ? (item.item.unitValue+''+ item.item.unitName): (item.item.unitValue+''+ item.item.unitName +' '+item.item.materialUnitValue+''+ item.item.materialUnitName)}}</text>
-              </view>
               <view class='goods-label'
-                wx:if="{{item.attrValues && item.attrValues.length>0}}"
+                    wx:if="{{item.attrValues && item.attrValues.length>0}}"
               >
                 <text wx:for="{{item.attrValues}}" wx:for-item="typelist" wx:key="ind" class='goods-label-txt'>{{typelist}}</text>
+              </view>
+              <view class='goods-stock'>
+                当前库存：<text>{{item.item.deductionType ==1 ? (item.item.unitValue+''+ item.item.unitName): (item.item.unitValue+''+ item.item.unitName +' '+item.item.materialUnitValue+''+ item.item.materialUnitName)}}</text>
               </view>
               <view class='product-count' >
                 <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" catchtap='countReduce' src='../../icons/jian.png'></image>
@@ -85,9 +85,12 @@
                 <view class="number-box" wx:if="{{item.item.deductionType == 1}}">
                     <input type='number' bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
                 </view>
-                <view class="number-box" wx:if="{{item.item.deductionType == 2 && pageindex !== 7 }}">
+                <view class="number-box" wx:if="{{item.item.deductionType == 2 && pageindex == 2 }}">
                     <input type="number" bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
                     <input type='number' bindinput="setScattered2" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
+                </view>
+                <view class="number-box" wx:if="{{item.item.deductionType == 2 && pageindex == 7 }}">
+                  <input type='number' bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
                 </view>
             </view>
         </view>

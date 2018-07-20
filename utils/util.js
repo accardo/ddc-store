@@ -1,21 +1,6 @@
-const formatTime = date => {
-  const year = date.getFullYear()
-  const month = date.getMonth() + 1
-  const day = date.getDate()
-  const hour = date.getHours()
-  const minute = date.getMinutes()
-  const second = date.getSeconds()
-
-  return [year, month, day].map(formatNumber).join('-')
-}
-
-const formatNumber = n => {
-  n = n.toString()
-  return n[1] ? n : '0' + n
-}
 
 /* 获取 值类型  */
-function getType(val){
+export function getType(val){
   return Object.prototype.toString.call(val).slice(8,-1);
 }
 
@@ -24,8 +9,9 @@ function getType(val){
  * Author: yanlichen <lichen.yan@daydaycook.com>
  * Date: 2018/5/22
  */
-function limitClass(num) {
-  let limitClass = '';
+
+export function limitClass(num) {
+	let limitClass = '';
 	switch (parseInt(num)) {
 		case 0:  // 0 订货
 			limitClass = '2,4,5,6';
@@ -59,7 +45,7 @@ function limitClass(num) {
  * Author: yanlichen <lichen.yan@daydaycook.com>
  * Date: 2018/6/8
  */
-function attrValuesToString(data) {
+export function attrValuesToString(data) {
 	return data.attrValues !== null ? data.attrValues.toString() : null;
 }
 
@@ -68,7 +54,7 @@ function attrValuesToString(data) {
  * Author: yanlichen <lichen.yan@daydaycook.com>
  * Date: 2018/6/8
  */
-function attrValuesSplit(data) {
+export function attrValuesSplit(data) {
 	return data.attrValues != null ? data.attrValues.split(',') : null;
 }
 /**
@@ -76,7 +62,7 @@ function attrValuesSplit(data) {
  * Author: yanlichen <lichen.yan@daydaycook.com>
  * Date: 2018/6/8
  */
-function attrValuesSkuSplit(data) {
+export function attrValuesSkuSplit(data) {
 	data.forEach((item) => {
 		if (item.shopItemSkuVO !== null && item.shopItemSkuVO.attrValues !== null) {
 			item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.split(',');
@@ -89,7 +75,7 @@ function attrValuesSkuSplit(data) {
  * Author: yanlichen <lichen.yan@daydaycook.com>
  * Date: 2018/6/8
  */
-function attrValuesSkuToString(data) {
+export function attrValuesSkuToString(data) {
 	data.forEach((item) => {
 		if (item.shopItemSkuVO !== null && item.shopItemSkuVO.attrValues !== null) {
 			item.shopItemSkuVO.attrValues = item.shopItemSkuVO.attrValues.toString();
@@ -102,7 +88,7 @@ function attrValuesSkuToString(data) {
  * Author: yanlichen <lichen.yan@daydaycook.com>
  * Date: 2018/5/24
  */
-function ArrayDeepCopy(data) {
+export function ArrayDeepCopy(data) {
 	return JSON.parse(JSON.stringify(data))
 }
 
@@ -111,7 +97,7 @@ function ArrayDeepCopy(data) {
  * Author: yanlichen <lichen.yan@daydaycook.com>
  * Date: 2018/5/24
  */
-function showToast(data) {
+export function showToast(data) {
 	let pages = data.pages[data.pages.length - (data.page + 1)]; // 当前页面选中的 this
 	wx.showToast({
 		title: data.title,
@@ -137,7 +123,7 @@ function showToast(data) {
  * Author: yanlichen <lichen.yan@daydaycook.com>
  * Date: 2018/6/3
  */
-function cacheDataDeal(data) {
+export function cacheDataDeal(data) {
 	let tempArray = [];
 	data.forEach((item) => {
 		return tempArray.push(...item)
@@ -150,7 +136,7 @@ function cacheDataDeal(data) {
  * Author: yanlichen <lichen.yan@daydaycook.com>
  * Date: 2018/6/3
  */
-function setTotalNumber(data) {
+export function setTotalNumber(data) {
 	let shopPieceN = 0;
 	let tempArray = [];
 	data.forEach((item) => {
@@ -165,26 +151,26 @@ function setTotalNumber(data) {
 	}
 }
 
-let digitLength = num => {
+export function digitLength(num){
 	const eSplit = num.toString().split(/[eE]/);
 	const len = (eSplit[0].split('.')[1] || '').length - (+(eSplit[1] || 0));
 	return len > 0 ? len : 0;
 }
 
 //精确加法
-let add = (num1, num2) => {
+export function add(num1, num2){
 	const baseNum = Math.pow(10, Math.max(digitLength(num1), digitLength(num2)));
 	return (sub(num1, baseNum) + sub(num2, baseNum)) / baseNum;
 }
 
 //精确减法
-let reduce = (num1, num2) => {
+export function reduce(num1, num2){
 	const baseNum = Math.pow(10, Math.max(digitLength(num1), digitLength(num2)));
 	return (sub(num1, baseNum) - sub(num2, baseNum)) / baseNum;
 }
 
 // 精确乘法
-let sub = (num1, num2) => {
+export function sub(num1, num2){
 	const num1Changed = Number(num1.toString().replace('.', ''));
 	const num2Changed = Number(num2.toString().replace('.', ''));
 	const baseNum = digitLength(num1) + digitLength(num2);
@@ -192,14 +178,13 @@ let sub = (num1, num2) => {
 }
 
 //精确除法
-let divide = (num1, num2) => {
+export function divide(num1, num2){
 	const num1Changed = Number(num1.toString().replace('.', ''));
 	const num2Changed = Number(num2.toString().replace('.', ''));
 	return sub((num1Changed / num2Changed), Math.pow(10, digitLength(num2) - digitLength(num1)));
 }
 
-module.exports = {
-  formatTime,
+export default {
   getType,
 	limitClass,
 	ArrayDeepCopy,

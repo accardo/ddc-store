@@ -1,8 +1,8 @@
-// pages/search/search.js
-const config = require('../../config/config.js');
-const sysService = require('../../service/sys.service.js');
-const utils = require('../../utils/util');
+import * as utils from'../../utils/util';
+import { StoreLogic } from '../../utils/logic';
 const app = getApp();
+const storeLogic = new StoreLogic();
+// pages/search/search.js
 Page({
 
   /**
@@ -35,7 +35,6 @@ Page({
       searchtxt: ''
     })
   },
-
   /**
    * Description: 获取搜索的数据列表 首先读取缓存数据
    * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -43,35 +42,23 @@ Page({
    */
   getSearchList() {
 	  let pageIndex = wx.getStorageSync('pageindex');
-	  let getProse = this.processData();
-    sysService.category({
-      url: 'listProduct',
-      method: 'get',
-      data: getProse
-    }).then((res) => {
-      if (res.code == 0) {
-	      res.page.list.forEach((item) => {
-		      item.attrValues = utils.attrValuesSplit(item);
-		      if (pageIndex == 0) { // 订货
-			      item.needNumber = 0;
-		      } else if(pageIndex == 1 || pageIndex == 2 || pageIndex == 7) { // 盘点
-			      item.unitValue = '';
-			      item.materialUnitValue = '';
-		      } else if (pageIndex == 3) { // 出库
-			      item.resultNumber = '';
-          } else if (pageIndex == 4) { // 调拨
-			      item.outNumber = 0;
-		      }
-		      item.navClass = this.data.navClassIndex;
-	      })
-	      this.setData({
-		      showList: true,
-          searchReset: res.page.list.length == 0 ? true : false,
-		      productlist: res.page.list,
-          inputShow: false, // 置换页面中用 是否显示input框
-        })
-      }
-    })
+	  let itemTypes = utils.limitClass(pageIndex);
+	  let getProse = {
+		  currPage: this.data.currPage,
+		  pageSize: this.data.pageSize,
+		  categoryId: this.data.categoryId,
+		  shopId: app.selectIndex,
+		  goodsName: this.data.searchtxt,
+		  itemTypes
+	  }
+	  storeLogic.ajaxGetData('category/listProduct', getProse, this.data.navClassIndex).then((res) => {
+		  this.setData({
+			  showList: true,
+			  searchReset: res.page.list.length == 0 ? true : false,
+			  productlist: res.page.list,
+			  inputShow: false, // 置换页面中用 是否显示input框
+		  })
+	  })
   },
 
   /**
@@ -99,48 +86,17 @@ Page({
       searchtxt: e.detail.value
     })
   },
-	/**
-	 * Description: 数据处理
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/7/2
-	 */
-	processData() {
-		let pageIndex = wx.getStorageSync('pageindex');
-		let itemTypes = utils.limitClass(pageIndex);
-		let getProse = {
-			currPage: this.data.currPage,
-			pageSize: this.data.pageSize,
-			categoryId: this.data.categoryId,
-			shopId: app.selectIndex,
-			goodsName: this.data.searchtxt,
-			itemTypes
-		}
-		return getProse
-	},
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-	  let pageIndex = wx.getStorageSync('pageindex');
-    if (options.shopType){
-      this.setData({
-        shoptype: options.shopType ? options.shopType : '',
-        categoryId: options.categoryId,
-	      shopTypeSearch: options.shopTypeSearch,
-	      navClassIndex: options.navClass,
-      });
-    }
-	  if(pageIndex == 3) {
-      this.setData({
-	      fromInto: options.convert,
-      })
-    }
-    if (pageIndex == 4) {
-    	this.setData({
-		    shopTypeSearch: options.shopTypeSearch,
-	      fromInto: 'into',
-	    })
-    }
+	  this.setData({
+		  shoptype: options.shopType || '',
+		  categoryId: options.categoryId || '',
+		  shopTypeSearch: options.shopTypeSearch || '',
+		  navClassIndex: options.navClass || '',
+		  fromInto: options.convert || 'into',
+	  })
     wx.setNavigationBarTitle({
       title: '搜索'
     })

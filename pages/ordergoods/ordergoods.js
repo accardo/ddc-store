@@ -1,6 +1,8 @@
 const config = require('../../config/config.js');
-const sysService = require('../../service/sys.service.js');
-const utils = require('../../utils/util');
+import * as utils from'../../utils/util';
+import * as logic from  '../../utils/logic';
+// const storeLogic = new logic.StoreLogic();
+const orderLogic = new logic.OrderLogic();
 const app = getApp();
 Page({
 
@@ -46,27 +48,14 @@ Page({
 	 * Date: 2018/7/16
 	 */
 	getMenuList() {
-    sysService.category({
-      url:'listCategory',
-      method:'get',
-    }).then((res) => {
-      if (res.code == 0 && res.categoryVOList.length > 0) {
-        this.setData({
-          categoryId: res.categoryVOList[0].id,
-          navlist: res.categoryVOList
-        })
-	      wx.setStorageSync('navlistLength', res.categoryVOList.length); // 分类长度
-        this.getProductByNav();
-      } else if (res.code == 401) {
-        config.logOutAll();
-        return
-      } else {
-        wx.showToast({
-          title: res.msg,
-          icon:'none'
-        })
-      }
-    })
+		storeLogic.ajaxGetData('category/listCategory').then((res) => {
+			this.setData({
+				categoryId: res.categoryVOList[0].id,
+				navlist: res.categoryVOList
+			})
+			wx.setStorageSync('navlistLength', res.categoryVOList.length); // 分类长度
+			this.getProductByNav();
+		})
   },
 	/*
 	 * Description: 获取产品信息
@@ -75,7 +64,6 @@ Page({
 	 */
 	getProductByNav() {
 	  wx.showLoading({ title: '加载中' });
-	  let productlist = [];
 	  let pageIndex = wx.getStorageSync('pageindex');
 	  let cacheData = wx.getStorageSync('cacheData'); // 读取分类中订货所有选中的数据
 	  let inventoryCacheData = wx.getStorageSync('inventoryCacheData'); // 读取分类中盘点所有选中的数据
@@ -88,61 +76,34 @@ Page({
       categoryId: this.data.categoryId, // 产品分类ID
 	    itemTypes, // 订货为 2,4,5,6 限制商品  盘点为 2,4,6 其他都是2,4,6，具体请看prd
     }
-    sysService.category({
-      url:'listProduct',
-      method:'get',
-      data:promdData
-    }).then((res) => {
+		storeLogic.ajaxGetData('category/listProduct', promdData, this.data._index).then((res) => {
 	    wx.stopPullDownRefresh();
-      if (res.code == 0 && res.page.list) {
-	      wx.hideLoading();
-	      if (res.page.list.length == 0) {
-		      wx.showToast({
-			      title: '没有更多数据',
-			      icon:'none'
-		      });
-		      wx.stopPullDownRefresh();
-		      return
-	      }
-	      productlist = res.page.list.map((item) => {
-          item.attrValues = utils.attrValuesSplit(item);
-          if (pageIndex == 0) { // 订货
-	          item.needNumber = 0;
-          } else if(pageIndex == 1 || pageIndex == 2 || pageIndex == 7) { // 盘点 出库 退货
-          	item.unitValue = '';
-          	item.materialUnitValue = '';
-          }
-          item.navClass = this.data._index;
-          return item;
-        })
-	      this.data.pagetListData = this.data.pagetListData.concat(productlist); // 数组合并
-	      if (pageIndex == 0) {
-		      if (cacheData[this.data._index]) { // 订货
-			      this.data.pagetListData = this.forDataContrastSearch(this.data.pagetListData, cacheData[this.data._index]);
-		      }
-	      } else if (pageIndex == 1) {
-		      if (inventoryCacheData[this.data._index]) { // 盘点
-			      this.data.pagetListData = this.forDataContrastSearch(this.data.pagetListData, inventoryCacheData[this.data._index])
-		      }
-	      } else if (pageIndex == 2 || pageIndex == 7) {
-		      if (outboundCacheData[this.data._index]) { //出库 退货
-			      this.data.pagetListData = this.forDataContrastSearch(this.data.pagetListData, outboundCacheData[this.data._index]);
-		      }
-	      }
-	      this.setData({
-          productlist: this.data.pagetListData,
-		      currPage: this.data.currPage + 1
-        })
-      } else if (res.code == 401) {
-        config.logOutAll();
-        return
-      } else {
-        wx.showToast({
-          title: res.msg,
-          icon: 'none'
-        })
-	      wx.hideLoading();
-      }
+	    if (res.page.list.length == 0) {
+		    wx.showToast({
+			    title: '没有更多数据',
+			    icon:'none'
+		    });
+		    wx.stopPullDownRefresh();
+		    return
+	    }
+	    this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
+	    if (pageIndex == 0) {
+		    if (cacheData[this.data._index]) { // 订货
+			    this.data.pagetListData = this.forDataContrastSearch(this.data.pagetListData, cacheData[this.data._index]);
+		    }
+	    } else if (pageIndex == 1) {
+		    if (inventoryCacheData[this.data._index]) { // 盘点
+			    this.data.pagetListData = this.forDataContrastSearch(this.data.pagetListData, inventoryCacheData[this.data._index])
+		    }
+	    } else if (pageIndex == 2 || pageIndex == 7) {
+		    if (outboundCacheData[this.data._index]) { //出库 退货
+			    this.data.pagetListData = this.forDataContrastSearch(this.data.pagetListData, outboundCacheData[this.data._index]);
+		    }
+	    }
+	    this.setData({
+		    productlist: this.data.pagetListData,
+		    currPage: this.data.currPage + 1
+	    })
     })
   },
 
@@ -401,7 +362,7 @@ Page({
 		 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
 		 * Date: 2018/7/16
 		 */
-	dpctGlobalModule(a1, a2, a3) { //a1 -> 选中数据缓存 type []; a2 -> 搜索缓存 type [];; a3 -> 缓存的key type string;
+	/*dpctGlobalModule(a1, a2, a3) { //a1 -> 选中数据缓存 type []; a2 -> 搜索缓存 type [];; a3 -> 缓存的key type string;
 		let ty1 = []; // ty1-> 临时存放数组1；
 		let ty2 = []; // ty2-> 临时存放数组2;
 		let os = wx.getStorageSync('optionStorage'); // 判断进入是哪个一个页面 1、订单结果页 2、搜索查询页
@@ -441,11 +402,12 @@ Page({
 		this.setData({
 			productlist: ty1
 		})
-	},
+	},*/
 	/**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+		console.log(orderLogic)
     this.getMenuList();
     console.log(options, 'ordergoods');
     let pageindex = wx.getStorageSync('pageindex');

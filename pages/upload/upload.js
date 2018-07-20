@@ -1,6 +1,7 @@
-const sysService = require('../../service/sys.service.js');
-const utils = require('../../utils/util');
+import * as utils from'../../utils/util';
+import { StoreLogic } from '../../utils/logic';
 const app = getApp();
+const storeLogic = new StoreLogic();
 // pages/uploadimg/uploadimg.js
 Page({
 
@@ -20,75 +21,30 @@ Page({
 	_bindUploadImg(e) {
 		this.data.imgList = e.detail
 	},
-  /* 提交信息 */
-  subInfo(){
-  	let promdData = this.processData();
-  	let pageindex = wx.getStorageSync('pageindex');
-  	let serviceUrl = pageindex != 7 ? 'delivery' : 'returnlist'
-  	sysService[serviceUrl]({
-		  url: 'save',
-		  method: "post",
-		  data: promdData
-	  }).then((res) => {
-		  if (res.code == 0) {
-			  utils.showToast({title: '更新成功', page: 3, pages: getCurrentPages()});
-        wx.removeStorageSync('outboundCacheData');
-        wx.removeStorageSync('searchOutboundCacheData');
-		  } else if(res.code == 401) {
-			  config.logOutAll();
-			  return
-		  } else {
-			  wx.showToast({
-				  title: res.msg,
-				  icon: 'none'
-			  })
-		  }
+	/*
+	 * Description: 提交信息
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/20
+	 */
+	subInfo(){
+  	const pageindex = wx.getStorageSync('pageindex');
+	  const outboundCacheData = wx.getStorageSync('outboundCacheData');
+	  const serviceUrl = pageindex != 7 ? 'delivery' : 'returnlist';
+	  const voList = pageindex != 7 ? 'deliveryDetailVOList' : 'returnDetailVOList';
+	  let promdData = {
+		  id: null,
+		  shopId: app.selectIndex, // 店铺ID
+		  type: this.data.outboundType, // 出库类型
+		  reason: this.data.reason, // 出库原因
+		  imageUrls: this.data.imgList.toString(),
+		  [voList]: storeLogic.processData(outboundCacheData)
+	  }
+		storeLogic.ajaxSaveUpdate(serviceUrl, promdData, true).then(() => {
+		  utils.showToast({title: '保存成功', page: 3, pages: getCurrentPages()});
+		  wx.removeStorageSync('outboundCacheData');
+		  wx.removeStorageSync('searchOutboundCacheData');
 	  })
   },
-	/**
-	 * Description: 整理数据逻辑
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/7/2
-	 */
-	processData() {
-		let pageindex = wx.getStorageSync('pageindex');
-		let outboundCacheData = wx.getStorageSync('outboundCacheData');
-				outboundCacheData = utils.cacheDataDeal(outboundCacheData);
-		let isComplete = outboundCacheData.map((item) => { // 提交数据整理
-			item.goodsId = item.id;
-			item.shopItemSkuVO = {
-				attrValues: utils.attrValuesToString(item),
-				id: item.id,
-				item: item.item,
-				skuId: item.skuId
-			}
-			delete item.attrValues;
-			delete item.copyShopItemSkuId;
-			delete item.id;
-			delete item.isExist;
-			delete item.isSale;
-			delete item.item;
-			delete item.price;
-			delete item.shopItemId;
-			delete item.skuId;
-			delete item.skuSn;
-			delete item.stock;
-			delete item.thumb;
-			delete item.valueIds;
-			delete item.costPrice;
-			return item;
-		})
-		let voList = pageindex != 7 ? 'deliveryDetailVOList' : 'returnDetailVOList'
-		let promdData = {
-			id: null,
-			shopId: app.selectIndex, // 店铺ID
-			type: this.data.outboundType, // 出库类型
-			reason: this.data.reason, // 出库原因
-			imageUrls: this.data.imgList.toString(),
-			[voList]: isComplete
-		}
-		return promdData
-	},
   /**
    * 生命周期函数--监听页面加载
    */

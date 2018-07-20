@@ -272,14 +272,14 @@
       <text class='label-name'>{{item.rtvReturnSn}}</text>
     </view>
     <view class='list-name'>
-      <text class='label-txt'>送货时间：</text>
+      <text class='label-txt'>发货时间：</text>
       <text class='label-name'>{{item.invoiceTime || ''}}</text>
     </view>
     <view class='list-name'>
       <text class='label-txt'>配送方式：</text>
       <text class='label-name'>{{item.deliveryMethodStr || ''}}</text>
     </view>
-    <view class='list-name list-row' wx:if="{{item.deliveryMethodStr == '供应商配送' || item.deliveryMethodStr == '物流'}}">
+    <view class='list-name list-row' wx:if="{{item.deliveryMethodStr == '供应商自提'}}">
       <view class="list-row-contact">
         <text class='label-txt'>联系人：</text>
         <text class='label-name'>{{item.contacts || ''}}</text>
