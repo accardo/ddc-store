@@ -298,11 +298,13 @@ Page({
 		}).then((res) => {
 			if (res.code == '0') {
 				wx.hideLoading();
+
 				this.setData({
 					receiptList: res.invoiceVO.invoiceDetailVOList,
 					invoiceVO: res.invoiceVO,
 					courierCompany: res.expressCompanys,
 				})
+				this.data.invoiceVO.deliveryMethod = 1;
 			} else if (res.code == 401) {
 				config.logOutAll();
 				return

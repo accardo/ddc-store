@@ -129,6 +129,7 @@ Page({
   setPostData(){
     let promeData = this.processData();
 		console.log(promeData, 'promeData222222');
+		wx.showLoading({title: '提交中...', mask: true,})
     if (this.data.update == '1') {
       sysService.purchase({
 	      url: 'update',
@@ -136,7 +137,10 @@ Page({
 	      data: promeData
       }).then((res) => {
         if (res.code == 0) {
-	        utils.showToast({title: '更新成功', page: 1, pages: getCurrentPages()});
+	        setTimeout(function(){
+		        wx.hideLoading();
+		        utils.showToast({title: '更新成功', page: 1, pages: getCurrentPages()});
+	        },2000)
         } else if(res.code == 401) {
 	        config.logOutAll();
 	        return
@@ -159,8 +163,11 @@ Page({
 			    return
 		    }
 		    if(code == 0){
-			    utils.showToast({title: '订货成功', page: 2, pages: getCurrentPages()});
-			    this.clearCache();
+			    setTimeout(function(){
+				    wx.hideLoading()
+				    utils.showToast({title: '订货成功', page: 2, pages: getCurrentPages()});
+				    this.clearCache();
+			    },2000)
 		    }else{
 			    wx.showToast({
 				    title: msg,

@@ -3,7 +3,7 @@
   <view class="receipt-top" wx:if="{{pageindex == 7}}">
     <view class="receipt-top-1">
       <view>供应商：{{invoiceVO.supplier}}</view>
-      <view><text>联系人: {{invoiceVO.supplierContacts}} </text><text>联系电话：{{invoiceVO.supplierContactPhone}}</text></view>
+      <view><text>联系人: {{invoiceVO.supplierContacts}} </text><text>联系电话：{{invoiceVO.supplierContactsPhone}}</text></view>
       <view>通讯地址：{{invoiceVO.address}}</view>
     </view>
     <view class="receipt-top-2">
