@@ -1,7 +1,6 @@
 const config = require('../../config/config.js');
 const shopListService = require('../../service/service.service.js');
 const baseService = require('../../service/base.service.js');
-
 const app = getApp();
 
 // pages/login/login.js
@@ -15,7 +14,6 @@ Page({
     username:'',
     userpwd:'',
     toastText:'',
-    duration: 1200,
     selectIndex:0,
     isSelectShop:false,
     shopArray:[],
@@ -42,7 +40,6 @@ Page({
       }
     })
   },
-
   getInfoByE(e) {
     let { name } = e.target.dataset;
     this.setData({
@@ -52,13 +49,10 @@ Page({
   
   /* 选择店铺 */
   selectShop(e){
-    let _index = parseInt(e.detail.value);
-    let selectIndex = this.data.shopArray[_index].id;
-    let shopName = this.data.shopArray[_index].shopName;
 	  this.setData({
-      shopName,
-      selectIndex,
-      isSelectShop:true
+      shopName: this.data.shopArray[parseInt(e.detail.value)].shopName,
+      selectIndex: this.data.shopArray[parseInt(e.detail.value)].id,
+      isSelectShop: true
     })
   },
   setUserName(e){
@@ -137,14 +131,13 @@ Page({
     wx.showToast({
       title: toastText,
       icon:"none",
-      duration: this.data.duration
     })
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: function () {
     this.getShoplist();
     wx.setNavigationBarTitle({
       title: '登录'

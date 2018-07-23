@@ -1,7 +1,9 @@
 // pages/inventoryreview/inventoryreview.js
+import * as utils from'../../utils/util';
+import * as logic from  '../../utils/logic';
 const config = require('../../config/config.js');
-const sysService = require('../../service/sys.service.js');
-const utils = require('../../utils/util');
+const storeLogic = new logic.StoreLogic();
+const orderLogic = new logic.OrderLogic();
 const app = getApp();
 Page({
 
@@ -31,27 +33,11 @@ Page({
 			shopId: app.selectIndex,
 			status: this.data.status
 		}
-		sysService.inventorydetail({
-			url:'info',
-			method:'get',
-			data: promseData
-		}).then((res) => {
-			if (res.code == 0) {
-				let receiptList = utils.attrValuesSkuSplit(res.inventoryDetailVOList); // attrValues  string 转 array 页面铺数据
-				this.setData({
-					receiptList // 订货列表数据
-				})
-				wx.hideLoading();
-			} else if(res.code == 401) {
-				config.logOutAll();
-				return
-			} else {
-				wx.showToast({
-					title: res.msg,
-					icon: 'none'
-				})
-				wx.hideLoading();
-			}
+		storeLogic.ajaxGetData('inventorydetail/info', promseData).then((res) => {
+			let receiptList = utils.attrValuesSkuSplit(res.inventoryDetailVOList); // attrValues  string 转 array 页面铺数据
+			this.setData({
+				receiptList
+			})
 		})
   },
 	/**
@@ -99,47 +85,27 @@ Page({
   /* 提交审核 */
   subReview(){
 	  let inventoryDetailVOList = utils.attrValuesSkuToString(this.data.receiptList); // attrValues array 转 string 提交数据
-	  inventoryDetailVOList = inventoryDetailVOList.filter((item) => {
-		  return (item.unitValue !== null && item.unitValue !== '') || (item.materialUnitValue !== null && item.materialUnitValue !== '')
-	  })
+	      inventoryDetailVOList = orderLogic.filterData(inventoryDetailVOList, 5);
 	  let promeData = {
-		  id: this.data.inventoryId || null, // 盘点id
-		  shopId: app.selectIndex, // 店铺ID
-		  inventoryDetailVOList,
+				  id: this.data.inventoryId || null, // 盘点id
+				  shopId: app.selectIndex, // 店铺ID
+				  inventoryDetailVOList
+		    }
+	  if (inventoryDetailVOList.length != this.data.receiptList.length) {
+	  	utils.showToastNone('盘点数量不能为空');
+		  return
 	  }
-	  if (inventoryDetailVOList.length == this.data.receiptList.length) {
-		  wx.showModal({
-			  content: '确认提交审核？',
-			  confirmColor: config.showModal.confirmColor,
-			  success: function (res) {
-				  if (res.confirm){
-					  sysService.inventory({
-						  url: 'update',
-						  method: "post",
-						  data: promeData
-					  }).then((res) => {
-						  if (res.code == 0) {
-							  utils.showToast({title: '盘点成功', page: 1, pages: getCurrentPages()});
-						  } else if (res.code == 401) {
-							  config.logOutAll();
-							  return
-						  } else {
-							  wx.showToast({
-								  title: res.msg,
-								  icon:'none'
-							  })
-						  }
-					  })
-				  }
+	  wx.showModal({
+		  content: '确认提交审核？',
+		  confirmColor: config.showModal.confirmColor,
+		  success: function (res) {
+			  if (res.confirm){
+				  storeLogic.ajaxSaveUpdate('inventory', promeData, false).then(() => {
+					  utils.showToast({title: '盘点成功', page: 1, pages: getCurrentPages()});
+				  })
 			  }
-		  });
-	  } else {
-		  wx.showToast({
-			  title: '盘点数量不能为空',
-			  icon:'none'
-		  })
-	  }
-    console.log('点击提交审核');
+		  }
+	  });
   },
 
   /**

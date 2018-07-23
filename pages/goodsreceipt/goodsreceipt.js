@@ -2,6 +2,8 @@
 const config = require('../../config/config.js');
 const sysService = require('../../service/sys.service.js');
 const utils = require('../../utils/util');
+import * as logic from  '../../utils/logic';
+const storeLogic = new logic.StoreLogic();
 const app = getApp();
 Page({
 
@@ -124,133 +126,19 @@ Page({
     })
   },
 	/**
-	 * Description: 部分收货
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/5/23
-	 */
-	partialReceipt(){
-		let processData = this.processData(2);
-		if (processData.isComplete.length == 0) {
-			wx.showToast({
-				title: '至少填写一项部分收货',
-				icon:'none'
-			})
-			return
-		}
-		console.log(processData, '部分收货返回数据');
-		wx.showModal({
-			content: '是否确认部分收货!',
-			confirmColor: config.showModal.confirmColor,
-			success: function (res) {
-				if (res.confirm){
-					sysService.receipt({
-						url: 'update',
-						method: "post",
-						data: processData.promeData
-					}).then((res) => {
-						if (res.code == 0) {
-							utils.showToast({title: '更新成功', page: 1, pages: getCurrentPages()});
-						} else if (res.code == 401) {
-							config.logOutAll();
-							return
-						} else {
-							wx.showToast({
-								title: res.msg,
-								icon:'none'
-							})
-						}
-					})
-				}
-			}
-		});
-  },
-	/*
-	 * Description: 全部收货
-	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
-	 * Date: 2018/7/11
-	 */
-	completeReceipt(){
-	  let processData = this.processData(3, 'complete');
-	  console.log(processData, '全部收货返回数据');
-	  wx.showModal({
-		  content: processData.isComplete.length > 0 ? '部分商品无实收数量，是否确认收货完毕' : '是否确认收货完毕，提交的数据不可修改!',
-		  confirmColor: config.showModal.confirmColor,
-		  success: function (res) {
-			  if (res.confirm){
-				  sysService.receipt({
-					  url: 'update',
-					  method: "post",
-					  data: processData.promeData
-				  }).then((res) => {
-					  if (res.code == 0) {
-						  utils.showToast({title: '收货成功', page: 1, pages: getCurrentPages()});
-					  } else if (res.code == 401) {
-						  config.logOutAll();
-						  return
-					  }
-				  })
-			  }
-		  }
-	  });
-  },
-	/*
-	 * Description: 部分收货 全部收货 处理数据
-	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
-	 * Date: 2018/7/17
-	 */
-	processData(status, receipt) {
-		let	ArrayDeepCopyData = utils.ArrayDeepCopy(this.data.tempReceiptList);  // 深层拷贝防止子组件数据联动
-		let receiptDetailVOList = utils.attrValuesSkuToString(ArrayDeepCopyData); // array 转 string 提交数据
-		receiptDetailVOList = receiptDetailVOList.filter((item) => {
-			item.goodsId = item.id;
-			if (receipt == 'complete') { // 全部收货 过滤
-				if (item.finalNumber == 0) {
-					if (item.deliveryCount == '' || item.deliveryCount == null ) {
-						return item;
-					}
-				}
-			} else { // 部分收货 过滤
-				if (item.deliveryCount !== null && item.deliveryCount !== '') {
-					return item;
-				};
-			}
-		})
-		let promeData = {
-			id: this.data.purchaseId || null, // 订单id
-			shopId: app.selectIndex, // 店铺ID
-			status, // 状态 (1、待收货 2、部分收货 3、已收货 4、待派单)
-			receiptDetailVOList: receipt == 'complete' ? utils.attrValuesSkuToString(this.data.tempReceiptList) : receiptDetailVOList,
-		}
-		return {
-			promeData,
-			isComplete: receiptDetailVOList
-		}
-	},
-	/**
 	 * Description: 待收货 部分收货 页面数据
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/5/23
 	 */
   getSreceipt() {
-		wx.showLoading({ title: '加载中' });
 		let promseData = {
 			receiptId: this.data.purchaseId, // 订货单ID
 			shopId: app.selectIndex, // 店铺ID
 		}
-		sysService.receiptdetail({
-			url:'info',
-			method:'get',
-			data: promseData
-		}).then((res) => {
-			if (res.code == '0') {
-				wx.hideLoading();
-				this.setData({
-					receiptList: res.receiptDetailVOList // 订货列表数据
-				})
-			} else if (res.code == 401) {
-				config.logOutAll();
-				return
-			}
+		storeLogic.ajaxGetData('receiptdetail/info', promseData).then((res) => {
+			this.setData({
+				receiptList: res.receiptDetailVOList
+			})
 		})
   },
 	/*
@@ -259,25 +147,14 @@ Page({
 	 * Date: 2018/7/9
 	 */
 	getAppReturn() {
-		wx.showLoading({ title: '加载中' });
 		let promseData = {
 			returnId: this.data.purchaseId, // 订货单ID
 			shopId: app.selectIndex, // 店铺ID
 		}
-		sysService.returndetail({
-			url:'info',
-			method:'get',
-			data: promseData
-		}).then((res) => {
-			if (res.code == '0') {
-				wx.hideLoading();
-				this.setData({
-					receiptList: res.inventoryDetailVOList
-				})
-			} else if (res.code == 401) {
-				config.logOutAll();
-				return
-			}
+		storeLogic.ajaxGetData('returndetail/info', promseData).then((res) => {
+			this.setData({
+				receiptList: res.inventoryDetailVOList
+			})
 		})
 	},
 	/*
@@ -286,29 +163,17 @@ Page({
 	 * Date: 2018/7/11
 	 */
 	getReturn() {
-		wx.showLoading({ title: '加载中' });
 		let promseData = {
 			invoiceId: this.data.purchaseId, // 订货单ID
 			shopId: app.selectIndex, // 店铺ID
 		}
-		sysService.invoicedetail({
-			url:'info',
-			method:'get',
-			data: promseData
-		}).then((res) => {
-			if (res.code == '0') {
-				wx.hideLoading();
-
-				this.setData({
-					receiptList: res.invoiceVO.invoiceDetailVOList,
-					invoiceVO: res.invoiceVO,
-					courierCompany: res.expressCompanys,
-				})
-				this.data.invoiceVO.deliveryMethod = 1;
-			} else if (res.code == 401) {
-				config.logOutAll();
-				return
-			}
+		storeLogic.ajaxGetData('invoicedetail/info', promseData).then((res) => {
+			this.setData({
+				receiptList: res.invoiceVO.invoiceDetailVOList,
+				invoiceVO: res.invoiceVO,
+				courierCompany: res.expressCompanys,
+			})
+			this.data.invoiceVO.deliveryMethod = 1;
 		})
 	},
 	/*
@@ -341,27 +206,46 @@ Page({
 				})
 				return
 			}
-			this.data.tempReceiptList.forEach((item) => {
-				item.shopItemSkuVO.attrValues = utils.attrValuesToString(item.shopItemSkuVO);
-			})
+			let invoiceDetailVOList = utils.attrValuesSkuToString(this.data.tempReceiptList);
 			let promeData = {
 				...{...this.data.invoiceVO},
-				invoiceDetailVOList: this.data.tempReceiptList
+				invoiceDetailVOList,
 			}
-			console.log(promeData)
-			sysService.invoice({
-					url: 'save',
-					method: "post",
-					data: promeData
-				}).then((res) => {
-					if (res.code == 0) {
-						utils.showToast({title: '发货成功', page: 1, pages: getCurrentPages()});
-					} else if (res.code == 401) {
-						config.logOutAll();
-						return
-					}
-				})
-
+			storeLogic.ajaxSaveUpdate('invoice', promeData, true).then(() => {
+				utils.showToast({title: '发货成功', page: 1, pages: getCurrentPages()});
+			})
+	},
+	/* 部分收货 1 , 否则全部收货
+	 * Description:
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/23
+	 */
+	receiptComp(e) {
+		let nIndex = e.currentTarget.dataset.index;
+		let processData = storeLogic.subData2(this.data.tempReceiptList, nIndex);
+		if (nIndex == 2) {
+			if (processData.length == 0) {
+				utils.showToastNone('至少填写一项部分收货');
+				return
+			}
+		}
+		let promeData = {
+			id: this.data.purchaseId || null, // 订单id
+			shopId: app.selectIndex, // 店铺ID
+			status: nIndex, // 状态 (1、待收货 2、部分收货 3、已收货 4、待派单)
+			receiptDetailVOList: nIndex == 3 ? utils.attrValuesSkuToString(this.data.tempReceiptList) : processData,
+		}
+		wx.showModal({
+			content: nIndex == 2 ? '是否确认部分收货!' : processData.length > 0 ? '部分商品无实收数量，是否确认收货完毕' : '是否确认收货完毕，提交的数据不可修改!',
+			confirmColor: config.showModal.confirmColor,
+			success: function (res) {
+				if (res.confirm){
+					storeLogic.ajaxSaveUpdate('receipt', promeData, false).then(() => {
+						utils.showToast({title: nIndex == 2 ? '更新成功' : '收货成功', page: 1, pages: getCurrentPages()});
+					})
+				}
+			}
+		});
 	},
 	/**
    * 生命周期函数--监听页面加载
@@ -375,7 +259,6 @@ Page({
 			listType: options.listType || 0,
 			pageindex,
 		})
-		console.log(options)
 	  if (pageindex == 0) { // 0 订货页面
 		  this.getSreceipt();
 	  }

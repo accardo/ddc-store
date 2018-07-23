@@ -117,7 +117,17 @@ export function showToast(data) {
 		pages.onLoad(pages.options)
 	}, 800);
 }
-
+/*
+ * Description: 验证信息 node toast
+ * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+ * Date: 2018/7/23
+ */
+export function showToastNone(msg) {
+	wx.showToast({
+		title: msg,
+		icon: 'none'
+	})
+}
 /**
  * Description: 总结页面缓存 二维数组处理成一维
  * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -198,5 +208,6 @@ export default {
 	add,
 	reduce,
 	sub,
-	divide
+	divide,
+	showToastNone,
 }

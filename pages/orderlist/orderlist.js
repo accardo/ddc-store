@@ -1,8 +1,9 @@
 // pages/orderlist/orderlist.js
-const app = getApp();
+import * as utils from "../../utils/util";
 import config from '../../config/config.js'
 import { StoreLogic } from '../../utils/logic';
 const storeLogic = new StoreLogic();
+const app = getApp();
 Page({
 
   /**
@@ -192,11 +193,7 @@ Page({
 		storeLogic.ajaxGetData(interFace, getData).then((res) => {
 			wx.stopPullDownRefresh();
 			if (res.page.list.length == 0) {
-				wx.showToast({
-					title: '没有更多数据',
-					icon:'none'
-				});
-				wx.stopPullDownRefresh();
+				utils.showToastNone('没有更多数据');
 				return
 			}
 			this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并

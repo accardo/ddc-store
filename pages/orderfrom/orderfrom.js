@@ -1,7 +1,7 @@
 // pages/orderfrom/orderfrom.js
-const config = require('../../config/config.js');
 const utils = require('../../utils/util');
-const sysService = require('../../service/sys.service.js');
+import * as logic from  '../../utils/logic';
+const storeLogic = new logic.StoreLogic();
 const app = getApp();
 Page({
 
@@ -27,40 +27,24 @@ Page({
 	 * Date: 2018/6/8
 	 */
 	requestReturnInfo(res, data, img = null) {
-		if (res.code == 0) {
-			this.setData({
-				receiptList: data, // 订货列表数据
-				imgList: img
-			})
-			wx.hideLoading();
-		} else if(res.code == 401) {
-			config.logOutAll();
-		} else {
-			wx.showToast({
-				title: res.msg,
-				icon: 'none'
-			})
-			wx.hideLoading()
-		}
+		this.setData({
+			receiptList: data, // 订货列表数据
+			imgList: img
+		})
 	},
 	/**
 	 * Description: 获取订货单详情商品列表 info
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/5/30
 	 */
-  getPurchaseDetail(){
-	  wx.showLoading({ title: '加载中' });
+  getPurchaseDetail() {
     let promseData = {
       purchaseId: this.data.purchaseId,
       shopId: app.selectIndex
     }
-    sysService.purchasedetail({
-      url:'info',
-      method:'get',
-      data: promseData
-    }).then((res) => {
-      this.requestReturnInfo(res, res.purchaseDetailVOList);
-    })
+		storeLogic.ajaxGetData('purchasedetail/info', promseData).then((res) => {
+			this.requestReturnInfo(res, res.purchaseDetailVOList);
+		})
   },
 	/*
 	 * Description: 获取收货详情商品列表 info
@@ -68,16 +52,11 @@ Page({
 	 * Date: 2018/7/12
 	 */
 	getReceiptdetail() {
-		wx.showLoading({ title: '加载中' });
 		let promseData = {
 			receiptId: this.data.purchaseId,
 			shopId: app.selectIndex
 		}
-		sysService.receiptdetail({
-			url:'info',
-			method:'get',
-			data: promseData
-		}).then((res) => {
+		storeLogic.ajaxGetData('receiptdetail/info', promseData).then((res) => {
 			this.requestReturnInfo(res, res.receiptDetailVOList);
 		})
 	},
@@ -87,17 +66,12 @@ Page({
 	 * Date: 2018/5/30
 	 */
 	getInventoryData() {
-		wx.showLoading({ title: '加载中' });
 		let promseData = {
 			inventoryId: this.data.purchaseId,
 			shopId: app.selectIndex,
       status: this.data.status
 		}
-		sysService.inventorydetail({
-			url:'info',
-			method:'get',
-			data: promseData
-		}).then((res) => {
+		storeLogic.ajaxGetData('inventorydetail/info', promseData).then((res) => {
 			this.requestReturnInfo(res, res.inventoryDetailVOList);
 		})
   },
@@ -107,16 +81,11 @@ Page({
 	 * Date: 2018/6/1
 	 */
 	getoutboundData() {
-		wx.showLoading({ title: '加载中' });
 		let promseData = {
 			deliveryId: this.data.purchaseId,
 			shopId: app.selectIndex,
 		}
-		sysService.deliverydetail({
-			url:'info',
-			method:'get',
-			data: promseData
-		}).then((res) => {
+		storeLogic.ajaxGetData('deliverydetail/info', promseData).then((res) => {
 			this.requestReturnInfo(res, res.deliveryDetailVOList, res.imageUrls);
 		})
 	},
@@ -126,17 +95,12 @@ Page({
 	 * Date: 2018/6/6
 	 */
 	gettransferData() {
-		wx.showLoading({ title: '加载中' });
 		let promseData = {
 			transferId: this.data.purchaseId,
 			shopId: app.selectIndex,
 			type: this.data.type
 		}
-		sysService.transferdetail({
-			url:'info',
-			method:'get',
-			data: promseData
-		}).then((res) => {
+		storeLogic.ajaxGetData('transferdetail/info', promseData).then((res) => {
 			this.requestReturnInfo(res, res.transferVO.transferDetailVOList);
 		})
 	},
@@ -146,16 +110,11 @@ Page({
 	 * Date: 2018/7/9
 	 */
 	getAppReturn() {
-		wx.showLoading({ title: '加载中' });
 		let promseData = {
 			returnId: this.data.purchaseId,
 			shopId: app.selectIndex,
 		}
-		sysService.returndetail({
-			url:'info',
-			method:'get',
-			data: promseData
-		}).then((res) => {
+		storeLogic.ajaxGetData('returndetail/info', promseData).then((res) => {
 			this.requestReturnInfo(res, res.returnDetailVOList, res.imageUrls);
 		})
 	},
@@ -183,54 +142,18 @@ Page({
 	 * Date: 2018/7/10
 	 */
 	returnUpdate() {
-		let promdData = this.processData();
-		sysService.returnlist({
-			url: 'save',
-			method: "post",
-			data: promdData
-		}).then((res) => {
-			if (res.code == 0) {
-				utils.showToast({title: '更新成功', page: 1, pages: getCurrentPages()});
-			} else if(res.code == 401) {
-				config.logOutAll();
-				return
-			} else {
-				wx.showToast({
-					title: res.msg,
-					icon: 'none'
-				})
+		let	promdData = {
+				id: this.data.purchaseId || null, // 订单id
+				shopId: app.selectIndex, // 店铺ID
+				status: 4, // 状态  4 未提交
+				type: this.data.type,
+				reason: this.data.reason,
+				imageUrls: this.data.imgList.toString(),
+				returnDetailVOList: storeLogic.subData1(this.data.tempReceiptList)
 			}
-		})
-	},
-	/**
-	 * Description: 整理数据逻辑
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/7/2
-	 */
-	processData() {
-		let	ArrayDeepCopyData = utils.ArrayDeepCopy(this.data.tempReceiptList);  // 深层拷贝防止子组件数据联动
-		let returnDetailVOList = utils.attrValuesSkuToString(ArrayDeepCopyData); // array 转 string 提交数据
-		returnDetailVOList = returnDetailVOList.filter((item) => {
-			if (item.unitValue !== null && item.unitValue !== '') {
-				delete item.createTime;
-				delete item.purchaseId;
-				delete item.shopItemSkuVO.copyShopItemSkuId;
-				delete item.shopItemSkuVO.costPrice;
-				delete item.shopItemSkuVO.isExist;
-				delete item.shopItemSkuVO.isSale;
-				return item;
-			};
-		})
-		let promeData = {
-			id: this.data.purchaseId || null, // 订单id
-			shopId: app.selectIndex, // 店铺ID
-			status: 4, // 状态  4 未提交
-			type: this.data.type,
-			reason: this.data.reason,
-			imageUrls: this.data.imgList.toString(),
-			returnDetailVOList
-		}
-		return promeData;
+			storeLogic.ajaxSaveUpdate('returnlist', promdData, true).then(() => {
+				utils.showToast({title: '更新成功', page: 1, pages: getCurrentPages()});
+			})
 	},
 	/**
    * 生命周期函数--监听页面加载
