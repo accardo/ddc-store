@@ -220,7 +220,6 @@ export class OrderLogic extends StoreLogic {
 	 */
 	dpctGlobalModule(a1, a2, a3, a4_index, a5_orig) { //a1 -> 选中数据缓存 type []; a2 -> 搜索缓存 type []; a3 -> 缓存的key type string; a4 -> 分类索引 a5-> 当前原始数据
 		this.constructor();
-		console.log(a1, super.os, '复杂页面')
 		let ty1 = []; // ty1-> 临时存放数组1；
 		let ty2 = []; // ty2-> 临时存放数组2;
 		if (super.os == 2) {
@@ -229,14 +228,12 @@ export class OrderLogic extends StoreLogic {
 				if (ty2 !== '' && ty2.length > 0) {
 					a1[a4_index] = this.forDataContrastSearch(a1[a4_index], ty2); // 搜索结果和总数据对比，如果有skuId相同责去除
 					ty1 = this.forDataContrastSearch(a5_orig, a1[a4_index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
-					console.log(a1, ty1, '有缓存执行')
 				}
 			} else { // 当页面没有缓存 直接搜索时候当前数据对比赋值
 				if (ty2 !== '' && ty2.length > 0) {
 					this.setEmptyArray(a1); // 二维数组置空
 					a1[a4_index] = ty2;
 					ty1 = this.forDataContrastSearch(a5_orig, ty2); // 搜索结果和总数据对比，如果有skuId相同责去除
-					console.log(a1, ty1, '没有缓存的时候执行')
 				}
 			}
 			wx.setStorageSync(a3, a1); // 搜索结束后 需要把搜索结果放入到总的结果缓存中
@@ -248,7 +245,6 @@ export class OrderLogic extends StoreLogic {
 				})
 			}
 			ty1 = this.forDataContrastSearch(a5_orig, a1[a4_index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
-			console.log(a5_orig, a1[a4_index], ty1, '多分类综合')
 		}
 		if (a1.length > 0 ) {
 			ty2 = this.forDataContrastSearch(a5_orig, a1[a4_index] || []);
@@ -305,7 +301,6 @@ export class OrderLogic extends StoreLogic {
 			}
 			return result;
 		}
-		console.log(data1.distinct(), '返回 过滤后数据 需要 给 结果页面')
 		return data1.distinct().reverse();
 	}
 	/**
