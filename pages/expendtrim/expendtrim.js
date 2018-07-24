@@ -1,6 +1,7 @@
-const sysService = require('../../service/sys.service.js');
-const config = require('../../config/config.js');
+import * as utils from "../../utils/util";
 const app = getApp();
+import * as logic from  '../../utils/logic';
+const storeLogic = new logic.StoreLogic();
 // pages/expendtrim/expendtrim.js
 Page({
 
@@ -28,55 +29,24 @@ Page({
 	 * Date: 2018/6/6
 	 */
 	getExpendtrim() {
-		wx.showLoading({ title: '加载中' });
-		let getParm = {}
-		if (this.data.isExpend == '1') {
-			getParm = {
-				currPage: this.data.currPage,
-				pageSize: this.data.pageSize,
-				shopId: app.selectIndex,
-			}
-		} else {
-			getParm = {
-				currPage: this.data.currPage,
-				pageSize: this.data.pageSize,
-				courseBillId: this.data.courseBillId,
-				shopId: app.selectIndex
-			}
+		let getParm = {
+			currPage: this.data.currPage,
+			pageSize: this.data.pageSize,
+			courseBillId: this.data.courseBillId,
+			shopId: app.selectIndex
 		}
-
-		sysService.coursebilldetail({
-			url: 'list',
-			method: 'get',
-			data: getParm
-		}).then((res) => {
+		this.data.isExpend == '1' ? delete getParm.courseBillId : '';
+		storeLogic.ajaxGetData('coursebilldetail/list', getParm).then((res) => {
 			wx.stopPullDownRefresh();
-			if (res.code == 0) {
-				wx.hideLoading();
-				if (res.page.list.length == 0) {
-					wx.showToast({
-						title: '没有更多数据',
-						icon:'none'
-					});
-					wx.stopPullDownRefresh();
-					return
-				}
-				this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
-				this.setData({
-					courseList: this.data.pagetListData,
-					currPage: this.data.currPage + 1
-				})
-			} else if (res.code == 401) {
-				config.logOutAll();
-			} else {
-				wx.showToast({
-					title: res.msg,
-					icon: 'none'
-				})
-				wx.hideLoading();
+			if (res.page.list.length == 0) {
+				utils.showToastNone('没有更多数据');
+				return
 			}
-		}).catch(() => {
-			wx.hideLoading();
+			this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
+			this.setData({
+				courseList: this.data.pagetListData,
+				currPage: this.data.currPage + 1
+			})
 		})
   },
 	/**
@@ -127,22 +97,15 @@ Page({
   confimNum(){
 	  let course = this.data.courseList[this.data.nIndex]; // 当前选中的哪一条
 	  if (course[this.data.name] == 0 || course[this.data.name] == '') {
-		    wx.showToast({
-		      title: '请输入数量',
-		      icon:'none'
-		    })
+	  	 utils.showToastNone('请输入数量')
 		   return false
 	  }
 		if (this.data.name == 'useCount') {
 			if (parseInt(course.useCount) < parseInt(course.number)) {
-				wx.showToast({
-					title: '正常消耗，不能小于实际上课人数',
-					icon: 'none'
-				})
+				utils.showToastNone('正常消耗，不能小于实际上课人数')
 				return false
 			}
 		}
-
 	  let postParm = {
 	  	id: this.data.courseList[this.data.nIndex].id,
 		  courseBillId: this.data.courseList[this.data.nIndex].courseBillId, //  调整单id
@@ -150,28 +113,14 @@ Page({
 		  useCount: this.data.courseList[this.data.nIndex].useCount,
 		  scrapCount: this.data.courseList[this.data.nIndex].scrapCount
 	  }
-	  sysService.coursebilldetail({
-		  url: 'update',
-		  method: 'post',
-		  data: postParm
-	  }).then((res) => {
-		  if (res.code == 0) {
-			  wx.showToast({
-				  title: '修改成功'
-			  })
-			  this.setData({
-				  isShow: false,
-				  courseList: this.data.courseList
-			  })
-		  } else if (res.code == 401) {
-			  config.logOutAll();
-			  return
-		  } else {
-			  wx.showToast({
-				  title: res.msg,
-				  icon: 'none'
-			  })
-		  }
+	  storeLogic.ajaxSaveUpdate('coursebilldetail', postParm, false).then(() => {
+		  wx.showToast({
+			  title: '修改成功'
+		  })
+		  this.setData({
+			  isShow: false,
+			  courseList: this.data.courseList
+		  })
 	  })
   },
 
@@ -180,7 +129,6 @@ Page({
    */
   onLoad: function (options) {
 	  let pagetitle = wx.getStorageSync('pagetitle');
-  	console.log(options, '课程消耗')
 	  this.setData({
 		  courseBillId: options.orderId || 0, // 课程消耗id
 		  isupdate: options.isupdate,  // 判断是否显示可调整

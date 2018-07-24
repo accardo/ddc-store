@@ -70,7 +70,6 @@ Component({
       switch (this.data.pageindex){
 	      case 0: // 订货 / 收货
 	        path = `?orderId=${orderId}&update=1&orderStatus=${orderStatus}&goods=goodsdetail`; // goods 待派单 和 订货页面缓存区分
-          // pageName = orderStatus ==1 || orderStatus == 2 ? 'goodsreceipt' : ( orderStatus == 3 ? 'orderfrom':'goodsinfo' )
 		      if (this.data.listType == 1) {
 		      	pageName = orderStatus == 1 ? 'orderfrom' : 'goodsinfo'
 		      } else if (this.data.listType == 2) {

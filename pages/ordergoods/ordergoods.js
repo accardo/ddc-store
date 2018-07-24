@@ -94,7 +94,8 @@ Page({
    * Date: 2018/5/27
    */
   _watchChange(){
-		let setShop = storeLogic.watchChange();
+  	let cacheData = wx.getStorageSync('cacheData');
+		let setShop = storeLogic.watchChange(cacheData);
     this.setData({
       shopTotalN: setShop.total || 0,
       shopPieceN: setShop.shopPieceN || 0
@@ -149,7 +150,8 @@ Page({
 	 * Date: 2018/5/25
 	 */
   getInventory() {
-  	let promdData = storeLogic.subData(this.data.productlist);
+  	let inventoryCacheData = wx.getStorageSync('inventoryCacheData');
+  	let promdData = storeLogic.subData(inventoryCacheData, this.data.productlist);
 		if (promdData.inventListLenght == 0 ) {
 			utils.showToastNone('盘点数据不能为空');
 			return

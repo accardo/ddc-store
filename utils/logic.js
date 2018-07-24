@@ -31,13 +31,12 @@ export class StoreLogic {
 		})
 	}
 	/**
-	 * Description: 整理数据逻辑 originalData -> 原始数据
+	 * Description: 整理数据逻辑 o1 ->盘点缓存数据； o2 -> 原始数据
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/7/2
 	 */
-	subData(originalData) {
-		this.constructor();
-		let tempInventList = this.inventoryCacheData ? this.inventoryCacheData : originalData;
+	subData(o1, o2) {
+		let tempInventList = o1 ? o1 : o2;
 				tempInventList = utils.ArrayDeepCopy(tempInventList);  // 数组深层拷贝
 				tempInventList = utils.cacheDataDeal(tempInventList); // 二维数组结构为一维数组进行 过滤
 		let isComplete = tempInventList.filter((item) => { // 过滤 没有填写数据
@@ -58,7 +57,6 @@ export class StoreLogic {
 			isComplete
 		}
 	}
-
 	/*
 	 * Description: 整理数据逻辑 申请退货更新数据
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
@@ -94,6 +92,83 @@ export class StoreLogic {
 					return item;
 				};
 			}
+		})
+	}
+	/*
+	 * Description: 订货 页面展示 数据处理 第一次见这烂的数据结构
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/24
+	 */
+	subData3(originalData) {
+		return originalData.map((item) => {
+			let shopTempObject = {};
+			let tempObj = { // 原始数据 第一层循环数据 需要提炼出来 放到循环数组中，以便提交数据用  needNumber为 订货数量数据 循环时候需要用
+				id: item.id,
+				purchaseId: item.purchaseId,
+				goodsId: item.goodsId,
+				finalNumber: item.finalNumber,
+				deliveryCount: item.deliveryCount,
+			}
+			item.shopItemSkuVO.attrValues = utils.attrValuesSplit(item.shopItemSkuVO); // attrValues string 转 array
+			return Object.assign(shopTempObject, item.shopItemSkuVO, {needNumber: item.needNumber}, {tempObj:tempObj});
+		})
+	}
+
+	/*
+	 * Description: 订货 save update 处理数据 o1 -> cacheData 订货缓存; cacheDataDetial 订货详情缓存 o2 -> 原始数据 o_index -> 1 update 否则 save
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/24
+	 */
+	subData4(o1, o2, o_index) {
+		if (o_index == '1') { // 1 为更新操作 处理原始数据，原始数据和后台传数据结构相差太大，很坑人的。
+				o1 = o1 ? o1 : o2;
+				return o1.map((item) => {
+					let tempObj1 = utils.ArrayDeepCopy(item.tempObj);
+					item.shopItemSkuVO = {
+						id : item.id,
+						attrValues: utils.attrValuesToString(item), // attrValues array 转 string ,
+						skuId: item.skuId,
+						item: item.item
+					}
+					item.shopItemSkuVO.item.unitValue = tempObj1.tempunitValue;
+					Object.assign(item, tempObj1);
+					return item
+				})
+		} else {
+			return utils.cacheDataDeal(o1).map((item) => { // 过滤 没有填写数据
+				item.goodsId = item.id;
+				item.shopItemSkuVO = {
+					attrValues: utils.attrValuesToString(item), // attrValues array 转 string
+					id: item.id,
+					skuId: item.skuId,
+					item: item.item
+				}
+				return item;
+			})
+		}
+	}
+
+	/*
+	 * Description: 置换 处理数据 o1 -> 要转换商品 数据 o2 -> 转化为商品 数据
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/24
+	 */
+	subData5(o1, o2) {
+		return o1.map((item, index) => { // 提交数据整理
+			item.needShopItemSkuVO = {
+				attrValues: utils.attrValuesToString(item), // array 转 string 提交数据
+				id: item.id,
+				skuId: item.skuId,
+				item: item.item
+			}
+			item.shopItemSkuVO = {
+				attrValues: utils.attrValuesToString(o2[index]), // array 转 string 提交数据
+				id: o2[index].id,
+				skuId: o2[index].skuId,
+				item: o2[index].item
+			}
+			item.id = null;
+			return item;
 		})
 	}
 	/*
@@ -192,11 +267,10 @@ export class StoreLogic {
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/5/27
 	 */
-	watchChange(){
-		this.constructor();
+	watchChange(data){
 		let setShop = {};
-		if (this.cacheData) {
-			setShop = utils.setTotalNumber(this.cacheData);
+		if (data) {
+			setShop = utils.setTotalNumber(data);
 		}
 		console.log(setShop, '设置商品总数');
 		return setShop
@@ -265,7 +339,7 @@ export class OrderLogic extends StoreLogic {
 			});
 		} else if(num == 2) {
 			return data && data.filter((item) => { // 搜索查询  返回搜索的数据
-				return item.needNumber != 0 || item.needNumber != '0' || item.needNumber != '';
+				return item.needNumber != 0 || item.needNumber != '0';
 			});
 		} else if(num == 3) {
 			return data && data.filter((item) => { // 盘点 搜索查询 返回搜索数据
@@ -278,6 +352,22 @@ export class OrderLogic extends StoreLogic {
 		} else if (num == 5) {
 			return data && data.filter((item) => {
 				return (item.unitValue !== null && item.unitValue !== '') || (item.materialUnitValue !== null && item.materialUnitValue !== '')
+			})
+		} else if (num == 6) {
+			return data && data.filter((item) => {
+				return (item.inNumber !== '')
+			})
+		} else if (num == 7) {
+			return data && data.filter((item) => { // 搜索查询  返回搜索的数据
+				return item.outNumber != 0 || item.outNumber != '0' || item.outNumber != '';
+			})
+		} else if (num == 8) {
+			return data && data.filter((item) => { // 搜索查询  返回搜索的数据
+				return item.needNumber != '' || item.needNumber != '0';
+			})
+		} else if (num == 9) {
+			return data && data.filter((item) => { // 搜索查询  返回搜索的数据
+				return item.needNumber != '' || item.needNumber != null;
 			})
 		}
 	}
@@ -340,6 +430,26 @@ export class OrderLogic extends StoreLogic {
     } else {
 			return a1;
     }
+	}
+
+	/*
+	 * Description: 调拨 a1 -> 调拨选中缓存; a2 -> 搜索缓存
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/7/24
+	 */
+	allocationModule(a1, a2) {
+		let transferData;
+		if(a2) {
+			if (a1.length == 0) {
+				transferData = a2.filter((item) => {
+					return item.outNumber != 0
+				})
+			} else {
+				transferData = this.forDataContrastSearch(a1, this.filterData(a2, 7));
+			}
+		}
+		wx.setStorageSync('transferCacheData', transferData); // 搜索结束后 需要把搜索结果放入到总的结果缓存中
+		return transferData;
 	}
 }
 export default {

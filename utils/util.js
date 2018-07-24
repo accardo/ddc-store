@@ -134,11 +134,7 @@ export function showToastNone(msg) {
  * Date: 2018/6/3
  */
 export function cacheDataDeal(data) {
-	let tempArray = [];
-	data.forEach((item) => {
-		return tempArray.push(...item)
-	})
-	return tempArray;
+	return [].concat.apply([],data);
 }
 
 /**
@@ -148,12 +144,8 @@ export function cacheDataDeal(data) {
  */
 export function setTotalNumber(data) {
 	let shopPieceN = 0;
-	let tempArray = [];
-	data.forEach((item) => {
-		return tempArray.push(...item)
-	})
-	tempArray.forEach((item) => {
-		shopPieceN += item.needNumber
+	let tempArray = cacheDataDeal(data).map((item) => {
+		return shopPieceN += item.needNumber
 	})
 	return {
 		total: tempArray.length,

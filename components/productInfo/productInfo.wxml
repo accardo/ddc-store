@@ -134,7 +134,7 @@
             <view class='goods-stock'>
                 收货数量：
                 <view class="number-box number-box-acc" wx:if="{{item.type != 2}}">
-                    <input type='number' data-name='collect' data-index="{{index}}" bindinput='setCollect' />{{ item.shopItemSkuVO.item.unitName }}
+                    <input type='number' data-name='collect' data-index="{{index}}" bindinput='setCollect' value="{{item.inNumber}}" />{{ item.shopItemSkuVO.item.unitName }}
                 </view>
                 <block wx:else>
                     -

@@ -1,8 +1,10 @@
 // pages/allotcollect/allotcollect.js
-const app = getApp();
-const sysService = require('../../service/sys.service.js');
-const utils = require('../../utils/util');
+import * as logic from  '../../utils/logic';
 const config = require('../../config/config.js');
+const utils = require('../../utils/util');
+const app = getApp();
+const storeLogic = new logic.StoreLogic();
+const orderLogic = new logic.OrderLogic();
 Page({
 
   /**
@@ -22,39 +24,20 @@ Page({
 	 * Date: 2018/6/6
 	 */
 	gettransferData() {
-		wx.showLoading({ title: '加载中' });
 		let promseData = {
 			transferId: this.data.transferId,
 			shopId: app.selectIndex,
 			type: this.data.type
 		}
-		sysService.transferdetail({
-			url:'info',
-			method:'get',
-			data: promseData
-		}).then((res) => {
-			if (res.code == 0) {
-				res.transferVO.transferDetailVOList.forEach((item) => {
-					if (item.shopItemSkuVO !== null) {
-						item.shopItemSkuVO.attrValues = utils.attrValuesSplit(item.shopItemSkuVO);
+		storeLogic.ajaxGetData('transferdetail/info', promseData).then((res) => {
+			let productlist = utils.attrValuesSkuSplit(res.transferVO.transferDetailVOList); // attrValues string 转 array 提交数据
+					productlist.forEach((item) => {
 						item.type = this.data.type;
-					}
-				})
-				this.setData({
-					productlist: res.transferVO.transferDetailVOList, // 订货列表数据
-					outTransferId: res.transferVO.outTransferId,
-				})
-				wx.hideLoading();
-			} else if(res.code == 401) {
-				config.logOutAll();
-				return
-			} else {
-				wx.showToast({
-					title: res.msg,
-					icon: 'none'
-				})
-				wx.hideLoading();
-			}
+					})
+			this.setData({
+				productlist, // 订货列表数据
+				outTransferId: res.transferVO.outTransferId,
+			})
 		})
 	},
 	/**
@@ -64,58 +47,38 @@ Page({
 	 */
   subAllot(){
     let collectCacheData = wx.getStorageSync('collectCacheData');
-		collectCacheData = collectCacheData && collectCacheData.filter((item) => {
-			if (item.inNumber != '') {
-				item.shopItemSkuVO.attrValues = utils.attrValuesToString(item.shopItemSkuVO);
-				return item;
-			}
-		})
+				collectCacheData = collectCacheData ? utils.attrValuesSkuToString(collectCacheData) : this.data.productlist;
+				collectCacheData = orderLogic.filterData(collectCacheData, 6);
+		let promseData = {
+			id: this.data.transferId, // 调拨单id
+			outShopId: this.data.outShopId,  // 调出店铺 id
+			inShopId: this.data.inShopId, // 调入店铺id
+			outTransferId: this.data.outTransferId, // 调拨出库单id
+			transferDetailVOList: collectCacheData
+		}
 		if (collectCacheData.length != this.data.productlist.length ) {
 		    wx.showToast({
 		      title: '部分商品未填写数量',
 		      icon: "none"
 		    })
-		    return ;
-		} else {
-			let promseData = {
-				id: this.data.transferId, // 调拨单id
-				outShopId: this.data.outShopId,  // 调出店铺 id
-				inShopId: this.data.inShopId, // 调入店铺id
-				outTransferId: this.data.outTransferId, // 调拨出库单id
-				transferDetailVOList: collectCacheData
-			}
-			wx.showModal({
-				content: '是否确认收货完成？',
-				confirmColor: config.showModal.confirmColor,
-				success: (res) => {
-					if (res.confirm) {
-						sysService.transfer({
-							url:'update',
-							method:'post',
-							data: promseData
-						}).then((res) => {
-							if (res.code == 0) {
-								utils.showToast({title: '调拨更新成功', page: 1, pages: getCurrentPages()});
-							} else if(res.code == 401) {
-								config.logOutAll();
-								return
-							} else {
-								wx.showToast({
-									title: res.msg,
-									icon: 'none'
-								})
-							}
-						})
-					}
-				}
-			});
+		    return;
 		}
+		wx.showModal({
+			content: '是否确认收货完成？',
+			confirmColor: config.showModal.confirmColor,
+			success: (res) => {
+				if (res.confirm) {
+					storeLogic.ajaxSaveUpdate('transfer', promseData, false).then(() => {
+						utils.showToast({title: '调拨更新成功', page: 1, pages: getCurrentPages()});
+					})
+				}
+			}
+		});
   },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  	wx.removeStorageSync('collectCacheData');
 	  let pagetitle = wx.getStorageSync('pagetitle');
 	  this.setData({
 		  transferId: options.orderId, // 调拨单id
@@ -127,6 +90,7 @@ Page({
 	  wx.setNavigationBarTitle({
 		  title: pagetitle
 	  })
+	  wx.removeStorageSync('collectCacheData');
   },
 
   /**

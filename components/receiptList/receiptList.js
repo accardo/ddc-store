@@ -1,5 +1,6 @@
 // components/receiptList/receiptList.js
 var config = require('../../config/config.js');
+import * as utils from'../../utils/util';
 Component({
   /**
    * 组件的属性列表
@@ -66,10 +67,7 @@ Component({
 					  this.setData({
 						  receiptArr: this.data.receiptArr
 					  })
-					  wx.showToast({
-						  title: '不能大于当前库存',
-						  icon:'none'
-					  })
+					  utils.showToastNone('不能大于当前库存');
 					  return
 				  }
 				  this.data.receiptArr[e.currentTarget.dataset.index].unitValue = e.detail.value;

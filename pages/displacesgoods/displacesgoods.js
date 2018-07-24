@@ -1,7 +1,8 @@
 // pages/displacesgoods/displacesgoods.js
-const sysService = require('../../service/sys.service.js');
+import * as logic from  '../../utils/logic';
 const utils = require('../../utils/util');
 const app = getApp();
+const storeLogic = new logic.StoreLogic();
 Page({
 
   /**
@@ -17,19 +18,16 @@ Page({
 	  intoDefault: true, // 控制转为商品默认图
 	  inputShow: false // 是否显示input框
   },
-
 	/**
-	 * Description: 选择搜索商品
+	 * Description: 选择搜索商品 convert = from: 要转换商品, convert = info: 转化为商品
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/6/5
 	 */
-  goSearch(e){
-    // convert = from: 要转换商品, convert = info: 转化为商品
+  goSearch(e) {
     wx.navigateTo({
       url: `../../pages/search/search?convert=${e.currentTarget.dataset.convert}`
     })
   },
-
 	/**
 	 * Description: 设置选中的商品
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -59,92 +57,32 @@ Page({
 	    })
     }
   },
-
 	/**
 	 * Description: 提交置换
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/6/5
 	 */
   subDisplace(){
-  	let processData = this.processData();
-		console.log(processData, '置换');
-    let resultNumber = processData.displaceDetailVOList[0].resultNumber;
-    if (resultNumber != '' && resultNumber > 0) {
-	    sysService.displace({
-		    url: 'save',
-		    method: "post",
-		    data: processData
-	    }).then((res) => {
-		    if (res.code == 0) {
-			    utils.showToast({title: '置换成功', page: 1, pages: getCurrentPages()});
-		    } else if(res.code == 401) {
-			    config.logOutAll();
-			    return
-		    } else {
-			    wx.showToast({
-				    title: res.msg,
-				    icon: 'none'
-			    })
-		    }
-	    })
-    } else {
-	    wx.showToast({
-		    title: '请填写转化数量',
-		    icon: 'none'
-	    })
-    }
-  },
-	/*
-	 * Description: 数据整理
-	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
-	 * Date: 2018/7/18
-	 */
-	processData() {
 		let converFrom = wx.getStorageSync('setConverFrom'); // 要转换商品 数据
-		let converInto = wx.getStorageSync('setConverInto'); // 转化为商品 数据
-		let isComplete = converFrom.map((item, index) => { // 提交数据整理
-			item.needShopItemSkuVO = {
-				attrValues: utils.attrValuesToString(item), // array 转 string 提交数据
-				id: item.id,
-				skuId: item.skuId,
-				item: item.item
+		let converInto = wx.getStorageSync('setConverInto'); // 转化为商品 数
+		let processData = {
+				id: null,
+				shopId: app.selectIndex, // 店铺ID
+				displaceDetailVOList: storeLogic.subData5(converFrom, converInto)
 			}
-			item.shopItemSkuVO = {
-				attrValues: utils.attrValuesToString(converInto[index]), // array 转 string 提交数据
-				id: converInto[index].id,
-				skuId: converInto[index].skuId,
-				item: converInto[index].item
-			}
-			item.id = null;
-			delete item.attrValues;
-			delete item.copyShopItemSkuId;
-			delete item.isExist;
-			delete item.isSale;
-			delete item.item;
-			delete item.price;
-			delete item.shopItemId;
-			delete item.skuId;
-			delete item.skuSn;
-			delete item.stock;
-			delete item.thumb;
-			delete item.valueIds;
-			delete item.costPrice;
-			delete item.navClass;
-			return item;
+		let resultNumber = processData.displaceDetailVOList[0].resultNumber;
+    if (resultNumber == '' || resultNumber < 0) {
+    	utils.showToastNone('请填写转化数量');
+	    return
+    }
+		storeLogic.ajaxSaveUpdate('displace', processData, true).then(() => {
+			utils.showToast({title: '置换成功', page: 1, pages: getCurrentPages()});
 		})
-
-		let promdData = {
-			id: null,
-			shopId: app.selectIndex, // 店铺ID
-			displaceDetailVOList: isComplete
-		}
-		return promdData;
-	},
+  },
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    console.log(options, '置换')
+  onLoad: function () {
     this.setShopFun();
 	  wx.setNavigationBarTitle({
 		  title: wx.getStorageSync('pagetitle')

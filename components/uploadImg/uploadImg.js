@@ -1,4 +1,5 @@
 const baseService = require('../../service/base.service.js');
+import * as utils from'../../utils/util';
 // components/uploadImg/uploadImg.js
 Component({
   /**
@@ -73,10 +74,7 @@ Component({
 				  let resData = JSON.parse(res.data);
 				  if (resData.code == 0) {
 					  if (this.data.imgList.length >= 5 ) {
-						  wx.showToast({
-							  title: '最多上传5张照片',
-							  icon: 'none'
-						  })
+						  utils.showToastNone('最多上传5张照片')
 						  return
 					  } else {
 						  this.data.imgList.push(resData.url[0]);

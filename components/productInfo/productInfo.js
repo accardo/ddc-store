@@ -1,6 +1,8 @@
 // components/productInfo/productInfo.js
-var config = require('../../config/config.js');
+import * as logic from  '../../utils/logic';
+const config = require('../../config/config.js');
 const utils = require('../../utils/util');
+const orderLogic = new logic.OrderLogic();
 Component({
   /**
    * 组件的属性列表  希望后来人不要骂我 都是让 后端逼的才这么写
@@ -88,7 +90,6 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    /* 盘点部分 start*/
 	  /**
 	   * Description: 拆零扣减 直接扣减 设置整数 input 用一个字段 unitValue
 	   * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -176,12 +177,8 @@ Component({
 		  this.setData({
 			  productList: this.data.productList
 		  })
-		  wx.showToast({
-			  title: '不能大于当前库存',
-			  icon: 'none'
-		  })
+		  utils.showToastNone('不能大于当前库存')
 	  },
-	  /* 盘点部分 end*/
 	  /**
 	   * Description: 盘点存储所有缓存数据
 	   * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -190,7 +187,7 @@ Component({
 	  cacheStorageSpaceInfo(navClassIndex) {
 		  let getOutboundCacheData = wx.getStorageSync('outboundCacheData');
 		  let getInventoryCacheData = wx.getStorageSync('inventoryCacheData');
-		  let tempInfoData = this.setFilterData(1);
+		  let tempInfoData = orderLogic.filterData(this.data.productList, 3);
 		  if (this.data.pageindex == 1) {
 		  	// 缓存数据 , 盘点临时存放空数组， 读取盘点缓存数据， 过滤后的数据 , 分类索引号：用于创建第几空数组
 		  	this.setEmptyArray('inventoryCacheData', 'inventoryCacheArray', getInventoryCacheData, tempInfoData, navClassIndex);
@@ -210,7 +207,7 @@ Component({
 	   */
 	  cacheStorageSpace(navClassIndex) {
 		  let getCacheData = wx.getStorageSync('cacheData');
-		  let tempInfoData = this.setFilterData(2);
+		  let tempInfoData = orderLogic.filterData(this.data.productList, 8);
 		  if (this.data.productConclusion == 1) { // 当是结果页面 返回 当前分类的数据 放入到对应的数据中
 			  this.setData({
 			   productList: tempInfoData
@@ -227,7 +224,7 @@ Component({
 	   * Date: 2018/6/4
 	   */
 	  cacheStorageSpaceDetial() {
-		  let tempInfoData = this.setFilterData(3);
+		  let tempInfoData = orderLogic.filterData(this.data.productList, 9);
 		  wx.setStorageSync('cacheDataDetial', tempInfoData);
 	  },
 	  /*
@@ -244,26 +241,6 @@ Component({
 		  }
 		  this.data[tempArray][navClassIndex] = filterData;
 		  wx.setStorageSync(cacheKey, this.data[tempArray]);
-	  },
-	  /*
-	   * Description: 过滤数据
-	   * Author: yanlichen <lichen.yan@daydaycook.com.cn>
-	   * Date: 2018/7/18
-	   */
-	  setFilterData(fNam) {
-		  let tempInfoData = [];
-		  tempInfoData = this.data.productList.filter((item) => { // 过滤不是结果页面 返回 不为空和 0 的数据
-			  if (fNam == 1) {
-				  return item.unitValue != '' || item.materialUnitValue != '';
-			  } else if (fNam == 2) {
-				  return item.needNumber != '' || item.needNumber != '0';
-			  } else if (fNam == 3) {
-				  return item.needNumber != '' || item.needNumber != null;
-			  } else if (fNam == 4) {
-				  return item.outNumber != '' || item.outNumber != 0;
-			  }
-		  })
-		  return tempInfoData;
 	  },
     /**
      * Description: 加号
@@ -332,7 +309,7 @@ Component({
 	   * Date: 2018/6/6
 	   */
 	  transfercacheStorageSpace() {
-		  let tempInfoData = this.setFilterData(4);
+		  let tempInfoData = orderLogic.filterData(this.data.productList, 7);
 		  this.data.transferCacheArray = tempInfoData
 		  wx.setStorageSync('transferCacheData', this.data.transferCacheArray);
 		  this.setData({

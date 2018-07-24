@@ -27,7 +27,6 @@ Page({
 	 * Date: 2018/5/30
 	 */
   getInentoryreviewData() {
-		wx.showLoading({ title: '加载中' });
 		let promseData = {
 			inventoryId: this.data.inventoryId,
 			shopId: app.selectIndex,

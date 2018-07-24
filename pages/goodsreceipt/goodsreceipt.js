@@ -1,6 +1,5 @@
 // pages/goodsreceipt/goodsreceipt.js
 const config = require('../../config/config.js');
-const sysService = require('../../service/sys.service.js');
 const utils = require('../../utils/util');
 import * as logic from  '../../utils/logic';
 const storeLogic = new logic.StoreLogic();
