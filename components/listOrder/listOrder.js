@@ -11,12 +11,9 @@ Component({
       value:[],
 	    observer: function(newVal, oldVal) {
 		    let pageindex = wx.getStorageSync('pageindex');
-		    if (pageindex == 6) {
-			    newVal.forEach((item) => {
-				     let time = this.strToDate(item.courseStartTime)
-				     item.courseStartTime = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`;
-			    })
-        }
+			  if (pageindex == 0 && this.data.listType == 2) { utils.formatTime(newVal, 'freightTime') };
+				if (pageindex == 6) { utils.formatTime(newVal, 'courseStartTime') };
+				if (pageindex == 7 && this.data.listType == 4) { utils.formatTime(newVal, 'invoiceTime') };
 		    this.setData({
           pageindex,
           list: newVal

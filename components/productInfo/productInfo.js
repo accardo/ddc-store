@@ -371,7 +371,7 @@ Component({
 	   */
     setCollect(e) {
 	    let index = e.currentTarget.dataset.index;
-      this.data.productList[index].inNumber = e.detail.value
+      this.data.productList[index].inNumber = e.detail.value == '' ? 0 :  e.detail.value
 	    wx.setStorageSync('collectCacheData', this.data.productList);
     },
 

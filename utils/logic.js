@@ -121,19 +121,19 @@ export class StoreLogic {
 	 */
 	subData4(o1, o2, o_index) {
 		if (o_index == '1') { // 1 为更新操作 处理原始数据，原始数据和后台传数据结构相差太大，很坑人的。
-				o1 = o1 ? o1 : o2;
-				return o1.map((item) => {
-					let tempObj1 = utils.ArrayDeepCopy(item.tempObj);
-					item.shopItemSkuVO = {
-						id : item.id,
-						attrValues: utils.attrValuesToString(item), // attrValues array 转 string ,
-						skuId: item.skuId,
-						item: item.item
-					}
-					item.shopItemSkuVO.item.unitValue = tempObj1.tempunitValue;
-					Object.assign(item, tempObj1);
-					return item
-				})
+			o1 = o1 ? o1 : o2;
+			return o1.map((item) => {
+				let tempObj1 = utils.ArrayDeepCopy(item.tempObj);
+				item.shopItemSkuVO = {
+					id : item.id,
+					attrValues: utils.attrValuesToString(item), // attrValues array 转 string ,
+					skuId: item.skuId,
+					item: item.item
+				}
+				item.shopItemSkuVO.item.unitValue = tempObj1.tempunitValue;
+				Object.assign(item, tempObj1);
+				return item
+			})
 		} else {
 			return utils.cacheDataDeal(o1).map((item) => { // 过滤 没有填写数据
 				item.goodsId = item.id;
@@ -355,7 +355,7 @@ export class OrderLogic extends StoreLogic {
 			})
 		} else if (num == 6) {
 			return data && data.filter((item) => {
-				return (item.inNumber !== '')
+				return item.inNumber !== ''
 			})
 		} else if (num == 7) {
 			return data && data.filter((item) => { // 搜索查询  返回搜索的数据

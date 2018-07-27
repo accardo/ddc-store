@@ -1,7 +1,30 @@
-
 /* 获取 值类型  */
 export function getType(val){
   return Object.prototype.toString.call(val).slice(8,-1);
+}
+/**
+ * Description: IOS 手机 时间格式转换
+ * Author: yanlichen <lichen.yan@daydaycook.com>
+ * Date: 2018/6/15
+ */
+export function strToDate(dateObj){
+	dateObj = dateObj.replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '').replace(/(-)/g, '/')
+	dateObj = dateObj.slice(0, dateObj.indexOf("."))
+	return new Date(dateObj)
+}
+
+/*
+ * Description: 格式化时间 例：2018-07-23
+ * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+ * Date: 2018/7/25
+ */
+export function formatTime(data, objTime) {
+	return data.forEach((item) => {
+		if (item[objTime] !== null) {
+			let time = strToDate(item[objTime])
+			return item[objTime] = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`;
+		}
+	})
 }
 
 /**
@@ -202,4 +225,5 @@ export default {
 	sub,
 	divide,
 	showToastNone,
+	formatTime,
 }

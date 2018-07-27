@@ -166,10 +166,7 @@ Page({
 			this.data.listType = 3;
 			this.dialogClose();
 		} else {
-			wx.showToast({
-				title: '请选择类型',
-				icon: 'none'
-			})
+			utils.showToastNone('请选择类型');
 		}
 	},
 	/* 关闭 遮罩层 取消*/

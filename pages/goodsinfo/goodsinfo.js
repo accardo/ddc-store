@@ -87,6 +87,7 @@ Page({
 				page: this.data.update == '1' ? 1 : 2,
 				pages: getCurrentPages()
 			});
+			this.clearCache();
 		})
   },
 	/**

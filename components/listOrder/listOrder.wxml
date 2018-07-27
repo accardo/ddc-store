@@ -263,7 +263,7 @@
         bindtap='detail'
   >
     <view class='list-title'>
-      <text class='label-txt'>退货发货单号：</text>
+      <text class='label-txt'>退货发货单：</text>
       <text class='label-order'>{{item.invoiceSn}}</text>
       <text class='list-type'>{{item.statusStr}}</text>
     </view>

@@ -4,7 +4,7 @@ const config = require('../../config/config.js');
 const utils = require('../../utils/util');
 const app = getApp();
 const storeLogic = new logic.StoreLogic();
-const orderLogic = new logic.OrderLogic();
+// const orderLogic = new logic.OrderLogic();
 Page({
 
   /**
@@ -47,8 +47,8 @@ Page({
 	 */
   subAllot(){
     let collectCacheData = wx.getStorageSync('collectCacheData');
-				collectCacheData = collectCacheData ? utils.attrValuesSkuToString(collectCacheData) : this.data.productlist;
-				collectCacheData = orderLogic.filterData(collectCacheData, 6);
+				collectCacheData = collectCacheData ? utils.attrValuesSkuToString(collectCacheData) : utils.attrValuesSkuToString(this.data.productlist);
+			//	collectCacheData = orderLogic.filterData(collectCacheData, 6);
 		let promseData = {
 			id: this.data.transferId, // 调拨单id
 			outShopId: this.data.outShopId,  // 调出店铺 id
@@ -56,13 +56,12 @@ Page({
 			outTransferId: this.data.outTransferId, // 调拨出库单id
 			transferDetailVOList: collectCacheData
 		}
-		if (collectCacheData.length != this.data.productlist.length ) {
-		    wx.showToast({
-		      title: '部分商品未填写数量',
-		      icon: "none"
-		    })
+		/*if (collectCacheData.length != this.data.productlist.length ) {
+		    utils.showToastNone('部分商品未填写数量');
 		    return;
-		}
+		}*/
+		console.log(promseData);
+
 		wx.showModal({
 			content: '是否确认收货完成？',
 			confirmColor: config.showModal.confirmColor,

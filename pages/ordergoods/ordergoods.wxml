@@ -17,7 +17,7 @@
             class='category-nav-item active_{{_index==index}}'
       >{{item.name}}</view>
     </view>
-     <scroll-view scroll-top="{{scrollTop}}" scroll-y  style="height: 100%; " bindscrolltolower="lower" class="products">
+     <scroll-view scroll-top="{{scrollTop}}" scroll-y  style="height: 100%; " bindscrolltolower="lower" lower-threshold='0' class="products">
          <product-info
                 product-list="{{productlist}}"
                 product-type="{{productType}}"
