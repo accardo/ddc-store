@@ -73,14 +73,15 @@ Page({
 	    itemTypes, // 订货为 2,4,5,6 限制商品  盘点为 2,4,6 其他都是2,4,6，具体请看prd
 	    type: pageIndex == 1 ? 1 : null
     }
-		wx.stopPullDownRefresh();
 		storeLogic.ajaxGetData('category/listProduct', promdData, this.data._index).then((res) => {
-	    if (res.page.list.length == 0) {
-		    utils.showToastNone('没有更多数据');
-		    return
-	    }
+			wx.stopPullDownRefresh();
+			if (res.page.totalPage < this.data.currPage || res.page.list.length == 0) {
+				utils.showToastNone('没有更多数据');
+				return false
+			}
 	    this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
 			this.data.pagetListData = orderLogic.refreshLoadData(this.data.pagetListData, this.data._index);
+
 	    this.setData({
 		    productlist: this.data.pagetListData,
 		    currPage: this.data.currPage + 1
@@ -202,7 +203,8 @@ Page({
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/6/15
 	 */
-	lower() {
+	lower(e) {
+		console.log(e,111);
 		this.getProductByNav();
 	},
 
