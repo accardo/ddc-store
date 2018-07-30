@@ -177,7 +177,7 @@ Component({
 		  this.setData({
 			  productList: this.data.productList
 		  })
-		  utils.showToastNone('不能大于当前库存')
+		  utils.showToastNone('不能大于当前库存');
 	  },
 	  /**
 	   * Description: 盘点存储所有缓存数据
@@ -290,6 +290,30 @@ Component({
 	    }
     },
 	  /*
+	   * Description: 订货直接输入input
+	   * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	   * Date: 2018/7/30
+	   */
+	  setNumber(e) {
+		  let index = e.currentTarget.dataset.index;
+		  let navClassIndex = e.currentTarget.dataset.navclassindex;
+		  console.log(index, navClassIndex);
+		  this.data.productList[index].needNumber = e.detail.value;
+		  if (e.detail.value < 0) {
+			  utils.showToastNone('订货数量不能小于0');
+			  this.data.productList[index].needNumber = 0;
+		  }
+		  this.setCurrentInput(navClassIndex);
+		  this.setData({
+			  productList: this.data.productList
+		  })
+		  if (this.data.productStatus == 'goodsdetail') {
+			  this.triggerEvent("watchChangeDetial", "click");
+		  } else {
+			  this.triggerEvent("watchChange", "click");
+		  }
+	  },
+	  /*
 	   * Description: 合并代码
 	   * Author: yanlichen <lichen.yan@daydaycook.com.cn>
 	   * Date: 2018/7/18
@@ -347,6 +371,23 @@ Component({
 				  -- this.data.productList[index].outNumber;
 				  this.setTransfer();
 			  }
+		  }
+		  this.setData({
+			  productList: this.data.productList
+		  })
+	  },
+	  /*
+	   * Description: 调拨 输入框
+	   * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	   * Date: 2018/7/30
+	   */
+	  setTransferNumber(e) {
+		  let index = e.currentTarget.dataset.index;
+		  if (e.detail.value > this.data.productList[index].item.unitValue) {
+			  this.setVerTosast();
+		  } else {
+			  this.data.productList[index].outNumber = e.detail.value;
+			  this.setTransfer();
 		  }
 		  this.setData({
 			  productList: this.data.productList

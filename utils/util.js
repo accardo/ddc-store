@@ -168,7 +168,7 @@ export function cacheDataDeal(data) {
 export function setTotalNumber(data) {
 	let shopPieceN = 0;
 	let tempArray = cacheDataDeal(data).map((item) => {
-		return shopPieceN += item.needNumber
+		return shopPieceN += Number(item.needNumber)
 	})
 	return {
 		total: tempArray.length,

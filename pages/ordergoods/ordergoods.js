@@ -71,8 +71,8 @@ Page({
       shopId: app.selectIndex, // 店铺ID
       categoryId: this.data.categoryId, // 产品分类ID
 	    itemTypes, // 订货为 2,4,5,6 限制商品  盘点为 2,4,6 其他都是2,4,6，具体请看prd
-	    type: pageIndex == 1 ? 1 : null
     }
+		pageIndex == 1 ? promdData.type = 1 : '';
 		storeLogic.ajaxGetData('category/listProduct', promdData, this.data._index).then((res) => {
 			wx.stopPullDownRefresh();
 			if (res.page.totalPage < this.data.currPage || res.page.list.length == 0) {

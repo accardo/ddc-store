@@ -363,7 +363,7 @@ export class OrderLogic extends StoreLogic {
 			})
 		} else if (num == 8) {
 			return data && data.filter((item) => { // 搜索查询  返回搜索的数据
-				return item.needNumber != '' || item.needNumber != '0';
+				return item.needNumber != '' && item.needNumber != '0';
 			})
 		} else if (num == 9) {
 			return data && data.filter((item) => { // 搜索查询  返回搜索的数据

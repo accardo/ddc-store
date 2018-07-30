@@ -51,6 +51,7 @@ Page({
 		  goodsName: this.data.searchtxt,
 		  itemTypes
 	  }
+	  pageIndex == 1 ? getProse.type = 1 : ''
 	  storeLogic.ajaxGetData('category/listProduct', getProse, this.data.navClassIndex).then((res) => {
 		  this.setData({
 			  showList: true,
