@@ -186,7 +186,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  	console.log(options, 'status');
     let pageindex = wx.getStorageSync('pageindex');
     let pagetitle = wx.getStorageSync('pagetitle');
     let cacheData = wx.getStorageSync('cacheData');

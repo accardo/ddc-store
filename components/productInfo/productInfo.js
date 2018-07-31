@@ -155,9 +155,9 @@ Component({
 		  let itemUnitValue = this.data.productList[uIndex].item.unitValue; // 拆零扣减 整数位
 		  let itemMaterialUnitValue = this.data.productList[uIndex].item.materialUnitValue; // 拆零扣减 拆零位
 		  let netWightValue = this.data.productList[uIndex].item.netWightValue; // 净含量
-		  let itemTotal = utils.add(utils.sub(itemUnitValue, netWightValue), itemMaterialUnitValue); // 库存总量
 		  let inputUnitValue = this.data.productList[uIndex].unitValue; // 输入拆零扣减 整数位
 		  let inputMaterialUnitValue = this.data.productList[uIndex].materialUnitValue; //输入拆零扣减 拆零位
+		  let itemTotal = utils.add(utils.sub(itemUnitValue, netWightValue), itemMaterialUnitValue); // 库存总量
 		  let total = utils.add(utils.sub(inputUnitValue, netWightValue), inputMaterialUnitValue); // 当前总量
 		  if (total > itemTotal) {
 			  if (uInput == 1) {
@@ -297,7 +297,6 @@ Component({
 	  setNumber(e) {
 		  let index = e.currentTarget.dataset.index;
 		  let navClassIndex = e.currentTarget.dataset.navclassindex;
-		  console.log(index, navClassIndex);
 		  this.data.productList[index].needNumber = e.detail.value;
 		  if (e.detail.value < 0) {
 			  utils.showToastNone('订货数量不能小于0');
