@@ -165,7 +165,7 @@ Page({
 	  let cacheData = wx.getStorageSync('cacheData'); // 所有结果数据
 	  if (cacheData) {
 		  this.setData({
-			  productlist: orderLogic.filterData(utils.cacheDataDeal(cacheData), 2)
+			  productlist: orderLogic.filterData(cacheData[0], 2)
 		  })
 	  }
   },

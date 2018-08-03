@@ -208,7 +208,7 @@ export class StoreLogic {
 	 * Params: serviceUrl -> 不同保存请求不同URL; getData -> 由于之前的封装接口分开的这里需要拆分
 	 * Date: 2018/7/20
 	 */
-	ajaxGetData(serviceUrl, getData = null, navClassIndex = null) {
+	ajaxGetData(serviceUrl, getData = null, navClassId = null) {
 		let urlStr = serviceUrl.split('/');
 		wx.showLoading({title: '加载中...', mask: true,});
 		return new Promise((resolve) => {
@@ -219,8 +219,8 @@ export class StoreLogic {
 			}).then((res) => {
 				if (res.code == 0) {
 					setTimeout(() => {
-						if (navClassIndex !== null) {
-							resolve(this.returnData(res, navClassIndex));
+						if (navClassId !== null) {
+							resolve(this.returnData(res, navClassId));
 						} else {
 							resolve(res);
 						}
@@ -243,7 +243,7 @@ export class StoreLogic {
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
 	 * Date: 2018/7/20
 	 */
-	returnData(data, navClassIndex) {
+	returnData(data, navClassId) {
 		this.constructor();
 		 data.page.list.map((item) => {
 			item.attrValues = utils.attrValuesSplit(item);
@@ -257,7 +257,7 @@ export class StoreLogic {
 			} else if (this.pageIndex == 4) { // 调拨
 				item.outNumber = 0;
 			}
-			item.navClass = navClassIndex;
+			item.navClass = navClassId;
 			return item;
 		})
 		return data;
@@ -292,7 +292,7 @@ export class OrderLogic extends StoreLogic {
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
 	 * Date: 2018/7/16
 	 */
-	dpctGlobalModule(a1, a2, a3, a4_index, a5_orig) { //a1 -> 选中数据缓存 type []; a2 -> 搜索缓存 type []; a3 -> 缓存的key type string; a4 -> 分类索引 a5-> 当前原始数据
+	dpctGlobalModule(a1, a2, a3, a5_orig) { //a1 -> 选中数据缓存 type []; a2 -> 搜索缓存 type []; a3 -> 缓存的key type string; a4 -> 分类索引 a5-> 当前原始数据
 		this.constructor();
 		let ty1 = []; // ty1-> 临时存放数组1；
 		let ty2 = []; // ty2-> 临时存放数组2;
@@ -399,9 +399,14 @@ export class OrderLogic extends StoreLogic {
 	 * Date: 2018/6/28
 	 */
 	setEmptyArray(arrayData) {
-		for (let i=0; i < super.navlistLength; i++) {
-			arrayData[i] = [];
+		//arrayData = Object.values(arrayData);
+
+		for (let i=0; i < super.navlistLength.voLenght; i++) {
+			arrayData[super.navlistLength.keyIndex[i]] = [];
 		}
+		// for (let i=0; i < navlistLength.voLenght; i++) {
+		// 	this.data[tempArray][navlistLength.keyIndex[i]] = [];
+		// }
 	}
 
 	/*

@@ -28,7 +28,7 @@ Component({
 		    let outboundCacheData = wx.getStorageSync('outboundCacheData');
 		    let transferCacheData = wx.getStorageSync('transferCacheData');
 
-		    if (cacheData.length > 0) { // 订货
+		    if (cacheData) { // 订货
 			    this.data.cacheArray = wx.getStorageSync('cacheData');
 		    }
 		    if (inventoryCacheData.length > 0) { // 盘点
@@ -78,7 +78,7 @@ Component({
   data: {
     defImg: config.pageImgUrl+'logo.png',
     shopType: config.dict.shopType,
-	  cacheArray: [],
+	  cacheArray: {},
 	  inventoryCacheArray: [],
 	  outboundCacheArray: [],
 	  transferCacheArray: [],
@@ -205,7 +205,7 @@ Component({
 	   * Author: yanlichen <lichen.yan@daydaycook.com>
 	   * Date: 2018/6/2
 	   */
-	  cacheStorageSpace(navClassIndex) {
+	  cacheStorageSpace(categoryId) {
 		  let getCacheData = wx.getStorageSync('cacheData');
 		  let tempInfoData = orderLogic.filterData(this.data.productList, 8);
 		  if (this.data.productConclusion == 1) { // 当是结果页面 返回 当前分类的数据 放入到对应的数据中
@@ -216,7 +216,7 @@ Component({
 				  return item.navClass == navClassIndex;
 			  })
 		  }
-		  this.setEmptyArray('cacheData', 'cacheArray', getCacheData, tempInfoData, navClassIndex);
+		  this.setEmptyArray('cacheData', 'cacheArray', getCacheData, tempInfoData, categoryId);
 	  },
 	  /**
 	   * Description: 订单存储所有详情缓存数据 radio
@@ -232,14 +232,28 @@ Component({
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
 	 * Date: 2018/7/18
 	 */
-	  setEmptyArray(cacheKey, tempArray, cacheData, filterData, navClassIndex) {
+	  setEmptyArray(cacheKey, tempArray, cacheData, filterData, categoryId) {
 		  let navlistLength = wx.getStorageSync('navlistLength');
 		  if (!cacheData) {
-			  for (let i=0; i < navlistLength; i++) {
-				  this.data[tempArray][i] = [];
+			  for (let i=0; i < navlistLength.voLenght; i++) {
+				  this.data[tempArray][navlistLength.keyIndex[i]] = [];
 			  }
 		  }
-		  this.data[tempArray][navClassIndex] = filterData;
+		  this.data[tempArray][navlistLength.categoryId] = filterData //先添加 在进行过滤
+		  if (navlistLength.categoryId == 0) { // 全部分类
+			  let filterCategory = this.data[tempArray][0].filter((item) => { // 过滤全部分类 当前选中所有分类数据
+			  	if (item.item.categoryId1 == categoryId) { // 返回当前选中的所有分类数据
+			  		return item
+				  }
+			  })
+			  this.data[tempArray][categoryId] = filterCategory
+		  } else { // 除全部分类 所有分类累加即使全部分类 在赋值到全部分类
+		  	let tempA = Object.values(this.data[tempArray]); // 对象转换成数组
+		  	tempA.splice(0, 1); // 删除全部分类 进行对象合并成数组
+		  	tempA = utils.cacheDataDeal(tempA); // 去除全部分类后 整合数组对象
+			  this.data[tempArray][0] = tempA // 所有分类进行合并后 赋值给全部分类
+		  }
+		  this.data[tempArray][navlistLength.categoryId] = filterData
 		  wx.setStorageSync(cacheKey, this.data[tempArray]);
 	  },
     /**
@@ -267,16 +281,17 @@ Component({
     setCurrentNum(e,isAddRed) {
       let index = e.currentTarget.dataset.index;
       let navClassIndex = e.currentTarget.dataset.navclassindex
-      if (isAddRed) {// 加法
+	    let categoryId = e.currentTarget.dataset.categoryid
+	    if (isAddRed) {// 加法
         if (this.data.productType == 'goods') { // 订货详情
           ++ this.data.productList[index].needNumber;
-	        this.setCurrentInput(navClassIndex)
+	        this.setCurrentInput(categoryId)
         }
       } else { // 减法
         if (this.data.productType == 'goods') {
           if (this.data.productList[index].needNumber > 0) {
             -- this.data.productList[index].needNumber;
-	          this.setCurrentInput(navClassIndex);
+	          this.setCurrentInput(categoryId);
           }
         }
       }
@@ -317,13 +332,14 @@ Component({
 	   * Author: yanlichen <lichen.yan@daydaycook.com.cn>
 	   * Date: 2018/7/18
 	   */
-	  setCurrentInput(navClassIndex) {
+	  setCurrentInput(categoryId) {
 		  if(this.data.shopTypeSearch == 'search') {
-			  wx.setStorageSync('searchGoodsOrderCacheData', this.data.productList); // 搜索页面的缓存数据 需要处理
+			  this.cacheStorageSpace(categoryId);
+			  // wx.setStorageSync('searchGoodsOrderCacheData', this.data.productList); // 搜索页面的缓存数据 需要处理
 		  } else if (this.data.productStatus == 'goodsdetail') {
 			  this.cacheStorageSpaceDetial();
 		  } else {
-			  this.cacheStorageSpace(navClassIndex);
+			  this.cacheStorageSpace(categoryId);
 		  }
 	  },
 	  /**

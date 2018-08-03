@@ -46,12 +46,12 @@ Page({
 	  let getProse = {
 		  currPage: this.data.currPage,
 		  pageSize: this.data.pageSize,
-		  categoryId: this.data.categoryId,
 		  shopId: app.selectIndex,
 		  goodsName: this.data.searchtxt,
 		  itemTypes
 	  }
-	  pageIndex == 1 ? getProse.type = 1 : ''
+	  pageIndex == 1 ? getProse.type = 1 : '';
+	  this.data.categoryId != 0 ? getProse.categoryId = this.data.categoryId : '' // 产品分类ID
 	  storeLogic.ajaxGetData('category/listProduct', getProse, this.data.navClassIndex).then((res) => {
 		  this.setData({
 			  showList: true,

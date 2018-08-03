@@ -167,7 +167,8 @@ export function cacheDataDeal(data) {
  */
 export function setTotalNumber(data) {
 	let shopPieceN = 0;
-	let tempArray = cacheDataDeal(data).map((item) => {
+	let arr = Object.getOwnPropertyNames(data);
+	let tempArray = (arr != 0) && data[0].map((item) => {
 		return shopPieceN += Number(item.needNumber)
 	})
 	return {

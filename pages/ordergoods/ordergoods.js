@@ -41,7 +41,8 @@ Page({
 	    scrollTop: 0,
     })
     this.getProductByNav();
-  },
+		this.listLength();
+	},
 	/*
 	 * Description: 获取类别信息
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
@@ -49,14 +50,26 @@ Page({
 	 */
 	getMenuList() {
 		storeLogic.ajaxGetData('category/listCategory').then((res) => {
+			res.categoryVOList.unshift({
+				id: 0,
+				name: '全部',
+				level: 0,
+				sort: 0
+			})
 			this.setData({
 				categoryId: res.categoryVOList[0].id,
 				navlist: res.categoryVOList
 			})
-			wx.setStorageSync('navlistLength', res.categoryVOList.length); // 分类长度
+			this.listLength();
 			this.getProductByNav();
 		})
   },
+	listLength() {
+		let a = this.data.navlist.map((item) => {
+			return item.id
+		})
+		wx.setStorageSync('navlistLength', {voLenght: this.data.navlist.length, keyIndex: a, categoryId: this.data.categoryId}); // 分类长度
+	},
 	/*
 	 * Description: 获取产品信息
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
@@ -69,18 +82,19 @@ Page({
       currPage: this.data.currPage,
       pageSize: this.data.pageSize,
       shopId: app.selectIndex, // 店铺ID
-      categoryId: this.data.categoryId, // 产品分类ID
 	    itemTypes, // 订货为 2,4,5,6 限制商品  盘点为 2,4,6 其他都是2,4,6，具体请看prd
     }
+    // 分类id为0的时候是全部分类 不传分类id 搜索全部商品
+		this.data.categoryId != 0 ? promdData.categoryId = this.data.categoryId : '' // 产品分类ID
 		pageIndex == 1 ? promdData.type = 1 : '';
-		storeLogic.ajaxGetData('category/listProduct', promdData, this.data._index).then((res) => {
+		storeLogic.ajaxGetData('category/listProduct', promdData, this.data.categoryId).then((res) => {
 			wx.stopPullDownRefresh();
 			if (res.page.totalPage < this.data.currPage || res.page.list.length == 0) {
 				utils.showToastNone('没有更多数据');
 				return false
 			}
 	    this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
-			this.data.pagetListData = orderLogic.refreshLoadData(this.data.pagetListData, this.data._index);
+			this.data.pagetListData = orderLogic.refreshLoadData(this.data.pagetListData, this.data.categoryId);
 
 	    this.setData({
 		    productlist: this.data.pagetListData,
@@ -96,6 +110,7 @@ Page({
    */
   _watchChange(){
   	let cacheData = wx.getStorageSync('cacheData');
+  	console.log(cacheData, 'cacheData')
 		let setShop = storeLogic.watchChange(cacheData);
     this.setData({
       shopTotalN: setShop.total || 0,
@@ -257,7 +272,7 @@ Page({
   onShow () {
     let pageindex = wx.getStorageSync('pageindex');
 	  // 订货
-	  let cacheData = wx.getStorageSync('cacheData') ? wx.getStorageSync('cacheData') : []; // 读取分类订货中所有选中的数据
+	  let cacheData = wx.getStorageSync('cacheData') ? wx.getStorageSync('cacheData') : {}; // 读取分类订货中所有选中的数据
     let searchGoodsOrderCacheData = wx.getStorageSync('searchGoodsOrderCacheData'); // 订货 搜索缓存
 
 	  // 盘点
@@ -268,15 +283,23 @@ Page({
 	  let outboundCacheData = wx.getStorageSync('outboundCacheData') ? wx.getStorageSync('outboundCacheData') : []; // 读取分类中出库所有选中数据
 	  let searchOutboundCacheData = wx.getStorageSync('searchOutboundCacheData'); // 出库 搜索缓存
 	  let productlistArray = [];
+
+	  let os = wx.getStorageSync('optionStorage');
     if (pageindex == 0) { // 订货
-	    productlistArray = orderLogic.dpctGlobalModule(cacheData, searchGoodsOrderCacheData, 'cacheData', this.data._index, this.data.productlist);
+    	console.log(1112334)
+	   // productlistArray = orderLogic.dpctGlobalModule(cacheData, searchGoodsOrderCacheData, 'cacheData', this.data.productlist);
+	    if (os == 2) {
+    		this.data.currPage = 1;
+		    this.getProductByNav();
+	    }
 	    this._watchChange();
+
     }
     if(pageindex == 1) { // 盘点
-	    productlistArray = orderLogic.dpctGlobalModule(inventoryCacheData, searchInventoryCacheData, 'inventoryCacheData', this.data._index, this.data.productlist);
+	    productlistArray = orderLogic.dpctGlobalModule(inventoryCacheData, searchInventoryCacheData, 'inventoryCacheData', this.data.categoryId, this.data.productlist);
     }
     if (pageindex == 2 || pageindex == 7) { // 出库 退货
-	    productlistArray = orderLogic.dpctGlobalModule(outboundCacheData, searchOutboundCacheData, 'outboundCacheData', this.data._index, this.data.productlist);
+	    productlistArray = orderLogic.dpctGlobalModule(outboundCacheData, searchOutboundCacheData, 'outboundCacheData', this.data.categoryId, this.data.productlist);
     }
     if (pageindex == 5) {
 	    productlistArray = this.data.productlist

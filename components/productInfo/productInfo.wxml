@@ -25,13 +25,13 @@
                 当前库存：<text>{{item.item.deductionType ==1 ? (item.item.unitValue+''+ item.item.unitName): (item.item.unitValue+''+ item.item.unitName +' '+item.item.materialUnitValue+''+ item.item.materialUnitName)}}</text>
               </view>
               <view class='product-count' >
-                <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" catchtap='countReduce' src='../../icons/jian.png'></image>
+                <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" data-categoryId="{{item.item.categoryId1}}" catchtap='countReduce' src='../../icons/jian.png'></image>
                 <view class='input-number'>
-                  <input class='input-num red' bindinput="setNumber" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" type="number" value="{{ item.needNumber }}"/>
+                  <input class='input-num red' bindinput="setNumber" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" data-categoryId="{{item.item.categoryId1}}" type="number" value="{{ item.needNumber }}"/>
                  <!-- <text class='input-num red'>{{item.needNumber }}</text>-->
                   <text class='input-type'>{{item.item.unitName}}</text>
                 </view>
-                <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" catchtap='countAdd' src='../../icons/jia.png'></image>
+                <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" data-categoryId="{{item.item.categoryId1}}" catchtap='countAdd' src='../../icons/jia.png'></image>
               </view>
           </view>
           <!--订货 end-->
