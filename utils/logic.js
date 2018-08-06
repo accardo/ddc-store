@@ -297,11 +297,18 @@ export class OrderLogic extends StoreLogic {
 		let ty1 = []; // ty1-> 临时存放数组1；
 		let ty2 = []; // ty2-> 临时存放数组2;
 		if (super.os == 2) {
+			let arr = Object.getOwnPropertyNames(a1);
 			ty2 = this.filterData(a2, 2); // 搜索数据获取数据输入不为0的数据
-			if (a1.length > 0) { // 有缓存先读取缓存数据后在和 当前数据对比赋值
+		//	console.log(ty2, '搜索数据过滤')
+			if (arr != 0) { // 有缓存先读取缓存数据后在和 当前数据对比赋值
 				if (ty2 !== '' && ty2.length > 0) {
-					a1[a4_index] = this.forDataContrastSearch(a1[a4_index], ty2); // 搜索结果和总数据对比，如果有skuId相同责去除
-					ty1 = this.forDataContrastSearch(a5_orig, a1[a4_index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
+					let a = Object.entries(a1).forEach()
+					//let tempA = Object.values(a1); // 对象转换成数组
+
+				//	tempA = utils.cacheDataDeal(tempA); // 去除全部分类后 整合数组对象
+					console.log(a, Object.values(ty2));
+					//a1[a4_index] = this.forDataContrastSearch(a1[a4_index], ty2); // 搜索结果和总数据对比，如果有skuId相同责去除
+					//ty1 = this.forDataContrastSearch(a5_orig, a1[a4_index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
 				}
 			} else { // 当页面没有缓存 直接搜索时候当前数据对比赋值
 				if (ty2 !== '' && ty2.length > 0) {

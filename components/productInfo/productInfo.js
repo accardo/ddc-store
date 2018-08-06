@@ -234,26 +234,43 @@ Component({
 	 */
 	  setEmptyArray(cacheKey, tempArray, cacheData, filterData, categoryId) {
 		  let navlistLength = wx.getStorageSync('navlistLength');
+		 // let cachemd = utils.ArrayDeepCopy(cacheData);
+
 		  if (!cacheData) {
 			  for (let i=0; i < navlistLength.voLenght; i++) {
 				  this.data[tempArray][navlistLength.keyIndex[i]] = [];
 			  }
 		  }
 		  this.data[tempArray][navlistLength.categoryId] = filterData //先添加 在进行过滤
-		  if (navlistLength.categoryId == 0) { // 全部分类
+		  if (navlistLength.categoryId == 0 || this.data.shopTypeSearch == 'search') { // 全部分类
 			  let filterCategory = this.data[tempArray][0].filter((item) => { // 过滤全部分类 当前选中所有分类数据
 			  	if (item.item.categoryId1 == categoryId) { // 返回当前选中的所有分类数据
 			  		return item
 				  }
 			  })
-			  this.data[tempArray][categoryId] = filterCategory
+			  console.log(cacheData[categoryId], filterCategory);
+			  filterCategory = orderLogic.forDataContrastSearch(cacheData[categoryId], filterCategory);
+
+			  console.log(filterCategory, 'filterCategory');
+			  this.data[tempArray][categoryId] = filterCategory;
+			  if (this.data.shopTypeSearch == 'search') {
+				  // let cacheData1 = wx.getStorageSync(this.data[tempArray])
+				  let tempA = Object.values(this.data[tempArray]); // 对象转换成数组
+				  tempA.splice(0, 1); // 删除全部分类 进行对象合并成数组
+				  tempA = utils.cacheDataDeal(tempA); // 去除全部分类后 整合数组对象
+				  console.log(tempA, 'tempa');
+				  this.data[tempArray][0] = tempA // 所有分类进行合并后 赋值给全部分类
+
+			  }
 		  } else { // 除全部分类 所有分类累加即使全部分类 在赋值到全部分类
 		  	let tempA = Object.values(this.data[tempArray]); // 对象转换成数组
 		  	tempA.splice(0, 1); // 删除全部分类 进行对象合并成数组
 		  	tempA = utils.cacheDataDeal(tempA); // 去除全部分类后 整合数组对象
 			  this.data[tempArray][0] = tempA // 所有分类进行合并后 赋值给全部分类
 		  }
-		  this.data[tempArray][navlistLength.categoryId] = filterData
+		  if (this.data.shopTypeSearch != 'search') {
+			  this.data[tempArray][navlistLength.categoryId] = filterData
+		  }
 		  wx.setStorageSync(cacheKey, this.data[tempArray]);
 	  },
     /**
@@ -335,7 +352,7 @@ Component({
 	  setCurrentInput(categoryId) {
 		  if(this.data.shopTypeSearch == 'search') {
 			  this.cacheStorageSpace(categoryId);
-			  // wx.setStorageSync('searchGoodsOrderCacheData', this.data.productList); // 搜索页面的缓存数据 需要处理
+		//	   wx.setStorageSync('searchGoodsOrderCacheData', this.data.productList); // 搜索页面的缓存数据 需要处理
 		  } else if (this.data.productStatus == 'goodsdetail') {
 			  this.cacheStorageSpaceDetial();
 		  } else {

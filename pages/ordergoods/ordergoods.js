@@ -288,10 +288,10 @@ Page({
     if (pageindex == 0) { // 订货
     	console.log(1112334)
 	   // productlistArray = orderLogic.dpctGlobalModule(cacheData, searchGoodsOrderCacheData, 'cacheData', this.data.productlist);
-	    if (os == 2) {
+	    /*if (os == 2) {
     		this.data.currPage = 1;
 		    this.getProductByNav();
-	    }
+	    }*/
 	    this._watchChange();
 
     }
