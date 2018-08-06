@@ -1,7 +1,8 @@
-const config = require('../../config/config.js');
-const utils = require('../../utils/util');
-const app = getApp();
+
+import * as utils from'../../utils/util';
 import * as logic from  '../../utils/logic';
+const config = require('../../config/config.js');
+const app = getApp();
 const storeLogic = new logic.StoreLogic();
 const orderLogic = new logic.OrderLogic();
 // pages/goodsinfo/goodsinfo.js
@@ -79,7 +80,7 @@ Page({
 			id: this.data.purchaseId || null, // 订单id
 			shopId: app.selectIndex, // 店铺ID
 			status: this.data.status || 0, // 状态 (4、未提交 / 保存)
-			purchaseDetailVOList: storeLogic.subData4(this.data.update == '1' ? cacheDataDetial : cacheData, this.data.productlist, this.data.update)
+			purchaseDetailVOList: storeLogic.subData4(this.data.update == '1' ? cacheDataDetial : cacheData[0], this.data.productlist, this.data.update)
 		}
 		storeLogic.ajaxSaveUpdate('purchase', promeData, this.data.update == '1' ? false : true).then(() => {
 			utils.showToast({
@@ -96,16 +97,13 @@ Page({
 	 * Date: 2018/5/29
 	 */
 	clearCache() {
-		wx.removeStorageSync('goodsOrderCacheData');
 		wx.removeStorageSync('cacheData');
-		wx.removeStorageSync('searchGoodsOrderCacheData');
 		wx.removeStorageSync('cacheDataDetial');
 	},
   /* 前往照片上传页面 */
   nextGo(){
     let outboundCacheData = wx.getStorageSync('outboundCacheData');
-	      outboundCacheData = utils.cacheDataDeal(outboundCacheData);
-	  let outboundCacheArray = orderLogic.filterData(outboundCacheData, 3);
+	  let outboundCacheArray = orderLogic.filterData(outboundCacheData && outboundCacheData[0], 3);
 	  if (outboundCacheData.length < 0) {
 	  	utils.showToastNone('请添加商品');
 	  	return
@@ -136,7 +134,7 @@ Page({
 	 */
 	_watchChange(){
 		let cacheData = wx.getStorageSync('cacheData');
-		let setShop = storeLogic.watchChange(cacheData);
+		let setShop = storeLogic.watchChange(cacheData && cacheData[0]);
 		this.setData({
 			shopTotalN: setShop.total || 0,
 			shopPieceN: setShop.shopPieceN || 0
@@ -178,7 +176,7 @@ Page({
 		let outboundCacheData = wx.getStorageSync('outboundCacheData'); // 所有结果数据
 		if (outboundCacheData) {
 			this.setData({
-				productlist: orderLogic.filterData(utils.cacheDataDeal(outboundCacheData), 3)
+				productlist: orderLogic.filterData(outboundCacheData[0], 3)
 			})
 		}
 	},

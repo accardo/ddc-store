@@ -82,7 +82,7 @@ Page({
 		})
 	},
   /* 提交审核 */
-  subReview(){
+  subReview() {
 	  let inventoryDetailVOList = utils.attrValuesSkuToString(this.data.receiptList); // attrValues array 转 string 提交数据
 	      inventoryDetailVOList = orderLogic.filterData(inventoryDetailVOList, 5);
 	  let promeData = {

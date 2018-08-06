@@ -1,6 +1,6 @@
 import * as utils from "../../utils/util";
-const app = getApp();
 import * as logic from  '../../utils/logic';
+const app = getApp();
 const storeLogic = new logic.StoreLogic();
 // pages/expendtrim/expendtrim.js
 Page({

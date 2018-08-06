@@ -20,7 +20,6 @@ Page({
     pageSize:10,
     categoryId: '',
     productlist: [], // 搜索原始数据
-	  navClassIndex: 0, // 用于判断页面多分类数据 存储二维数组
 	  inputShow: false, // 置换页面中用 是否显示input框
 	  fromInto: '', // form  要转换的商品  info 转换为的商品
   },
@@ -52,7 +51,7 @@ Page({
 	  }
 	  pageIndex == 1 ? getProse.type = 1 : '';
 	  this.data.categoryId != 0 ? getProse.categoryId = this.data.categoryId : '' // 产品分类ID
-	  storeLogic.ajaxGetData('category/listProduct', getProse, this.data.navClassIndex).then((res) => {
+	  storeLogic.ajaxGetData('category/listProduct', getProse, this.data.categoryId).then((res) => {
 		  this.setData({
 			  showList: true,
 			  searchReset: res.page.list.length == 0 ? true : false,
@@ -95,7 +94,6 @@ Page({
 		  shoptype: options.shopType || '',
 		  categoryId: options.categoryId || '',
 		  shopTypeSearch: options.shopTypeSearch || '',
-		  navClassIndex: options.navClass || '',
 		  fromInto: options.convert || 'into',
 	  })
     wx.setNavigationBarTitle({

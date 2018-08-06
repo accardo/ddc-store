@@ -1,5 +1,5 @@
 // pages/orderfrom/orderfrom.js
-const utils = require('../../utils/util');
+import * as utils from'../../utils/util';
 import * as logic from  '../../utils/logic';
 const storeLogic = new logic.StoreLogic();
 const app = getApp();

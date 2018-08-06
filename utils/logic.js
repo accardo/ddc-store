@@ -37,9 +37,7 @@ export class StoreLogic {
 	 */
 	subData(o1, o2) {
 		let tempInventList = o1 ? o1 : o2;
-				tempInventList = utils.ArrayDeepCopy(tempInventList);  // 数组深层拷贝
-				tempInventList = utils.cacheDataDeal(tempInventList); // 二维数组结构为一维数组进行 过滤
-		let isComplete = tempInventList.filter((item) => { // 过滤 没有填写数据
+		let isComplete = o1.filter((item) => { // 过滤 没有填写数据
 			if (item.unitValue !== '' || item.materialUnitValue !== '') { // 提交数据整理
 				item.goodsId = item.id;
 				item.shopItemSkuVO = {
@@ -135,7 +133,7 @@ export class StoreLogic {
 				return item
 			})
 		} else {
-			return utils.cacheDataDeal(o1).map((item) => { // 过滤 没有填写数据
+			return o1.map((item) => { // 过滤 没有填写数据
 				item.goodsId = item.id;
 				item.shopItemSkuVO = {
 					attrValues: utils.attrValuesToString(item), // attrValues array 转 string
@@ -208,7 +206,7 @@ export class StoreLogic {
 	 * Params: serviceUrl -> 不同保存请求不同URL; getData -> 由于之前的封装接口分开的这里需要拆分
 	 * Date: 2018/7/20
 	 */
-	ajaxGetData(serviceUrl, getData = null, navClassId = null) {
+	ajaxGetData(serviceUrl, getData = null, categoryId =null) {
 		let urlStr = serviceUrl.split('/');
 		wx.showLoading({title: '加载中...', mask: true,});
 		return new Promise((resolve) => {
@@ -219,8 +217,8 @@ export class StoreLogic {
 			}).then((res) => {
 				if (res.code == 0) {
 					setTimeout(() => {
-						if (navClassId !== null) {
-							resolve(this.returnData(res, navClassId));
+						if (categoryId !== null) {
+							resolve(this.returnData(res));
 						} else {
 							resolve(res);
 						}
@@ -243,9 +241,9 @@ export class StoreLogic {
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
 	 * Date: 2018/7/20
 	 */
-	returnData(data, navClassId) {
+	returnData(data) {
 		this.constructor();
-		 data.page.list.map((item) => {
+		data.page.list.map((item) => {
 			item.attrValues = utils.attrValuesSplit(item);
 			if (this.pageIndex == 0) { // 订货
 				item.needNumber = 0;
@@ -257,7 +255,6 @@ export class StoreLogic {
 			} else if (this.pageIndex == 4) { // 调拨
 				item.outNumber = 0;
 			}
-			item.navClass = navClassId;
 			return item;
 		})
 		return data;
@@ -292,7 +289,7 @@ export class OrderLogic extends StoreLogic {
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
 	 * Date: 2018/7/16
 	 */
-	dpctGlobalModule(a1, a2, a3, a5_orig) { //a1 -> 选中数据缓存 type []; a2 -> 搜索缓存 type []; a3 -> 缓存的key type string; a4 -> 分类索引 a5-> 当前原始数据
+	/*dpctGlobalModule(a1, a2, a3, a5_orig) { //a1 -> 选中数据缓存 type []; a2 -> 搜索缓存 type []; a3 -> 缓存的key type string; a4 -> 分类索引 a5-> 当前原始数据
 		this.constructor();
 		let ty1 = []; // ty1-> 临时存放数组1；
 		let ty2 = []; // ty2-> 临时存放数组2;
@@ -333,7 +330,7 @@ export class OrderLogic extends StoreLogic {
 			ty2 = a5_orig;
 		}
 		return ty1.length > 0 ? ty1 : ty2;
-	}
+	}*/
 	/**
 	 * Description: 过滤数据
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -405,16 +402,11 @@ export class OrderLogic extends StoreLogic {
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
 	 * Date: 2018/6/28
 	 */
-	setEmptyArray(arrayData) {
-		//arrayData = Object.values(arrayData);
-
+	/*setEmptyArray(arrayData) {
 		for (let i=0; i < super.navlistLength.voLenght; i++) {
 			arrayData[super.navlistLength.keyIndex[i]] = [];
 		}
-		// for (let i=0; i < navlistLength.voLenght; i++) {
-		// 	this.data[tempArray][navlistLength.keyIndex[i]] = [];
-		// }
-	}
+	}*/
 
 	/*
 	 * Description: 连续加载数据处理
