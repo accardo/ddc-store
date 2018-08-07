@@ -100,7 +100,7 @@ Component({
 		  let categoryId = e.currentTarget.dataset.categoryid
 		  this.data.productList[uIndex].unitValue = e.detail.value;
 		  if (this.data.pageindex == 1) {
-			  this.setInventoryCache(categoryId);
+			  this.cacheStorageSpaceInfo(categoryId);
 		  }else if(this.data.pageindex == 2 || this.data.pageindex == 7) {
 			  if (this.data.productList[uIndex].item.deductionType == 1) {
 			  	// 判断输入商品数量不能大于当前库存，直接扣减
@@ -112,7 +112,7 @@ Component({
 			  } else if(this.data.productList[uIndex].item.deductionType == 2) { // 拆零扣减
 			  	this.setVerification(uIndex, 1);
 			  }
-			  this.setInventoryCache(categoryId);
+			  this.cacheStorageSpaceInfo(categoryId);
 		  }
     },
 	  /**
@@ -125,20 +125,12 @@ Component({
 		  let categoryId = e.currentTarget.dataset.categoryid
 		  this.data.productList[uIndex].materialUnitValue = e.detail.value;
 		  if (this.data.pageindex == 1) {
-			  this.setInventoryCache(categoryId);
+			  this.cacheStorageSpaceInfo(categoryId);
 		  } else if (this.data.pageindex == 2 || this.data.pageindex == 7) {
 			  this.setVerification(uIndex, 2);
-			  this.setInventoryCache(categoryId);
+			  this.cacheStorageSpaceInfo(categoryId);
 		  }
     },
-	  /*
-	   * Description: 查询缓存设置 公共整合
-	   * Author: yanlichen <lichen.yan@daydaycook.com.cn>
-	   * Date: 2018/7/18
-	   */
-	  setInventoryCache(categoryId) {
-	  	this.cacheStorageSpaceInfo(categoryId);
-	  },
 	  /**
 		 * Description: 验证信息 拆零 整合
 		 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
@@ -187,9 +179,9 @@ Component({
 		  let tempInfoData = orderLogic.filterData(this.data.productList, 3);
 		  if (this.data.pageindex == 1) {
 		  	// 缓存数据 , 盘点临时存放空数组， 读取盘点缓存数据， 过滤后的数据 , 分类索引号：用于创建第几空数组
-		  	this.setEmptyArray('inventoryCacheData', 'inventoryCacheArray', getInventoryCacheData, tempInfoData, categoryId);
+			  orderLogic.setfuncData('inventoryCacheData', this.data.inventoryCacheArray, getInventoryCacheData, tempInfoData, categoryId, this.data.shopTypeSearch);
 		  } else if(this.data.pageindex == 2 || this.data.pageindex == 7) {
-			  this.setEmptyArray('outboundCacheData', 'outboundCacheArray', getOutboundCacheData, tempInfoData, categoryId);
+			  orderLogic.setfuncData('outboundCacheData', this.data.outboundCacheArray, getOutboundCacheData, tempInfoData, categoryId, this.data.shopTypeSearch);
 		  }
 	  },
 	  /**
@@ -205,7 +197,7 @@ Component({
 			   productList: tempInfoData
 			  })
 		  }
-		  this.setEmptyArray('cacheData', 'cacheArray', getCacheData, tempInfoData, categoryId);
+		  orderLogic.setfuncData('cacheData', this.data.cacheArray, getCacheData, tempInfoData, categoryId, this.data.shopTypeSearch);
 	  },
 	  /**
 	   * Description: 订单存储所有详情缓存数据 radio
@@ -215,59 +207,6 @@ Component({
 	  cacheStorageSpaceDetial() {
 		  let tempInfoData = orderLogic.filterData(this.data.productList, 9);
 		  wx.setStorageSync('cacheDataDetial', tempInfoData);
-	  },
-	  /*
-	 * Description: 设置空数组 占位 有多少分类设置多少个空数组
-	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
-	 * Date: 2018/7/18
-	 */
-	  setEmptyArray(cacheKey, tempArray, cacheData, filterData, categoryId) {
-		  let navlistLength = wx.getStorageSync('navlistLength');
-		  if (!cacheData) {
-			  for (let i=0; i < navlistLength.voLenght; i++) {
-				  this.data[tempArray][navlistLength.keyIndex[i]] = [];
-			  }
-		  }
-		  this.data[tempArray][navlistLength.categoryId] = filterData //先添加 在进行过滤
-		  if (navlistLength.categoryId == 0) { // 全部分类
-			  let filterCategory = this.data[tempArray][0].filter((item) => { // 过滤全部分类 当前选中所有分类数据
-			  	if (item.item.categoryId1 == categoryId) { // 返回当前选中的所有分类数据
-			  		return item
-				  }
-			  })
-			  if (this.data.shopTypeSearch == 'search') {
-				  filterCategory = orderLogic.forDataContrastSearch(cacheData[categoryId] || [], filterCategory);
-			  }
-			  console.log(filterCategory, 'filterCategory');
-			  this.data[tempArray][categoryId] = filterCategory;
-			  if (this.data.shopTypeSearch == 'search') {
-				  // let cacheData1 = wx.getStorageSync(this.data[tempArray])
-				  let tempA = Object.values(this.data[tempArray]); // 对象转换成数组
-				  tempA.splice(0, 1); // 删除全部分类 进行对象合并成数组
-				  tempA = utils.cacheDataDeal(tempA); // 去除全部分类后 整合数组对象
-				  this.data[tempArray][0] = tempA // 所有分类进行合并后 赋值给全部分类
-
-			  }
-		  } else { // 除全部分类 所有分类累加即使全部分类 在赋值到全部分类
-		  	if (this.data.shopTypeSearch == 'search') {
-				  let filterCategory = this.data[tempArray][categoryId].filter((item) => { // 过滤全部分类 当前选中所有分类数据
-					  if (item.item.categoryId1 == categoryId) { // 返回当前选中的所有分类数据
-						  return item
-					  }
-				  })
-				  filterCategory = orderLogic.forDataContrastSearch(cacheData[categoryId] || [], filterCategory);
-				  this.data[tempArray][categoryId] = filterCategory;
-			  }
-
-		  	let tempA = Object.values(this.data[tempArray]); // 对象转换成数组
-		  	tempA.splice(0, 1); // 删除全部分类 进行对象合并成数组
-		  	tempA = utils.cacheDataDeal(tempA); // 去除全部分类后 整合数组对象
-			  this.data[tempArray][0] = tempA // 所有分类进行合并后 赋值给全部分类
-		  }
-		  if (this.data.shopTypeSearch != 'search') {
-			  this.data[tempArray][navlistLength.categoryId] = filterData
-		  }
-		  wx.setStorageSync(cacheKey, this.data[tempArray]);
 	  },
     /**
      * Description: 加号

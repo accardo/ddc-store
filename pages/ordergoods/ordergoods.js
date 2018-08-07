@@ -12,7 +12,7 @@ Page({
   data: {
     _index: 0, // 分类导航索引号
     currPage: 1,
-    pageSize: 6,
+    pageSize: 10,
     categoryId: 0, // 导航分类Id
     scrollTop: 0,
     navlist: [],  // 侧边导航

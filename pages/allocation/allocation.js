@@ -1,7 +1,7 @@
 // pages/allocation/allocation.js
 import * as logic from  '../../utils/logic';
+import * as utils from'../../utils/util';
 const config = require('../../config/config.js');
-const utils = require('../../utils/util');
 const shopListService = require('../../service/service.service.js');
 const app = getApp();
 const storeLogic = new logic.StoreLogic();

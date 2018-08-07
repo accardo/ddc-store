@@ -283,6 +283,7 @@ export class OrderLogic extends StoreLogic {
 	constructor() {
 		super();
 		this.plistArray = [];
+		this.pl = {};
 	}
 	/*
 	 * Description: 订货 盘点 出库 退出 公共模块
@@ -367,7 +368,7 @@ export class OrderLogic extends StoreLogic {
 			})
 		} else if (num == 8) {
 			return data && data.filter((item) => { // 搜索查询  返回搜索的数据
-				return item.needNumber != '' && item.needNumber != '0';
+				return item.needNumber != '0';
 			})
 		} else if (num == 9) {
 			return data && data.filter((item) => { // 搜索查询  返回搜索的数据
@@ -407,7 +408,63 @@ export class OrderLogic extends StoreLogic {
 			arrayData[super.navlistLength.keyIndex[i]] = [];
 		}
 	}*/
-
+	/*
+	 * Description: 订货 盘点 出库 退货 数据筛选逻辑 c_key -> 缓存key值；t_array -> 临时存储值； c_data -> 缓存数据； f_data -> 过滤数据； c_id -> 分类id； t_sh -> 搜索版面  search 搜索页面
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/8/7
+	 */
+	setfuncData(c_key, t_array, c_data, f_data, c_id, t_sh) {
+		this.constructor();
+		if (!c_data) {
+			for (let i=0; i < super.navlistLength.voLenght; i++) {
+				t_array[super.navlistLength.keyIndex[i]] = [];
+			}
+		}
+		t_array[super.navlistLength.categoryId] = f_data //先添加 在进行过滤
+		if (super.navlistLength.categoryId == 0) { // 全部分类
+			let fCategory = this.allFilter(t_array[0], c_id);
+			if (t_sh == 'search') {
+				fCategory = this.forDataContrastSearch(c_data[c_id] || [], fCategory);
+			}
+			t_array[c_id] = fCategory;
+			if(t_sh == 'search') {
+				t_array[0] = this.mergeData(t_array);
+			}
+		} else { // 除全部分类 所有分类累加即使全部分类 在赋值到全部分类
+			if (t_sh == 'search') {
+				let fCategory = this.allFilter(t_array[c_id], c_id);
+				fCategory = this.forDataContrastSearch(c_data[c_id] || [], fCategory);
+				t_array[c_id] = fCategory;
+			}
+			t_array[0] = this.mergeData(t_array);
+		}
+		if (t_sh != 'search') {
+			t_array[super.navlistLength.categoryId] = f_data
+		}
+		wx.setStorageSync(c_key, t_array);
+	}
+	/*
+	 * Description: 过滤全部分类 或者  搜索全部分类 数据
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/8/7
+	 */
+	allFilter(data, c_id) {
+		return data.filter((item) => { // 过滤全部分类 当前选中所有分类数据
+			if (item.item.categoryId1 == c_id) { // 返回当前选中的所有分类数据
+				return item
+			}
+		})
+	}
+	/*
+	 * Description: 合并选中总数据并赋值给 0 全部分类
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/8/7
+	 */
+	mergeData(data) {
+		let tempA = Object.values(data); // 对象转换成数组
+		tempA.splice(0, 1); // 删除全部分类 进行对象合并成数组
+		return utils.cacheDataDeal(tempA); // 去除全部分类后 整合数组对象
+	}
 	/*
 	 * Description: 连续加载数据处理
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
