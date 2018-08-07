@@ -241,14 +241,7 @@ Component({
           }
         }
       }
-      this.setData({
-        productList: this.data.productList
-      })
-	    if (this.data.productStatus == 'goodsdetail') {
-		    this.triggerEvent("watchChangeDetial", "click");
-	    } else {
-		    this.triggerEvent("watchChange", "click");
-	    }
+	    this.watchTriggerEvent();
     },
 	  /*
 	   * Description: 订货直接输入input
@@ -264,6 +257,14 @@ Component({
 			  this.data.productList[index].needNumber = 0;
 		  }
 		  this.setCurrentInput(categoryId);
+		  this.watchTriggerEvent();
+	  },
+	  /*
+	   * Description: 监听 触发监听事件
+	   * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	   * Date: 2018/8/7
+	   */
+	  watchTriggerEvent() {
 		  this.setData({
 			  productList: this.data.productList
 		  })
@@ -296,7 +297,6 @@ Component({
 		  wx.setStorageSync('transferCacheData', this.data.transferCacheArray);
 		  this.setData({
 			  productList: this.data.transferCacheArray
-
 		  })
 	  },
 	  /**
