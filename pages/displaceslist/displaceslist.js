@@ -1,7 +1,7 @@
 // pages/displaceslist/displaceslist.js
-const app = getApp();
-const utils = require('../../utils/util');
+import * as utils from'../../utils/util';
 import * as logic from  '../../utils/logic';
+const app = getApp();
 const storeLogic = new logic.StoreLogic();
 Page({
 
