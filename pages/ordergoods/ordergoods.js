@@ -153,8 +153,8 @@ Page({
 	 * Date: 2018/6/20
 	 */
 	conclusion() {
-  	let outboundCacheData = wx.getStorageSync('outboundCacheData') || []; // 出库过滤
-		return orderLogic.filterData(outboundCacheData && outboundCacheData[0], 3);
+  	let outboundCacheData = wx.getStorageSync('outboundCacheData'); // 出库过滤
+		return orderLogic.filterData(outboundCacheData ? outboundCacheData[0] : [], 3);
 	},
 	/**
 	 * Description: 保存盘点 接口
@@ -259,6 +259,8 @@ Page({
     if (pageindex ==0 || pageindex == 1 || pageindex == 2 || pageindex == 7) {
 	    if (os == 2 || os == 1) {
 		    this.data.currPage = 1;
+		    this.data.pagetListData = [];
+		    this.data.productlist = [];
 		    this.getProductByNav();
 	    }
 	    if (pageindex == 0) {

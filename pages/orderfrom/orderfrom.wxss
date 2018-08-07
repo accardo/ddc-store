@@ -68,3 +68,33 @@
 .btn-review-disable > button {
   background-color: rgba(144, 144, 144, 1);
 }
+
+.mark-title {
+  margin-top: 30rpx;
+  color: #999999;
+  font-size: 46rpx;
+}
+.remarks {
+  margin: 50rpx 30rpx 50rpx 30rpx;
+  border-top: #999999 solid 1px;
+}
+.mark-wrap {
+  margin-top: 30rpx;
+}
+.mark-input {
+  display: flex;
+  margin-top: 30rpx;
+}
+.mark-input text{
+  flex: 1;
+  color: #999999;
+  font-size: 32rpx;
+}
+.mark-input .input-text {
+  flex: 3;
+  border: #cccccc solid 1rpx;
+  font-size: 32rpx;
+}
+.mark-input textarea {
+  min-height: 200rpx;
+}

@@ -25,7 +25,9 @@ Page({
 	  pageindex: 0,
 	  productStatus:'', // 判断订货详情
 	  reason: '', // 出库原因
-	  outboundType: 0 // 1 报废 2 退货
+	  outboundType: 0, // 1 报废 2 退货
+	  productInput1: '',
+	  productInput2: '',
   },
 	/**
 	 * Description: 读取商品列表 待派单； 订货 状态 4 save; 未提交 状态 4 update; 部分收货 状态2 update ; 收货完毕 状态2 update
@@ -41,7 +43,9 @@ Page({
 			this.setData({
 				productStatus: 'goodsdetail',
 				productType: 'goods',
-				productlist: storeLogic.subData3(res.purchaseDetailVOList)
+				productlist: storeLogic.subData3(res.purchaseDetailVOList),
+				productInput1: res.otherProduct,
+				productInput2: res.productRemark,
 			})
 			this.clearCache();
 			this._watchChangeDetial(); //详情商品数量
@@ -68,6 +72,22 @@ Page({
 			}
 		})
   },
+	/*
+	 * Description: 其他商品
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/8/7
+	 */
+	bindInput(e) {
+		this.data.productInput1 = e.detail.value;
+	},
+	/*
+	 * Description: 商品备注
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/8/7
+	 */
+	bindTextArea(e) {
+		this.data.productInput2 = e.detail.value;
+	},
 	/**
 	 * Description: 更新 保存 数据
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -80,6 +100,8 @@ Page({
 			id: this.data.purchaseId || null, // 订单id
 			shopId: app.selectIndex, // 店铺ID
 			status: this.data.status || 0, // 状态 (4、未提交 / 保存)
+			otherProduct: this.data.productInput1,
+			productRemark: this.data.productInput2,
 			purchaseDetailVOList: storeLogic.subData4(this.data.update == '1' ? cacheDataDetial : cacheData[0], this.data.productlist, this.data.update)
 		}
 		storeLogic.ajaxSaveUpdate('purchase', promeData, this.data.update == '1' ? false : true).then(() => {

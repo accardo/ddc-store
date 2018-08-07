@@ -99,21 +99,19 @@ Component({
 	  	let uIndex = e.currentTarget.dataset.index; // 当前选中索引号
 		  let categoryId = e.currentTarget.dataset.categoryid
 		  this.data.productList[uIndex].unitValue = e.detail.value;
-		  if (this.data.pageindex == 1) {
-			  this.cacheStorageSpaceInfo(categoryId);
-		  }else if(this.data.pageindex == 2 || this.data.pageindex == 7) {
+		  if(this.data.pageindex == 2 || this.data.pageindex == 7) {
 			  if (this.data.productList[uIndex].item.deductionType == 1) {
-			  	// 判断输入商品数量不能大于当前库存，直接扣减
-			  	if (parseInt(e.detail.value) > parseInt(this.data.productList[uIndex].item.unitValue)) {
+				  // 判断输入商品数量不能大于当前库存，直接扣减
+				  if (parseInt(e.detail.value) > parseInt(this.data.productList[uIndex].item.unitValue)) {
 					  this.data.productList[uIndex].unitValue = '';
-			  		this.setVerTosast();
-			  		return
+					  this.setVerTosast();
+					  return
 				  }
-			  } else if(this.data.productList[uIndex].item.deductionType == 2) { // 拆零扣减
-			  	this.setVerification(uIndex, 1);
+			  } else if (this.data.productList[uIndex].item.deductionType == 2) { // 拆零扣减
+				  this.setVerification(uIndex, 1);
 			  }
-			  this.cacheStorageSpaceInfo(categoryId);
 		  }
+		  this.cacheStorageSpaceInfo(categoryId);
     },
 	  /**
 	   * Description: 拆零扣减 设置零散 input
@@ -124,12 +122,10 @@ Component({
 	  	let uIndex = e.currentTarget.dataset.index;
 		  let categoryId = e.currentTarget.dataset.categoryid
 		  this.data.productList[uIndex].materialUnitValue = e.detail.value;
-		  if (this.data.pageindex == 1) {
-			  this.cacheStorageSpaceInfo(categoryId);
-		  } else if (this.data.pageindex == 2 || this.data.pageindex == 7) {
+		  if (this.data.pageindex == 2 || this.data.pageindex == 7) {
 			  this.setVerification(uIndex, 2);
-			  this.cacheStorageSpaceInfo(categoryId);
 		  }
+		  this.cacheStorageSpaceInfo(categoryId);
     },
 	  /**
 		 * Description: 验证信息 拆零 整合
@@ -169,7 +165,7 @@ Component({
 		  utils.showToastNone('不能大于当前库存');
 	  },
 	  /**
-	   * Description: 盘点存储所有缓存数据
+	   * Description: 盘点, 出库，退货存储所有缓存数据
 	   * Author: yanlichen <lichen.yan@daydaycook.com>
 	   * Date: 2018/6/4
 	   */
@@ -178,7 +174,6 @@ Component({
 		  let getInventoryCacheData = wx.getStorageSync('inventoryCacheData');
 		  let tempInfoData = orderLogic.filterData(this.data.productList, 3);
 		  if (this.data.pageindex == 1) {
-		  	// 缓存数据 , 盘点临时存放空数组， 读取盘点缓存数据， 过滤后的数据 , 分类索引号：用于创建第几空数组
 			  orderLogic.setfuncData('inventoryCacheData', this.data.inventoryCacheArray, getInventoryCacheData, tempInfoData, categoryId, this.data.shopTypeSearch);
 		  } else if(this.data.pageindex == 2 || this.data.pageindex == 7) {
 			  orderLogic.setfuncData('outboundCacheData', this.data.outboundCacheArray, getOutboundCacheData, tempInfoData, categoryId, this.data.shopTypeSearch);

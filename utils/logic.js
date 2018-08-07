@@ -285,53 +285,6 @@ export class OrderLogic extends StoreLogic {
 		this.plistArray = [];
 		this.pl = {};
 	}
-	/*
-	 * Description: 订货 盘点 出库 退出 公共模块
-	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
-	 * Date: 2018/7/16
-	 */
-	/*dpctGlobalModule(a1, a2, a3, a5_orig) { //a1 -> 选中数据缓存 type []; a2 -> 搜索缓存 type []; a3 -> 缓存的key type string; a4 -> 分类索引 a5-> 当前原始数据
-		this.constructor();
-		let ty1 = []; // ty1-> 临时存放数组1；
-		let ty2 = []; // ty2-> 临时存放数组2;
-		if (super.os == 2) {
-			let arr = Object.getOwnPropertyNames(a1);
-			ty2 = this.filterData(a2, 2); // 搜索数据获取数据输入不为0的数据
-		//	console.log(ty2, '搜索数据过滤')
-			if (arr != 0) { // 有缓存先读取缓存数据后在和 当前数据对比赋值
-				if (ty2 !== '' && ty2.length > 0) {
-					let a = Object.entries(a1).forEach()
-					//let tempA = Object.values(a1); // 对象转换成数组
-
-				//	tempA = utils.cacheDataDeal(tempA); // 去除全部分类后 整合数组对象
-					console.log(a, Object.values(ty2));
-					//a1[a4_index] = this.forDataContrastSearch(a1[a4_index], ty2); // 搜索结果和总数据对比，如果有skuId相同责去除
-					//ty1 = this.forDataContrastSearch(a5_orig, a1[a4_index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
-				}
-			} else { // 当页面没有缓存 直接搜索时候当前数据对比赋值
-				if (ty2 !== '' && ty2.length > 0) {
-					this.setEmptyArray(a1); // 二维数组置空
-					a1[a4_index] = ty2;
-					ty1 = this.forDataContrastSearch(a5_orig, ty2); // 搜索结果和总数据对比，如果有skuId相同责去除
-				}
-			}
-			wx.setStorageSync(a3, a1); // 搜索结束后 需要把搜索结果放入到总的结果缓存中
-		} else if (super.os == 1) { // 多分类综合页面
-			if (super.pageIndex == 2 || super.pageIndex == 7) {
-				a5_orig.forEach((item) => {
-					item.unitValue = '';
-					item.materialUnitValue = '';
-				})
-			}
-			ty1 = this.forDataContrastSearch(a5_orig, a1[a4_index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
-		}
-		if (a1.length > 0 ) {
-			ty2 = this.forDataContrastSearch(a5_orig, a1[a4_index] || []);
-		} else {
-			ty2 = a5_orig;
-		}
-		return ty1.length > 0 ? ty1 : ty2;
-	}*/
 	/**
 	 * Description: 过滤数据
 	 * Author: yanlichen <lichen.yan@daydaycook.com>
@@ -398,16 +351,6 @@ export class OrderLogic extends StoreLogic {
 		}
 		return data1.distinct().reverse();
 	}
-	/**
-	 * Description: 不规则选区 二维数组置空
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/6/28
-	 */
-	/*setEmptyArray(arrayData) {
-		for (let i=0; i < super.navlistLength.voLenght; i++) {
-			arrayData[super.navlistLength.keyIndex[i]] = [];
-		}
-	}*/
 	/*
 	 * Description: 订货 盘点 出库 退货 数据筛选逻辑 c_key -> 缓存key值；t_array -> 临时存储值； c_data -> 缓存数据； f_data -> 过滤数据； c_id -> 分类id； t_sh -> 搜索版面  search 搜索页面
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>

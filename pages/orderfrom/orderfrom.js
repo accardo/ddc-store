@@ -20,6 +20,9 @@ Page({
 	  type: '', // 调拨 状态 1、调拨入库 2、调拨出库
 	  imgBigUrl: '', // 放大的图片
 	  imgIsShow: false,
+	  listType: '',
+	  otherProduct: '',
+	  productRemark: '',
   },
 	/**
 	 * Description: 统一回调处理 返回信息
@@ -44,6 +47,10 @@ Page({
     }
 		storeLogic.ajaxGetData('purchasedetail/info', promseData).then((res) => {
 			this.requestReturnInfo(res, res.purchaseDetailVOList);
+			this.setData({
+				otherProduct: res.otherProduct,
+				productRemark: res.productRemark,
+			})
 		})
   },
 	/*
@@ -167,6 +174,7 @@ Page({
 		  status: options.orderStatus || '', // 订货状态 或 盘点状态
 		  type: options.orderType || '',  // 调拨点状态 订货状态 盘点状态
 		  reason: options.orderReason || '', // 破损原因
+		  listType: listType || '',
 		  pageindex,
 	  })
     if (pageindex == 0) {
