@@ -17,10 +17,10 @@
       <view class="mark-title">订货备注</view>
       <view class="mark-wrap">
         <view class="mark-input">
-          <text>其他商品：{{otherProduct}}</text>
+          <text>其他商品：{{otherProduct || ''}}</text>
         </view>
         <view class="mark-input">
-          <text>商品备注：{{productRemark}}</text>
+          <text>商品备注：{{productRemark || ''}}</text>
         </view>
       </view>
     </view>
