@@ -1,6 +1,6 @@
 <!--pages/goodsinfo/goodsinfo.wxml-->
 <view class='detail'>
-  <tip-info reason="{{reason}}" conclusion="{{conclusion}}"></tip-info>
+  <tip-info reason="{{reason}}"  wx:if="{{reason}}" conclusion="{{conclusion}}"></tip-info>
   <view class="scroll-box {{(pageindex == 2 || pageindex == 7) ? 'active' : ''}}" style="height: auto;">
   <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
       <!--wx:if="{{conclusion}}"-->
@@ -28,7 +28,7 @@
       </view>
     </view>
   </view>
-  <view class='bottom-box' wx:if="{{pageindex == 0 }}">
+  <view class="bottom-box {{(pageindex == 0 && conclusion == 1) ? 'box-auto' : ''}}" wx:if="{{pageindex == 0 }}">
       <view class='bottom-price'>
         共<text>{{shopTotalN}}</text>个商品，<text>{{shopPieceN}}</text>件
       </view>

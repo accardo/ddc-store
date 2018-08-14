@@ -233,7 +233,10 @@ Page({
       title: pagetitle
     })
   },
-
+	onPageScroll: function(Object) {
+  	console.log(Object)
+		// Do something when page scroll
+	},
   /**
    * 生命周期函数--监听页面初次渲染完成
    */

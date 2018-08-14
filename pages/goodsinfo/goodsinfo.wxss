@@ -6,9 +6,14 @@ page{
 .detail{
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .scroll-box.active{
   padding-bottom: 140rpx;
+  position: relative;
+  z-index: 2;
 }
 .bottom-price{
   font-size: 32rpx;
@@ -56,4 +61,8 @@ page{
 }
 .mark-input textarea {
   min-height: 200rpx;
+}
+.box-auto {
+  flex: 0 0 80rpx;
+  position: inherit;
 }

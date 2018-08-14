@@ -301,7 +301,7 @@ export class OrderLogic extends StoreLogic {
 			});
 		} else if(num == 3) {
 			return data && data.filter((item) => { // 盘点 搜索查询 返回搜索数据
-				return item.unitValue != '' || item.materialUnitValue != '';
+				return (item.unitValue != '' && item.unitValue != 0 && item.unitValue != '0') || (item.materialUnitValue != '' && item.materialUnitValue != 0 && item.materialUnitValue != '0');
 			})
 		} else if (num == 4) {
 			return data && data.filter((item) => { // 出库 返回没有输入值的数据
