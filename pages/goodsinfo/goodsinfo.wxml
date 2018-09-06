@@ -1,7 +1,7 @@
 <!--pages/goodsinfo/goodsinfo.wxml-->
 <view class='detail'>
-  <tip-info reason="{{reason}}" conclusion="{{conclusion}}"></tip-info>
-  <view class="scroll-box {{(pageindex == 2 || pageindex == 7) ? 'active' : ''}}">
+  <tip-info reason="{{reason}}"  wx:if="{{reason}}" conclusion="{{conclusion}}"></tip-info>
+  <view class="scroll-box {{(pageindex == 2 || pageindex == 7) ? 'active' : ''}}" style="height: auto;">
   <scroll-view scroll-top="{{scrollTop}}" scroll-y style="height:100%;" class="products">
       <!--wx:if="{{conclusion}}"-->
     <product-info
@@ -12,9 +12,23 @@
             bind:watchChange="_watchChange"
             bind:watchChangeDetial="_watchChangeDetial"
     ></product-info>
+
   </scroll-view>
+    <view class="remarks" wx:if="{{pageindex == 0}}">
+      <view class="mark-title">订货备注</view>
+      <view class="mark-wrap">
+        <view class="mark-input">
+          <text>其他商品：</text>
+          <input class="input-text" type="text" bindblur="bindInput" maxlength="100" value="{{productInput1}}" placeholder="请输入"/>
+        </view>
+        <view class="mark-input">
+          <text>商品备注：</text>
+          <textarea class="input-text" bindblur="bindTextArea" maxlength="500" value="{{productInput2}}" auto-height placeholder="请输入" />
+        </view>
+      </view>
+    </view>
   </view>
-  <view class='bottom-box' wx:if="{{pageindex == 0 }}">
+  <view class="bottom-box {{(pageindex == 0 && conclusion == 1) ? 'box-auto' : ''}}" wx:if="{{pageindex == 0 }}">
       <view class='bottom-price'>
         共<text>{{shopTotalN}}</text>个商品，<text>{{shopPieceN}}</text>件
       </view>

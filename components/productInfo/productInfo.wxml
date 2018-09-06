@@ -25,13 +25,13 @@
                 当前库存：<text>{{item.item.deductionType ==1 ? (item.item.unitValue+''+ item.item.unitName): (item.item.unitValue+''+ item.item.unitName +' '+item.item.materialUnitValue+''+ item.item.materialUnitName)}}</text>
               </view>
               <view class='product-count' >
-                <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" catchtap='countReduce' src='../../icons/jian.png'></image>
+                <image class='input-icon' data-index="{{index}}" data-categoryId="{{item.item.categoryId1}}" catchtap='countReduce' src='../../icons/jian.png'></image>
                 <view class='input-number'>
-                  <input class='input-num red' bindinput="setNumber" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" type="number" value="{{ item.needNumber }}"/>
+                  <input class='input-num red' bindinput="setNumber" data-index="{{index}}" data-categoryId="{{item.item.categoryId1}}" type="number" value="{{ item.needNumber }}"/>
                  <!-- <text class='input-num red'>{{item.needNumber }}</text>-->
                   <text class='input-type'>{{item.item.unitName}}</text>
                 </view>
-                <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" catchtap='countAdd' src='../../icons/jia.png'></image>
+                <image class='input-icon' data-index="{{index}}" data-categoryId="{{item.item.categoryId1}}" catchtap='countAdd' src='../../icons/jia.png'></image>
               </view>
           </view>
           <!--订货 end-->
@@ -53,11 +53,11 @@
           <view class='goods-stock stock-num'>
             盘点数量:
               <view class="number-box" wx:if="{{item.item.deductionType == 2}}">
-                  <input type="number" bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
-                  <input type='number' bindinput="setScattered2" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
+                  <input type="number" bindinput="setScattered1" data-index="{{index}}" data-categoryId="{{item.item.categoryId1}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
+                  <input type='number' bindinput="setScattered2" data-index="{{index}}" data-categoryId="{{item.item.categoryId1}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
               </view>
               <view class="number-box" wx:if="{{item.item.deductionType == 1}}">
-                 <input type='number' bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
+                 <input type='number' bindinput="setScattered1" data-index="{{index}}" data-categoryId="{{item.item.categoryId1}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
               </view>
           </view>
         </view>
@@ -84,14 +84,14 @@
             <view class='goods-stock stock-num'>
               出库数量:
                 <view class="number-box" wx:if="{{item.item.deductionType == 1}}">
-                    <input type='number' bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
+                    <input type='number' bindinput="setScattered1" data-index="{{index}}" data-categoryId="{{item.item.categoryId1}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
                 </view>
                 <view class="number-box" wx:if="{{item.item.deductionType == 2 && pageindex == 2 }}">
-                    <input type="number" bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
-                    <input type='number' bindinput="setScattered2" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
+                    <input type="number" bindinput="setScattered1" data-index="{{index}}" data-categoryId="{{item.item.categoryId1}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 2 拆零扣减整数-->
+                    <input type='number' bindinput="setScattered2" data-index="{{index}}" data-categoryId="{{item.item.categoryId1}}" value="{{item.materialUnitValue}}"/>{{item.item.materialUnitName}} <!-- 拆零扣减零散-->
                 </view>
                 <view class="number-box" wx:if="{{item.item.deductionType == 2 && pageindex == 7 }}">
-                  <input type='number' bindinput="setScattered1" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
+                  <input type='number' bindinput="setScattered1" data-index="{{index}}" data-categoryId="{{item.item.categoryId1}}" value="{{item.unitValue}}" />{{item.item.unitName}} <!-- 1 直接扣减 -->
                 </view>
             </view>
         </view>
@@ -159,13 +159,13 @@
             </view>
             <view class='product-count allot'>
                 <text>调出数量:</text>
-                <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" catchtap='transferReduce' src='../../icons/jian.png'></image>
+                <image class='input-icon' data-index="{{index}}" catchtap='transferReduce' src='../../icons/jian.png'></image>
                 <view class='input-number'>
-                      <input class='input-num red' bindinput="setTransferNumber" data-index="{{index}}" data-navClassIndex="{{item.navClass}}" type="number" value="{{ item.outNumber }}"/>
+                      <input class='input-num red' bindinput="setTransferNumber" data-index="{{index}}" type="number" value="{{ item.outNumber }}"/>
                       <!--<text class='input-num red'>{{item.outNumber }}</text>-->
                       <text class='input-type'>{{item.item.unitName}}</text>
                  </view>
-                <image class='input-icon' data-index="{{index}}" data-navClassIndex="{{item.navClass}}" catchtap='transferAdd' src='../../icons/jia.png'></image>
+                <image class='input-icon' data-index="{{index}}" catchtap='transferAdd' src='../../icons/jia.png'></image>
             </view>
         </view>
           <!-- 调拨 end-->

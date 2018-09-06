@@ -13,6 +13,17 @@
          order-status="{{ status }}"
          bind:bindReceiptData="_bindReceiptData"
      ></receipt-list>
+    <view class="remarks" wx:if="{{pageindex == 0 && listType == 1}}">
+      <view class="mark-title">订货备注</view>
+      <view class="mark-wrap">
+        <view class="mark-input">
+          <text>其他商品：{{otherProduct || ''}}</text>
+        </view>
+        <view class="mark-input">
+          <text>商品备注：{{productRemark || ''}}</text>
+        </view>
+      </view>
+    </view>
   </view>
   <view class="btn-review" wx:if="{{pageindex == 7 && status == 4}}">
     <button bindtap="returnUpdate">保存</button>

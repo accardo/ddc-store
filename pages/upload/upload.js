@@ -37,12 +37,11 @@ Page({
 		  type: this.data.outboundType, // 出库类型
 		  reason: this.data.reason, // 出库原因
 		  imageUrls: this.data.imgList.toString(),
-		  [voList]: storeLogic.processData(outboundCacheData)
+		  [voList]: storeLogic.processData(outboundCacheData[0])
 	  }
 		storeLogic.ajaxSaveUpdate(serviceUrl, promdData, true).then(() => {
 		  utils.showToast({title: '保存成功', page: 3, pages: getCurrentPages()});
 		  wx.removeStorageSync('outboundCacheData');
-		  wx.removeStorageSync('searchOutboundCacheData');
 	  })
   },
   /**

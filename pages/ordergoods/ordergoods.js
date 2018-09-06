@@ -41,7 +41,8 @@ Page({
 	    scrollTop: 0,
     })
     this.getProductByNav();
-  },
+		this.listLength();
+	},
 	/*
 	 * Description: 获取类别信息
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
@@ -49,14 +50,26 @@ Page({
 	 */
 	getMenuList() {
 		storeLogic.ajaxGetData('category/listCategory').then((res) => {
+			res.categoryVOList.unshift({
+				id: 0,
+				name: '全部',
+				level: 0,
+				sort: 0
+			})
 			this.setData({
 				categoryId: res.categoryVOList[0].id,
 				navlist: res.categoryVOList
 			})
-			wx.setStorageSync('navlistLength', res.categoryVOList.length); // 分类长度
+			this.listLength();
 			this.getProductByNav();
 		})
   },
+	listLength() {
+		let a = this.data.navlist.map((item) => {
+			return item.id
+		})
+		wx.setStorageSync('navlistLength', {voLenght: this.data.navlist.length, keyIndex: a, categoryId: this.data.categoryId}); // 分类长度
+	},
 	/*
 	 * Description: 获取产品信息
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
@@ -69,18 +82,19 @@ Page({
       currPage: this.data.currPage,
       pageSize: this.data.pageSize,
       shopId: app.selectIndex, // 店铺ID
-      categoryId: this.data.categoryId, // 产品分类ID
 	    itemTypes, // 订货为 2,4,5,6 限制商品  盘点为 2,4,6 其他都是2,4,6，具体请看prd
     }
+    // 分类id为0的时候是全部分类 不传分类id 搜索全部商品
+		this.data.categoryId != 0 ? promdData.categoryId = this.data.categoryId : '' // 产品分类ID
 		pageIndex == 1 ? promdData.type = 1 : '';
-		storeLogic.ajaxGetData('category/listProduct', promdData, this.data._index).then((res) => {
+		storeLogic.ajaxGetData('category/listProduct', promdData, this.data.categoryId).then((res) => {
 			wx.stopPullDownRefresh();
 			if (res.page.totalPage < this.data.currPage || res.page.list.length == 0) {
 				utils.showToastNone('没有更多数据');
 				return false
 			}
 	    this.data.pagetListData = this.data.pagetListData.concat(res.page.list); // 数组合并
-			this.data.pagetListData = orderLogic.refreshLoadData(this.data.pagetListData, this.data._index);
+			this.data.pagetListData = orderLogic.refreshLoadData(this.data.pagetListData, this.data.categoryId);
 
 	    this.setData({
 		    productlist: this.data.pagetListData,
@@ -96,7 +110,7 @@ Page({
    */
   _watchChange(){
   	let cacheData = wx.getStorageSync('cacheData');
-		let setShop = storeLogic.watchChange(cacheData);
+		let setShop = storeLogic.watchChange(cacheData && cacheData[0]);
     this.setData({
       shopTotalN: setShop.total || 0,
       shopPieceN: setShop.shopPieceN || 0
@@ -110,11 +124,8 @@ Page({
    */
   goSearch() {
     wx.navigateTo({
-      url: `../../pages/search/search?categoryId=${this.data.categoryId}&shopType=goods&shopTypeSearch=search&navClass=${this.data._index}`
+      url: `../../pages/search/search?categoryId=${this.data.categoryId}&shopType=goods&shopTypeSearch=search`
     })
-	  wx.removeStorageSync('searchGoodsOrderCacheData');
-	  wx.removeStorageSync('searchInventoryCacheData');
-	  wx.removeStorageSync('searchOutboundCacheData');
 	  wx.setStorageSync('optionStorage', 2) // 用于判断进入不同页面 在返回获取数据 1是进入订单总结页面，2是进入搜索查询页面
   },
 
@@ -142,8 +153,8 @@ Page({
 	 * Date: 2018/6/20
 	 */
 	conclusion() {
-  	let outboundCacheData = wx.getStorageSync('outboundCacheData') || []; // 出库过滤
-		return orderLogic.filterData(utils.cacheDataDeal(outboundCacheData), 3);
+  	let outboundCacheData = wx.getStorageSync('outboundCacheData'); // 出库过滤
+		return orderLogic.filterData(outboundCacheData ? outboundCacheData[0] : [], 3);
 	},
 	/**
 	 * Description: 保存盘点 接口
@@ -152,7 +163,7 @@ Page({
 	 */
   getInventory() {
   	let inventoryCacheData = wx.getStorageSync('inventoryCacheData');
-  	let promdData = storeLogic.subData(inventoryCacheData, this.data.productlist);
+  	let promdData = storeLogic.subData(inventoryCacheData && inventoryCacheData[0], this.data.productlist);
 		if (promdData.inventListLenght == 0 ) {
 			utils.showToastNone('盘点数据不能为空');
 			return
@@ -170,7 +181,6 @@ Page({
 					storeLogic.ajaxSaveUpdate('inventory', promdData, true).then(() => {
 						utils.showToast({title: '提交盘点成功', page: 1, pages: getCurrentPages()});
 						wx.removeStorageSync('inventoryCacheData'); // 数据提交后 清除缓存
-						wx.removeStorageSync('searchInventoryCacheData'); // 数据提交后 清除缓存
 					})
 				}
 			}
@@ -204,7 +214,6 @@ Page({
 	 * Date: 2018/6/15
 	 */
 	lower(e) {
-		console.log(e,111);
 		this.getProductByNav();
 	},
 
@@ -240,49 +249,26 @@ Page({
 	* 缓存说明：
 	* 0、通用
 	*     wx.getStorageSync('optionStorage') -> 读取判断进入哪一个页面 1、为结果页面；2、搜索查询页面
-	* 1、订货
-	*     wx.getStorageSync('cacheData') -> 读取盘订货中全部数据
-	*     wx.getStorageSync('searchGoodsOrderCacheData') -> 读取订货 搜索查询数据
-	* 2、盘点
-	*     wx.getStorageSync('inventoryCacheData') -> 读取盘点选中全部数据
-	*     wx.getStorageSync('searchInventoryCacheData') -> 读取盘点 搜索查询数据
-	* 3、出库
-	*     wx.getStorageSync('outboundCacheData') -> 读取出库 退货 选中全部数据
-	*     wx.getStorageSync('searchOutboundCacheData') -> 读取出库 退货 搜索查询数据
-	*
 	* */
   /**
    * 生命周期函数--监听页面显示
    */
   onShow () {
     let pageindex = wx.getStorageSync('pageindex');
-	  // 订货
-	  let cacheData = wx.getStorageSync('cacheData') ? wx.getStorageSync('cacheData') : []; // 读取分类订货中所有选中的数据
-    let searchGoodsOrderCacheData = wx.getStorageSync('searchGoodsOrderCacheData'); // 订货 搜索缓存
-
-	  // 盘点
-	  let inventoryCacheData = wx.getStorageSync('inventoryCacheData') ? wx.getStorageSync('inventoryCacheData') : []; // 读取分类中盘点所有选中数据
-		let searchInventoryCacheData = wx.getStorageSync('searchInventoryCacheData'); // 盘点 搜索缓存
-
-		// 出库
-	  let outboundCacheData = wx.getStorageSync('outboundCacheData') ? wx.getStorageSync('outboundCacheData') : []; // 读取分类中出库所有选中数据
-	  let searchOutboundCacheData = wx.getStorageSync('searchOutboundCacheData'); // 出库 搜索缓存
-	  let productlistArray = [];
-    if (pageindex == 0) { // 订货
-	    productlistArray = orderLogic.dpctGlobalModule(cacheData, searchGoodsOrderCacheData, 'cacheData', this.data._index, this.data.productlist);
-	    this._watchChange();
-    }
-    if(pageindex == 1) { // 盘点
-	    productlistArray = orderLogic.dpctGlobalModule(inventoryCacheData, searchInventoryCacheData, 'inventoryCacheData', this.data._index, this.data.productlist);
-    }
-    if (pageindex == 2 || pageindex == 7) { // 出库 退货
-	    productlistArray = orderLogic.dpctGlobalModule(outboundCacheData, searchOutboundCacheData, 'outboundCacheData', this.data._index, this.data.productlist);
-    }
-    if (pageindex == 5) {
-	    productlistArray = this.data.productlist
+	  let os = wx.getStorageSync('optionStorage');
+    if (pageindex ==0 || pageindex == 1 || pageindex == 2 || pageindex == 7) {
+	    if (os == 2 || os == 1) {
+		    this.data.currPage = 1;
+		    this.data.pagetListData = [];
+		    this.data.productlist = [];
+		    this.getProductByNav();
+	    }
+	    if (pageindex == 0) {
+		    this._watchChange();
+	    }
     }
 	  this.setData({
-			productlist: productlistArray
+			productlist: this.data.productlist
 		})
 	  wx.removeStorageSync('optionStorage'); // 每次显示清空上一次判断结果
   },

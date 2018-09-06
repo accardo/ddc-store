@@ -1,7 +1,7 @@
 // pages/allotcollect/allotcollect.js
 import * as logic from  '../../utils/logic';
+import * as utils from'../../utils/util';
 const config = require('../../config/config.js');
-const utils = require('../../utils/util');
 const app = getApp();
 const storeLogic = new logic.StoreLogic();
 // const orderLogic = new logic.OrderLogic();

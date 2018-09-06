@@ -1,5 +1,4 @@
 const config = require('../../config/config.js');
-const shopListService = require('../../service/service.service.js');
 var app = getApp();
 // pages/index/index.js
 Page({
@@ -71,7 +70,7 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: function () {
     this.getShoplist();
     this.setUserMenu();
 	  let shopId = wx.getStorageSync('shopId');
@@ -85,8 +84,6 @@ Page({
    */
   onReady: function () {
     // 调用 获取位置信息
-    //this.getLocalAndInfos();
-   
   },
 
   /**

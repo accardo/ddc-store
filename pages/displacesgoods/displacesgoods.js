@@ -1,6 +1,6 @@
 // pages/displacesgoods/displacesgoods.js
 import * as logic from  '../../utils/logic';
-const utils = require('../../utils/util');
+import * as utils from'../../utils/util';
 const app = getApp();
 const storeLogic = new logic.StoreLogic();
 Page({

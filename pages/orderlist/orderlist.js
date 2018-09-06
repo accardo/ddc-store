@@ -36,8 +36,6 @@ Page({
 		    url: '../../pages/ordergoods/ordergoods?productType=goods'
 	    })
 	    this.data.listType = 1;
-	    wx.removeStorageSync('searchGoodsOrderCacheData');
-	    wx.removeStorageSync('resultsGoodsOrderCacheData');
     } else if (pageindex == 1) {
 	    wx.navigateTo({ // 盘点
 		    url: '../../pages/ordergoods/ordergoods'
@@ -126,7 +124,7 @@ Page({
  * Author: yanlichen <lichen.yan@daydaycook.com.cn>
  * Date: 2018/7/6
  */
-	scrapSelect(){
+	scrapSelect() {
 		this.setData({
 			outboundType: 1,
 			isShow: true,
@@ -138,7 +136,7 @@ Page({
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
 	 * Date: 2018/7/6
 	 */
-	returnGoods(){
+	returnGoods() {
 		this.setData({
 			outboundType: 2,
 			isShow: true,
@@ -159,7 +157,6 @@ Page({
 				wx.removeStorageSync('outboundCacheData');
 			}
 			wx.removeStorageSync('optionStorage');
-			wx.removeStorageSync('searchOutboundCacheData');
 			wx.navigateTo({
 				url: `../../pages/ordergoods/ordergoods?reason=${this.data.selectRadio}&outboundType=${this.data.outboundType}`
 			})

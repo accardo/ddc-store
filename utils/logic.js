@@ -37,9 +37,7 @@ export class StoreLogic {
 	 */
 	subData(o1, o2) {
 		let tempInventList = o1 ? o1 : o2;
-				tempInventList = utils.ArrayDeepCopy(tempInventList);  // 数组深层拷贝
-				tempInventList = utils.cacheDataDeal(tempInventList); // 二维数组结构为一维数组进行 过滤
-		let isComplete = tempInventList.filter((item) => { // 过滤 没有填写数据
+		let isComplete = o1.filter((item) => { // 过滤 没有填写数据
 			if (item.unitValue !== '' || item.materialUnitValue !== '') { // 提交数据整理
 				item.goodsId = item.id;
 				item.shopItemSkuVO = {
@@ -135,7 +133,7 @@ export class StoreLogic {
 				return item
 			})
 		} else {
-			return utils.cacheDataDeal(o1).map((item) => { // 过滤 没有填写数据
+			return o1.map((item) => { // 过滤 没有填写数据
 				item.goodsId = item.id;
 				item.shopItemSkuVO = {
 					attrValues: utils.attrValuesToString(item), // attrValues array 转 string
@@ -208,7 +206,7 @@ export class StoreLogic {
 	 * Params: serviceUrl -> 不同保存请求不同URL; getData -> 由于之前的封装接口分开的这里需要拆分
 	 * Date: 2018/7/20
 	 */
-	ajaxGetData(serviceUrl, getData = null, navClassIndex = null) {
+	ajaxGetData(serviceUrl, getData = null, categoryId =null) {
 		let urlStr = serviceUrl.split('/');
 		wx.showLoading({title: '加载中...', mask: true,});
 		return new Promise((resolve) => {
@@ -219,8 +217,8 @@ export class StoreLogic {
 			}).then((res) => {
 				if (res.code == 0) {
 					setTimeout(() => {
-						if (navClassIndex !== null) {
-							resolve(this.returnData(res, navClassIndex));
+						if (categoryId !== null) {
+							resolve(this.returnData(res));
 						} else {
 							resolve(res);
 						}
@@ -243,9 +241,9 @@ export class StoreLogic {
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
 	 * Date: 2018/7/20
 	 */
-	returnData(data, navClassIndex) {
+	returnData(data) {
 		this.constructor();
-		 data.page.list.map((item) => {
+		data.page.list.map((item) => {
 			item.attrValues = utils.attrValuesSplit(item);
 			if (this.pageIndex == 0) { // 订货
 				item.needNumber = 0;
@@ -257,7 +255,6 @@ export class StoreLogic {
 			} else if (this.pageIndex == 4) { // 调拨
 				item.outNumber = 0;
 			}
-			item.navClass = navClassIndex;
 			return item;
 		})
 		return data;
@@ -286,46 +283,7 @@ export class OrderLogic extends StoreLogic {
 	constructor() {
 		super();
 		this.plistArray = [];
-	}
-	/*
-	 * Description: 订货 盘点 出库 退出 公共模块
-	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
-	 * Date: 2018/7/16
-	 */
-	dpctGlobalModule(a1, a2, a3, a4_index, a5_orig) { //a1 -> 选中数据缓存 type []; a2 -> 搜索缓存 type []; a3 -> 缓存的key type string; a4 -> 分类索引 a5-> 当前原始数据
-		this.constructor();
-		let ty1 = []; // ty1-> 临时存放数组1；
-		let ty2 = []; // ty2-> 临时存放数组2;
-		if (super.os == 2) {
-			ty2 = this.filterData(a2, 2); // 搜索数据获取数据输入不为0的数据
-			if (a1.length > 0) { // 有缓存先读取缓存数据后在和 当前数据对比赋值
-				if (ty2 !== '' && ty2.length > 0) {
-					a1[a4_index] = this.forDataContrastSearch(a1[a4_index], ty2); // 搜索结果和总数据对比，如果有skuId相同责去除
-					ty1 = this.forDataContrastSearch(a5_orig, a1[a4_index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
-				}
-			} else { // 当页面没有缓存 直接搜索时候当前数据对比赋值
-				if (ty2 !== '' && ty2.length > 0) {
-					this.setEmptyArray(a1); // 二维数组置空
-					a1[a4_index] = ty2;
-					ty1 = this.forDataContrastSearch(a5_orig, ty2); // 搜索结果和总数据对比，如果有skuId相同责去除
-				}
-			}
-			wx.setStorageSync(a3, a1); // 搜索结束后 需要把搜索结果放入到总的结果缓存中
-		} else if (super.os == 1) { // 多分类综合页面
-			if (super.pageIndex == 2 || super.pageIndex == 7) {
-				a5_orig.forEach((item) => {
-					item.unitValue = '';
-					item.materialUnitValue = '';
-				})
-			}
-			ty1 = this.forDataContrastSearch(a5_orig, a1[a4_index]); // 搜索返回 缓存数据 需要和完整数据做对比取出输入值在进行赋值
-		}
-		if (a1.length > 0 ) {
-			ty2 = this.forDataContrastSearch(a5_orig, a1[a4_index] || []);
-		} else {
-			ty2 = a5_orig;
-		}
-		return ty1.length > 0 ? ty1 : ty2;
+		this.pl = {};
 	}
 	/**
 	 * Description: 过滤数据
@@ -343,7 +301,7 @@ export class OrderLogic extends StoreLogic {
 			});
 		} else if(num == 3) {
 			return data && data.filter((item) => { // 盘点 搜索查询 返回搜索数据
-				return item.unitValue != '' || item.materialUnitValue != '';
+				return (item.unitValue != '' && item.unitValue != 0 && item.unitValue != '0') || (item.materialUnitValue != '' && item.materialUnitValue != 0 && item.materialUnitValue != '0');
 			})
 		} else if (num == 4) {
 			return data && data.filter((item) => { // 出库 返回没有输入值的数据
@@ -363,7 +321,7 @@ export class OrderLogic extends StoreLogic {
 			})
 		} else if (num == 8) {
 			return data && data.filter((item) => { // 搜索查询  返回搜索的数据
-				return item.needNumber != '' && item.needNumber != '0';
+				return item.needNumber != '0';
 			})
 		} else if (num == 9) {
 			return data && data.filter((item) => { // 搜索查询  返回搜索的数据
@@ -393,17 +351,63 @@ export class OrderLogic extends StoreLogic {
 		}
 		return data1.distinct().reverse();
 	}
-	/**
-	 * Description: 不规则选区 二维数组置空
-	 * Author: yanlichen <lichen.yan@daydaycook.com>
-	 * Date: 2018/6/28
+	/*
+	 * Description: 订货 盘点 出库 退货 数据筛选逻辑 c_key -> 缓存key值；t_array -> 临时存储值； c_data -> 缓存数据； f_data -> 过滤数据； c_id -> 分类id； t_sh -> 搜索版面  search 搜索页面
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/8/7
 	 */
-	setEmptyArray(arrayData) {
-		for (let i=0; i < super.navlistLength; i++) {
-			arrayData[i] = [];
+	setfuncData(c_key, t_array, c_data, f_data, c_id, t_sh) {
+		this.constructor();
+		if (!c_data) {
+			for (let i=0; i < super.navlistLength.voLenght; i++) {
+				t_array[super.navlistLength.keyIndex[i]] = [];
+			}
 		}
+		t_array[super.navlistLength.categoryId] = f_data //先添加 在进行过滤
+		if (super.navlistLength.categoryId == 0) { // 全部分类
+			let fCategory = this.allFilter(t_array[0], c_id);
+			if (t_sh == 'search') {
+				fCategory = this.forDataContrastSearch(c_data[c_id] || [], fCategory);
+			}
+			t_array[c_id] = fCategory;
+			if(t_sh == 'search') {
+				t_array[0] = this.mergeData(t_array);
+			}
+		} else { // 除全部分类 所有分类累加即使全部分类 在赋值到全部分类
+			if (t_sh == 'search') {
+				let fCategory = this.allFilter(t_array[c_id], c_id);
+				fCategory = this.forDataContrastSearch(c_data[c_id] || [], fCategory);
+				t_array[c_id] = fCategory;
+			}
+			t_array[0] = this.mergeData(t_array);
+		}
+		if (t_sh != 'search') {
+			t_array[super.navlistLength.categoryId] = f_data
+		}
+		wx.setStorageSync(c_key, t_array);
 	}
-
+	/*
+	 * Description: 过滤全部分类 或者  搜索全部分类 数据
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/8/7
+	 */
+	allFilter(data, c_id) {
+		return data.filter((item) => { // 过滤全部分类 当前选中所有分类数据
+			if (item.item.categoryId1 == c_id) { // 返回当前选中的所有分类数据
+				return item
+			}
+		})
+	}
+	/*
+	 * Description: 合并选中总数据并赋值给 0 全部分类
+	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
+	 * Date: 2018/8/7
+	 */
+	mergeData(data) {
+		let tempA = Object.values(data); // 对象转换成数组
+		tempA.splice(0, 1); // 删除全部分类 进行对象合并成数组
+		return utils.cacheDataDeal(tempA); // 去除全部分类后 整合数组对象
+	}
 	/*
 	 * Description: 连续加载数据处理
 	 * Author: yanlichen <lichen.yan@daydaycook.com.cn>
